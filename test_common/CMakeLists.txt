@@ -3,16 +3,17 @@ project(test_common)
 
 
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  roscpp
-  rospy
-  std_msgs
+    message_generation
+    roscpp
+    rospy
+    std_msgs
 )
 
 add_message_files(
     FILES
     PathPoint.msg
     TrajectoryPoint.msg
+    ChassisData.msg
 )
 
 generate_messages(
@@ -29,7 +30,15 @@ catkin_package(CATKIN_DEPENDS
 
 
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+    include
+    ${catkin_INCLUDE_DIRS}
+)
+
+add_library(vehicle_state_provider
+    src/vehicle_state_provider.cpp
+)
+
+target_link_libraries(vehicle_state_provider
+    ${catkin_LIBRARIES}
 )
 
