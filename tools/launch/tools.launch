@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="tools" type="plot_control_debug.py" name="plot_control_debug" output="screen" />
+
+    <node pkg="tools" type="plot_control.py" name="plot_control" output="screen" />
+
+</launch>

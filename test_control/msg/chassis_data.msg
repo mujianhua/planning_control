@@ -1,0 +1,10 @@
+float64 simulink_time
+float64 Xo
+float64 Yo
+float64 Theta
+float64 Roll
+float64 Pitch
+float64 Vx
+float64 Vy
+float64 Yawrate
+float64 Rollrate

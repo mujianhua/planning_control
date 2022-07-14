@@ -1,0 +1,3 @@
+float64 lateral_error
+float64 heading_error
+float64 ref_heading

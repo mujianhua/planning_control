@@ -1,0 +1,12 @@
+VehicleParam:
+ mass: 1600.0
+ mass_s: 1430.0
+ iz: 2059.2
+ ix: 700.7
+ wheelbase: 1.565
+ steer_ratio: 19.0
+ lf: 1.05
+ lr: 1.565
+ h: 0.65
+ k_phi: 145330.0
+ d_phi: 4500.0

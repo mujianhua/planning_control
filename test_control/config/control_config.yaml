@@ -1,0 +1,22 @@
+ControlConfig:
+
+  ts: 0.05
+  horizon: 10
+  state_size: 6
+  control_size: 1
+
+  max_vy: 0.4 # m/s
+  max_yawrate: 0.3 # rad/s
+  max_rollrate: 0.6 # rad/s
+  max_roll: 0.08 # rad
+  max_fwa: 20.0 # deg
+
+  mpc_max_iteration: 200
+  mpc_matrix_q_vy: 1
+  mpc_matrix_q_yawrate: 1
+  mpc_matrix_q_rollrate: 1
+  mpc_matrix_q_roll: 1
+  mpc_matrix_q_ey: 10
+  mpc_matrix_q_epsi: 10
+
+  mpc_matrix_r_fwa: 1

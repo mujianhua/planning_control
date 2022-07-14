@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+
+  	<!-- - Run optimization test node -->
+    <!-- <node pkg="test_control" type="test_pub_node" name="test_pub_node" output="screen" /> -->
+
+    <node pkg="test_control" type="test_control" name="test_control" output="screen" >
+        <rosparam command = "load" file="$(find test_control)/config/vehicle_param.yaml" />
+        <rosparam command = "load" file="$(find test_control)/config/control_config.yaml" />
+    </node>
+<!-- 
+    <node pkg="rosbag" type="record" name="bag_record" 
+                args="-a -o /home/mujianhua/catkin_ws/src/bagfiles/control.bag" /> -->
+
+</launch>
