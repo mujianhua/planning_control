@@ -8,8 +8,8 @@
 namespace mujianhua {
 namespace planning {
 
-bool LatticePlanner::Init(const PlanningConfig &planning_config) {
-    return true;
+common::Status LatticePlanner::Init(const PlanningConfig &planning_config) {
+    return common::Status::OK();
 }
 
 bool LatticePlanner::Plan(

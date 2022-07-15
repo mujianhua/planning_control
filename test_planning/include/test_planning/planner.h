@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "test_common/TrajectoryPoint.h"
+#include "test_common/status.h"
 #include "test_planning/dependency_injector.h"
 #include "test_planning/planning_config.h"
 
@@ -28,7 +29,7 @@ class Planner {
 
     virtual std::string Name() = 0;
 
-    virtual bool Init(const PlanningConfig &planning_config) = 0;
+    virtual common::Status Init(const PlanningConfig &planning_config) = 0;
 
     virtual bool
     Plan(const test_common::TrajectoryPoint &planning_init_point) = 0;

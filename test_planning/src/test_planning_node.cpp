@@ -8,11 +8,13 @@
 #include "gtest/gtest.h"
 #include "test_common/PathPoint.h"
 #include "test_common/TrajectoryPoint.h"
+#include "test_common/status.h"
 #include "test_common/vehicle_state_provider.h"
 #include "test_planning/dependency_injector.h"
 #include "test_planning/lattice_planner.h"
 
 using namespace mujianhua::planning;
+using mujianhua::common::Status;
 
 class PlanningNode {
   public:
@@ -22,6 +24,12 @@ class PlanningNode {
         injector_ = std::make_shared<DependencyInjector>();
 
         planner_ = std::make_shared<LatticePlanner>(injector_);
+
+        PlanningConfig planning_config{};
+
+        if (!planner_->Init(planning_config).ok()) {
+            ROS_ERROR("planner init error");
+        }
 
         ROS_INFO("%s", planner_->Name().c_str());
 
