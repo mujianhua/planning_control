@@ -4,7 +4,7 @@
 Email: jianhua_mu@163.com
 
 # Planning
-
+无人车路径规划
 
 # Control
 主要控制算法为Model Predict Control(MPC)，其中用到了[OSQP](https://osqp.org/)求解器，并借鉴的百度[Apollo](https://github.com/ApolloAuto/apollo)的相关算法。
@@ -27,8 +27,23 @@ $$
 
 [cpp读取yaml](https://blog.csdn.net/weixin_45024226/article/details/120279723)
 
+# Common
 
-# tools
+生成链接库及共用消息类型，供其他功能包共同使用。
+
+## message
+
+### ChassisData
+
+### PathPoint
+
+### TrajectoryPoint
+
+## libraries
+
+### vehicle_state_provider
+
+# Tools
 绘制曲线
 
 ### plot_control

@@ -1,3 +1,8 @@
+/**
+ * @file
+ * @brief
+ */
+
 #include <memory>
 #include <ros/ros.h>
 #include "gtest/gtest.h"
@@ -5,6 +10,7 @@
 #include "test_common/TrajectoryPoint.h"
 #include "test_common/vehicle_state_provider.h"
 #include "test_planning/dependency_injector.h"
+#include "test_planning/lattice_planner.h"
 
 using namespace mujianhua::planning;
 
@@ -14,6 +20,10 @@ class PlanningNode {
         test();
 
         injector_ = std::make_shared<DependencyInjector>();
+
+        planner_ = std::make_shared<LatticePlanner>(injector_);
+
+        ROS_INFO("%s", planner_->Name().c_str());
 
         planning_pub_ =
             nh_.advertise<test_common::TrajectoryPoint>("planning", 1);
@@ -35,9 +45,14 @@ class PlanningNode {
 
   private:
     ros::NodeHandle nh_;
+
+    // publisher
     ros::Publisher planning_pub_;
+    // subscriber
     ros::Subscriber chassis_sub_;
+
     std::shared_ptr<DependencyInjector> injector_;
+    std::shared_ptr<Planner> planner_;
 };
 
 int main(int argc, char **argv) {

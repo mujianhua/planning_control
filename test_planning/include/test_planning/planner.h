@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <string>
-#include "planning_config.h"
 #include "test_common/TrajectoryPoint.h"
 #include "test_planning/dependency_injector.h"
+#include "test_planning/planning_config.h"
 
 namespace mujianhua {
 namespace planning {
@@ -40,6 +40,10 @@ class Planner {
 class PlannerWithReferenceLine : public Planner {
   public:
     PlannerWithReferenceLine() = delete;
+
+    explicit PlannerWithReferenceLine(
+        const std::shared_ptr<DependencyInjector> &injector)
+        : Planner(injector) {}
 
     virtual bool PlanOnReferenceLine(
         const test_common::TrajectoryPoint &planning_init_point) {}

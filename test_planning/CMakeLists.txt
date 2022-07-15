@@ -10,13 +10,6 @@ find_package(catkin REQUIRED COMPONENTS
     test_common
 )
 
-
-# catkin_package(
-#     LIBRARIES test_planning
-#     CATKIN_DEPENDS roscpp rospy std_msgs
-#     test_common
-# )
-
 catkin_package(
     CATKIN_DEPENDS 
     test_common
