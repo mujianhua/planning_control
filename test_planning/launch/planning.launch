@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+
+
+    <node pkg="test_planning" type="test_planning" name="test_planning" output="screen" >
+    </node>
+
+
+</launch>

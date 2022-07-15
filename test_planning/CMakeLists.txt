@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(test_planning)
 
+SET(CMAKE_BUILD_TYPE Debug)
 
 find_package(catkin REQUIRED COMPONENTS
     roscpp
@@ -10,13 +11,16 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES test_planning
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
-)
+# catkin_package(
+#     LIBRARIES test_planning
+#     CATKIN_DEPENDS roscpp rospy std_msgs
+#     test_common
+# )
 
+catkin_package(
+    CATKIN_DEPENDS 
+    test_common
+)
 
 include_directories(
     include

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "test_common/ChassisData.h"
+
 namespace mujianhua {
-namespace control {
+namespace common {
 
 class VehicleStateProvider {
   public:
@@ -32,5 +33,5 @@ class VehicleStateProvider {
     const test_common::ChassisData *data_;
 };
 
-} // namespace control
+} // namespace common
 } // namespace mujianhua

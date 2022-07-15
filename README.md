@@ -47,6 +47,8 @@ $$
 
 # other
 
+[链接自己的库](https://zhuanlan.zhihu.com/p/337377100)
+
 **vscode 最新版本好像不再支持 Python2.7 ...**
 
 显示DEBUG信息

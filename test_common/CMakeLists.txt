@@ -26,6 +26,8 @@ catkin_package(CATKIN_DEPENDS
     roscpp
     rospy
     std_msgs
+    INCLUDE_DIRS include
+    LIBRARIES vehicle_state_provider
 )
 
 
@@ -37,8 +39,8 @@ include_directories(
 add_library(vehicle_state_provider
     src/vehicle_state_provider.cpp
 )
-
 target_link_libraries(vehicle_state_provider
     ${catkin_LIBRARIES}
 )
+
 

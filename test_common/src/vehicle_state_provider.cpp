@@ -6,7 +6,7 @@
 #include "test_common/vehicle_state_provider.h"
 
 namespace mujianhua {
-namespace control {
+namespace common {
 
 bool VehicleStateProvider::Update(
     const test_common::ChassisData *chassis_data) {
@@ -40,5 +40,5 @@ double VehicleStateProvider::rollrate() const {
     return data_->Rollrate / 180 * M_PI;
 }
 
-} // namespace control
+} // namespace common
 } // namespace mujianhua
