@@ -1,12 +1,21 @@
 # ROS Package
+![](https://img.shields.io/badge/ROS-Melodic-orange)
+
 实现无人车规划与控制仿真及试验
 
 Email: jianhua_mu@163.com
 
-![](https://img.shields.io/badge/ROS-Melodic-orange)
+Dependence and Reference
+* [OSQP](https://osqp.org/)
+* [Apollo](https://github.com/ApolloAuto/apollo)
+* [Ipopt](https://github.com/coin-or/Ipopt)
 
 # Planning
 无人车路径规划
+
+## Planner
+
+## Path Optimization
 
 # Control
 主要控制算法为Model Predict Control(MPC)，其中用到了[OSQP](https://osqp.org/)求解器，并借鉴的百度[Apollo](https://github.com/ApolloAuto/apollo)的相关算法。

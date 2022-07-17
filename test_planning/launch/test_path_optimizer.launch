@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+
+
+    <node pkg="test_planning" type="test_path_optimizer" name="test_path_optimizer" output="screen" >
+    </node>
+
+
+</launch>
