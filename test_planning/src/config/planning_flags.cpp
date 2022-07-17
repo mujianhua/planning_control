@@ -1,16 +1,13 @@
 /**
  * @file
- * @brief
  */
 
-#pragma once
-
-#include <gflags/gflags.h>
+#include "config/planning_flags.h"
 
 namespace mujianhua {
 namespace planning {
 
-DECLARE_double(car_width);
+DEFINE_double(car_width, 2.0, "");
 
 }
 } // namespace mujianhua

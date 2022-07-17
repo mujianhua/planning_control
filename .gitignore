@@ -5,3 +5,4 @@
 *.active
 *.csv
 path_optimizer
+log/

@@ -24,7 +24,9 @@ include_directories(
 )
 
 # path optimizer
-add_executable(test_path_optimizer src/test/test_path_optimizer.cpp)
+set(PATH_OPTIMIZER_SRC
+    src/config/planning_flags.cpp)
+add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
 target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags)
 
 # planning node

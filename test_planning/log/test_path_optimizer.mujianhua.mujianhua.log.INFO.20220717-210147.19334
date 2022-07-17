@@ -1,4 +1,0 @@
-Log file created at: 2022/07/17 21:01:47
-Running on machine: mujianhua
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-I0717 21:01:47.825232 19334 test_path_optimizer.cpp:22] TEST

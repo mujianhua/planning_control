@@ -9,6 +9,8 @@
 #include <ros/ros.h>
 #include "config/planning_flags.h"
 
+using namespace mujianhua::planning;
+
 int main(int argc, char **argv) {
     ros::init(argc, argv, "test_path_optimizer");
 
@@ -18,6 +20,8 @@ int main(int argc, char **argv) {
     google::InitGoogleLogging(argv[0]);
 
     FLAGS_log_dir = log_dir;
+
+    LOG(INFO) << "car_width: " << FLAGS_car_width;
 
     return 0;
 }
