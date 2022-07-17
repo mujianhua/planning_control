@@ -3,13 +3,12 @@
  * @brief
  */
 
-#include "test_common/vehicle_state_provider.h"
+#include "common_me/vehicle_state_provider.h"
 
 namespace mujianhua {
 namespace common {
 
-bool VehicleStateProvider::Update(
-    const test_common::ChassisData *chassis_data) {
+bool VehicleStateProvider::Update(const common_me::ChassisData *chassis_data) {
     data_ = chassis_data; // 此处若不是 VehicleStateProvider 的 shared_ptr
                           // 会异常, why???
     return true;

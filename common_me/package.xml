@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>test_common</name>
+  <name>common_me</name>
   <version>0.0.0</version>
-  <description>The test_common package</description>
+  <description>The common_me package</description>
 
   <maintainer email="jianhua_mu@163.com">mujianhua</maintainer>
 

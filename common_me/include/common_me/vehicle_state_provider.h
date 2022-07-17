@@ -1,6 +1,6 @@
 #pragma once
 
-#include "test_common/ChassisData.h"
+#include "common_me/ChassisData.h"
 
 namespace mujianhua {
 namespace common {
@@ -9,7 +9,7 @@ class VehicleStateProvider {
   public:
     VehicleStateProvider() = default;
 
-    bool Update(const test_common::ChassisData *chassis_data);
+    bool Update(const common_me::ChassisData *chassis_data);
 
     double x() const;
 
@@ -30,7 +30,7 @@ class VehicleStateProvider {
     double rollrate() const;
 
   private:
-    const test_common::ChassisData *data_;
+    const common_me::ChassisData *data_;
 };
 
 } // namespace common

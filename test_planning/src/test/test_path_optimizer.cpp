@@ -21,7 +21,5 @@ int main(int argc, char **argv) {
 
     FLAGS_log_dir = log_dir;
 
-    LOG(INFO) << "car_width: " << FLAGS_car_width;
-
     return 0;
 }
