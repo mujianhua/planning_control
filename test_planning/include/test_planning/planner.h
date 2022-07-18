@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
-#include "test_common/TrajectoryPoint.h"
-#include "test_common/status.h"
+#include "common_me/TrajectoryPoint.h"
+#include "common_me/status.h"
 #include "test_planning/dependency_injector.h"
 #include "test_planning/planning_config.h"
 
@@ -32,7 +32,7 @@ class Planner {
     virtual common::Status Init(const PlanningConfig &planning_config) = 0;
 
     virtual bool
-    Plan(const test_common::TrajectoryPoint &planning_init_point) = 0;
+    Plan(const common_me::TrajectoryPoint &planning_init_point) = 0;
 
   private:
     std::shared_ptr<DependencyInjector> injector_;
@@ -46,8 +46,9 @@ class PlannerWithReferenceLine : public Planner {
         const std::shared_ptr<DependencyInjector> &injector)
         : Planner(injector) {}
 
-    virtual bool PlanOnReferenceLine(
-        const test_common::TrajectoryPoint &planning_init_point) {}
+    virtual bool
+    PlanOnReferenceLine(const common_me::TrajectoryPoint &planning_init_point) {
+    }
 };
 
 } // namespace planning

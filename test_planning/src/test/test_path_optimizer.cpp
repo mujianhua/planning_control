@@ -4,9 +4,11 @@
  */
 
 #include <string>
+
 #include <glog/logging.h>
 #include <ros/package.h>
 #include <ros/ros.h>
+
 #include "config/planning_flags.h"
 
 using namespace mujianhua::planning;
@@ -20,6 +22,7 @@ int main(int argc, char **argv) {
     google::InitGoogleLogging(argv[0]);
 
     FLAGS_log_dir = log_dir;
+    ros::spin();
 
     return 0;
 }

@@ -6,10 +6,10 @@
 #include <memory>
 #include <ros/ros.h>
 #include "gtest/gtest.h"
-#include "test_common/PathPoint.h"
-#include "test_common/TrajectoryPoint.h"
-#include "test_common/status.h"
-#include "test_common/vehicle_state_provider.h"
+#include "common_me/PathPoint.h"
+#include "common_me/TrajectoryPoint.h"
+#include "common_me/status.h"
+#include "common_me/vehicle_state_provider.h"
 #include "test_planning/dependency_injector.h"
 #include "test_planning/lattice_planner.h"
 
@@ -34,18 +34,18 @@ class PlanningNode {
         ROS_INFO("%s", planner_->Name().c_str());
 
         planning_pub_ =
-            nh_.advertise<test_common::TrajectoryPoint>("planning", 1);
+            nh_.advertise<common_me::TrajectoryPoint>("planning", 1);
         chassis_sub_ = nh_.subscribe("/chassis_data", 1,
                                      &PlanningNode::ReceiveChassisDataCb, this);
     }
 
-    void ReceiveChassisDataCb(const test_common::ChassisData &msg) {
+    void ReceiveChassisDataCb(const common_me::ChassisData &msg) {
         injector_->vehicle_state()->Update(&msg);
     }
 
     void test() {
         mujianhua::common::VehicleStateProvider vehicle_state;
-        test_common::ChassisData *data;
+        common_me::ChassisData *data;
         data->Vx = 36.0;
         vehicle_state.Update(data);
         ROS_INFO("%f", vehicle_state.vx());

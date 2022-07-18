@@ -13,7 +13,7 @@ common::Status LatticePlanner::Init(const PlanningConfig &planning_config) {
 }
 
 bool LatticePlanner::Plan(
-    const test_common::TrajectoryPoint &planning_init_point) {
+    const common_me::TrajectoryPoint &planning_init_point) {
     return true;
 }
 

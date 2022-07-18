@@ -22,7 +22,7 @@ class LatticePlanner : public PlannerWithReferenceLine {
 
     common::Status Init(const PlanningConfig &planning_config) override;
 
-    bool Plan(const test_common::TrajectoryPoint &planning_init_point);
+    bool Plan(const common_me::TrajectoryPoint &planning_init_point);
 
   private:
 };
