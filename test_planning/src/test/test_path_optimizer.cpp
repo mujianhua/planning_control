@@ -25,6 +25,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/eigen.hpp"
 #include "opencv2/opencv.hpp"
+#include "path_optimizer/path_optimizer.h"
 #include "tools/eigen2cv.h"
 
 using namespace mujianhua::planning;
@@ -32,13 +33,19 @@ using common_me::TrajectoryPoint;
 
 std::vector<TrajectoryPoint> reference_path;
 TrajectoryPoint start_point, end_point;
+bool start_point_receive = false, end_point_receive = false,
+     reference_point_receive = false;
 
 void referenceCb(const geometry_msgs::PointStampedConstPtr &p) {
+    if (start_point_receive && end_point_receive) {
+        reference_path.clear();
+    }
     TrajectoryPoint point;
     point.path_point.x = p->point.x;
     point.path_point.y = p->point.y;
     reference_path.emplace_back(point);
-
+    start_point_receive = end_point_receive = false;
+    reference_point_receive = reference_path.size() >= 6;
     LOG(INFO) << "receive a reference point"
               << " x: " << point.path_point.x << "\t y: " << point.path_point.y;
 }
@@ -48,12 +55,18 @@ void startPointCb(
     start_point.path_point.x = start->pose.pose.position.x;
     start_point.path_point.y = start->pose.pose.position.y;
     start_point.path_point.theta = tf::getYaw(start->pose.pose.orientation);
+    if (reference_point_receive) {
+        start_point_receive = true;
+    }
 }
 
 void goalPointCb(const geometry_msgs::PoseStampedConstPtr &end) {
     end_point.path_point.x = end->pose.position.x;
     end_point.path_point.y = end->pose.position.y;
     end_point.path_point.theta = tf::getYaw(end->pose.orientation);
+    if (reference_point_receive) {
+        end_point_receive = true;
+    }
 }
 
 int main(int argc, char **argv) {
@@ -166,6 +179,16 @@ int main(int argc, char **argv) {
                                                  marker_frame_id);
         markers.append(start_marker);
         markers.append(end_marker);
+
+        if (start_point_receive && end_point_receive &&
+            reference_point_receive) {
+            PathOptimizer path_optimizer(start_point, end_point, grid_map);
+
+            std::vector<TrajectoryPoint> result_path;
+            if (path_optimizer.Solve(reference_path, &result_path)) {
+                ROS_INFO("Path optimize success!");
+            }
+        }
 
         markers.publish();
 

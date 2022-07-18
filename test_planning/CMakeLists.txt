@@ -37,8 +37,10 @@ set(PATH_OPTIMIZER_SRC
         src/config/planning_flags.cpp
         src/data_struct/reference_path.cpp
         src/data_struct/reference_path_impl.cpp
-        src/path_smoother/path_smoother.cpp
+        src/path_optimizer/path_optimizer.cpp
+        src/path_smoother/reference_path_smoother.cpp
         src/tools/spline.cpp
+        src/tools/vehicle_state.cpp
         src/math/math_util.cpp)
 add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
 target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS})

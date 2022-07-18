@@ -15,7 +15,7 @@ using common_me::TrajectoryPoint;
 class ReferencePathImpl {
   public:
     ReferencePathImpl();
-
+    ~ReferencePathImpl();
   private:
     std::vector<TrajectoryPoint> reference_points_;
     tk::spline *x_s_;
