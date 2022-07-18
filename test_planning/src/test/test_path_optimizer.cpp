@@ -8,7 +8,6 @@
 #include <glog/logging.h>
 #include <ros/package.h>
 #include <ros/ros.h>
-
 #include "config/planning_flags.h"
 
 using namespace mujianhua::planning;
