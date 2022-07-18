@@ -3,24 +3,33 @@ project(test_planning)
 
 SET(CMAKE_BUILD_TYPE Debug)
 
-find_package(catkin REQUIRED COMPONENTS
+set(catkin_deps
         roscpp
+        common_me
+        grid_map_ros
+        ros_viz_tools)
+
+find_package(catkin REQUIRED COMPONENTS
+        ${catkin_deps}
         rospy
         std_msgs
-        common_me
         roslib
 )
 
+find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(gflags REQUIRED)
 
 catkin_package(
-        CATKIN_DEPENDS
-        common_me
+        CATKIN_DEPENDS ${catkin_deps}
+        DEPENDS OpenCV
 )
 
 include_directories(
         include
+        ${OpenCV_INCLUDE_DIRS}
         ${catkin_INCLUDE_DIRS}
+        ${EIGEN3_INCLUDE_DIRS}
 )
 
 # path optimizer
@@ -29,9 +38,10 @@ set(PATH_OPTIMIZER_SRC
         src/data_struct/reference_path.cpp
         src/data_struct/reference_path_impl.cpp
         src/path_smoother/path_smoother.cpp
-        src/tools/spline.cpp)
+        src/tools/spline.cpp
+        src/math/math_util.cpp)
 add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
-target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags)
+target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS})
 
 # planning node
 set(SRC

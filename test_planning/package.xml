@@ -23,6 +23,9 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>common_me</exec_depend>
 
+  <depend>grid_map_ros</depend>
+  <depend>ros_viz_tools</depend>
+
   <export>
 
   </export>
