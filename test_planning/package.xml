@@ -25,6 +25,7 @@
 
   <depend>grid_map_ros</depend>
   <depend>ros_viz_tools</depend>
+  <depend>tinyspline_ros</depend>
 
   <export>
 

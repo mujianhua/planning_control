@@ -14,17 +14,20 @@ PathOptimizer::~PathOptimizer() {
     delete reference_path_;
 }
 
-bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &initial_path,
+bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &reference_points,
                           std::vector<TrajectoryPoint> *final_path) {
     CHECK_NOTNULL(final_path);
 
     auto t1 = ros::Time::now();
-    if (initial_path.empty()) {
+    if (reference_points.empty()) {
         LOG(ERROR) << "initial path is empty, quit path optimization!";
         return false;
     }
-    auto reference_path_smoother = ReferencePathSmoother::Creat(
-        FLAGS_smoothing_method, initial_path, vehicle_state_->getStartPoint());
+    reference_path_->clear();
+    auto reference_path_smoother =
+        ReferencePathSmoother::Creat(FLAGS_smoothing_method, reference_points,
+                                     vehicle_state_->getStartPoint());
+    reference_path_smoother->Solve(reference_path_);
 
     return true;
 }

@@ -13,6 +13,7 @@
 #include "data_struct/reference_path.h"
 #include "glog/logging.h"
 #include "path_smoother/reference_path_smoother.h"
+#include "path_smoother/tension_smoother.h"
 #include "tools/vehicle_state.h"
 
 namespace mujianhua {
@@ -30,7 +31,7 @@ class PathOptimizer {
 
     ~PathOptimizer();
 
-    bool Solve(const std::vector<TrajectoryPoint> &initial_path,
+    bool Solve(const std::vector<TrajectoryPoint> &reference_points,
                std::vector<TrajectoryPoint> *final_path);
 
   private:

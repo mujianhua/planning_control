@@ -7,15 +7,20 @@ set(catkin_deps
         roscpp
         common_me
         grid_map_ros
-        ros_viz_tools)
+        ros_viz_tools
+        tinyspline_ros)
 
 find_package(catkin REQUIRED COMPONENTS
         ${catkin_deps}
         rospy
         std_msgs
         roslib
-)
+        )
 
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+message(STATUS "CMAKE SOURCE DIR:" ${CMAKE_MODULE_PATH})
+
+find_package(IPOPT REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(gflags REQUIRED)
@@ -39,6 +44,7 @@ set(PATH_OPTIMIZER_SRC
         src/data_struct/reference_path_impl.cpp
         src/path_optimizer/path_optimizer.cpp
         src/path_smoother/reference_path_smoother.cpp
+        src/path_smoother/tension_smoother.cpp
         src/tools/spline.cpp
         src/tools/vehicle_state.cpp
         src/math/math_util.cpp)

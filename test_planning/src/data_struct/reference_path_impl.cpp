@@ -14,5 +14,7 @@ ReferencePathImpl::~ReferencePathImpl() {
     delete original_y_s_;
 }
 
+void ReferencePathImpl::clear() { reference_points_.clear(); }
+
 } // namespace planning
 } // namespace mujianhua

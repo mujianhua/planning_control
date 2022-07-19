@@ -46,8 +46,8 @@ void referenceCb(const geometry_msgs::PointStampedConstPtr &p) {
     reference_path.emplace_back(point);
     start_point_receive = end_point_receive = false;
     reference_point_receive = reference_path.size() >= 6;
-    LOG(INFO) << "receive a reference point"
-              << " x: " << point.path_point.x << "\t y: " << point.path_point.y;
+    LOG(INFO) << "receive a reference point "
+              << "x: " << point.path_point.x << "\ty: " << point.path_point.y;
 }
 
 void startPointCb(
@@ -57,6 +57,10 @@ void startPointCb(
     start_point.path_point.theta = tf::getYaw(start->pose.pose.orientation);
     if (reference_point_receive) {
         start_point_receive = true;
+        LOG(INFO) << "receive effective start point "
+                  << "x: " << start_point.path_point.x
+                  << "\ty: " << start_point.path_point.y
+                  << "\theading: " << start_point.path_point.theta;
     }
 }
 
@@ -66,6 +70,10 @@ void goalPointCb(const geometry_msgs::PoseStampedConstPtr &end) {
     end_point.path_point.theta = tf::getYaw(end->pose.orientation);
     if (reference_point_receive) {
         end_point_receive = true;
+        LOG(INFO) << "receive effective end point "
+                  << "x: " << end_point.path_point.x
+                  << "\ty: " << end_point.path_point.y
+                  << "\theading: " << end_point.path_point.theta;
     }
 }
 

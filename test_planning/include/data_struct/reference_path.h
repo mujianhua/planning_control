@@ -15,6 +15,8 @@ class ReferencePath {
   public:
     ReferencePath();
 
+    void clear();
+
   private:
     std::shared_ptr<ReferencePathImpl> reference_path_impl;
 };
