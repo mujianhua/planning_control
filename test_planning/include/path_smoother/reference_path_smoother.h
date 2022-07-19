@@ -12,6 +12,7 @@
 #include "glog/logging.h"
 #include "math/math_util.h"
 #include "tinyspline_ros/tinysplinecpp.h"
+#include "tools/map.h"
 
 namespace mujianhua {
 namespace planning {
@@ -23,20 +24,28 @@ class ReferencePathSmoother {
     ReferencePathSmoother() = delete;
 
     ReferencePathSmoother(const std::vector<TrajectoryPoint> &initial_points,
-                          const TrajectoryPoint &start_point);
+                          const TrajectoryPoint &start_point,
+                          const Map &grid_map);
 
     virtual ~ReferencePathSmoother() = default;
 
     // TODO
     static std::unique_ptr<ReferencePathSmoother>
     Creat(std::string &type, const std::vector<TrajectoryPoint> &initial_points,
-          const TrajectoryPoint &start_point);
+          const TrajectoryPoint &start_point, const Map &grid_map);
 
     bool Solve(ReferencePath *reference_path);
 
     void bSpline();
 
   protected:
+    bool SegmentRawReference(std::vector<double> *x_list,
+                             std::vector<double> *y_list,
+                             std::vector<double> *s_list,
+                             std::vector<double> *heading_list,
+                             std::vector<double> *kappa_list) const;
+
+    const Map &grid_map_;
     const TrajectoryPoint start_point_;
     std::vector<double> x_list_, y_list_, s_list_;
 

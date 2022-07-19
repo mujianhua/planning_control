@@ -7,7 +7,7 @@ PathOptimizer::PathOptimizer(const TrajectoryPoint &start_point,
                              const TrajectoryPoint &end_point,
                              const grid_map::GridMap &map)
     : vehicle_state_(new VehicleState{start_point, end_point}),
-      reference_path_(new ReferencePath) {}
+      reference_path_(new ReferencePath), grid_map_(new Map{map}) {}
 
 PathOptimizer::~PathOptimizer() {
     delete vehicle_state_;
@@ -24,9 +24,9 @@ bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &reference_points,
         return false;
     }
     reference_path_->clear();
-    auto reference_path_smoother =
-        ReferencePathSmoother::Creat(FLAGS_smoothing_method, reference_points,
-                                     vehicle_state_->getStartPoint());
+    auto reference_path_smoother = ReferencePathSmoother::Creat(
+        FLAGS_smoothing_method, reference_points,
+        vehicle_state_->getStartPoint(), *grid_map_);
     reference_path_smoother->Solve(reference_path_);
 
     return true;

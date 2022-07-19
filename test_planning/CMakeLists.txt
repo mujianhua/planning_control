@@ -47,6 +47,7 @@ set(PATH_OPTIMIZER_SRC
         src/path_smoother/tension_smoother.cpp
         src/tools/spline.cpp
         src/tools/vehicle_state.cpp
+        src/tools/map.cpp
         src/math/math_util.cpp)
 add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
 target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS})

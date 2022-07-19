@@ -6,15 +6,15 @@ namespace planning {
 
 ReferencePathSmoother::ReferencePathSmoother(
     const std::vector<TrajectoryPoint> &initial_points,
-    const TrajectoryPoint &start_point)
-    : initial_points_(initial_points), start_point_(start_point) {}
+    const TrajectoryPoint &start_point, const Map &grid_map)
+    : initial_points_(initial_points), start_point_(start_point),
+      grid_map_(grid_map) {}
 
-std::unique_ptr<ReferencePathSmoother>
-ReferencePathSmoother::Creat(std::string &type,
-                             const std::vector<TrajectoryPoint> &initial_points,
-                             const TrajectoryPoint &start_point) {
+std::unique_ptr<ReferencePathSmoother> ReferencePathSmoother::Creat(
+    std::string &type, const std::vector<TrajectoryPoint> &initial_points,
+    const TrajectoryPoint &start_point, const Map &grid_map) {
     return std::unique_ptr<ReferencePathSmoother>{
-        new TensionSmoother(initial_points, start_point)};
+        new TensionSmoother(initial_points, start_point, grid_map)};
 }
 
 bool ReferencePathSmoother::Solve(ReferencePath *reference_path) {
@@ -63,6 +63,39 @@ void ReferencePathSmoother::bSpline() {
                                pow(y_list_[i] - y_list_[i - 1], 2));
         s_list_.emplace_back(s_list_.back() + distance);
     }
+}
+
+bool ReferencePathSmoother::SegmentRawReference(
+    std::vector<double> *x_list, std::vector<double> *y_list,
+    std::vector<double> *s_list, std::vector<double> *heading_list,
+    std::vector<double> *kappa_list) const {
+    if ((x_list_.size() != s_list_.size()) ||
+        (y_list_.size() != s_list_.size())) {
+        LOG(ERROR) << "Raw Path x y and s is not equal.";
+        return false;
+    }
+    tk::spline x_spline, y_spline;
+    x_spline.set_points(s_list_, x_list_);
+    y_spline.set_points(s_list_, y_list_);
+    double max_s = s_list_.back();
+    double delta_s = 1.0;
+    s_list->emplace_back(0);
+    while (s_list->back() < max_s) {
+        s_list->emplace_back(s_list->back() + delta_s);
+    }
+    for (double length_on_ref_path : *s_list) {
+        double dx = x_spline.deriv(1, length_on_ref_path);
+        double dy = y_spline.deriv(1, length_on_ref_path);
+        double ddx = x_spline.deriv(2, length_on_ref_path);
+        double ddy = y_spline.deriv(2, length_on_ref_path);
+        double theta = atan2(dy, dx);
+        double curvature = (dx * ddy - dy * ddx) / pow(dx * dx + dy * dy, 1.5);
+        heading_list->emplace_back(theta);
+        kappa_list->emplace_back(curvature);
+        x_list->emplace_back(x_spline(length_on_ref_path));
+        y_list->emplace_back(y_spline(length_on_ref_path));
+    }
+    return true;
 }
 
 } // namespace planning

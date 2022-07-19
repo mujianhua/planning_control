@@ -152,41 +152,45 @@ int main(int argc, char **argv) {
         }
         markers.append(reference_marker);
 
-        // display start and end point selected by mouse.
         geometry_msgs::Vector3 scale;
         scale.x = 2.0;
         scale.y = 0.3;
         scale.z = 0.3;
-        geometry_msgs::Pose start_pose;
-        start_pose.position.x = start_point.path_point.x;
-        start_pose.position.y = start_point.path_point.y;
-        start_pose.position.z = 1.0;
-        auto start_quaternion =
-            tf::createQuaternionFromYaw(start_point.path_point.theta);
-        start_pose.orientation.x = start_quaternion.x();
-        start_pose.orientation.y = start_quaternion.y();
-        start_pose.orientation.z = start_quaternion.z();
-        start_pose.orientation.w = start_quaternion.w();
-        visualization_msgs::Marker start_marker =
-            ros_viz_tools::RosVizTools::newArrow(
-                scale, start_pose, "start point", id++, ros_viz_tools::CYAN,
-                marker_frame_id);
-        geometry_msgs::Pose end_pose;
-        end_pose.position.x = end_point.path_point.x;
-        end_pose.position.y = end_point.path_point.y;
-        end_pose.position.z = 1.0;
-        auto end_quaternion =
-            tf::createQuaternionFromYaw(end_point.path_point.theta);
-        end_pose.orientation.x = end_quaternion.x();
-        end_pose.orientation.y = end_quaternion.y();
-        end_pose.orientation.z = end_quaternion.z();
-        end_pose.orientation.w = end_quaternion.w();
-        visualization_msgs::Marker end_marker =
-            ros_viz_tools::RosVizTools::newArrow(scale, end_pose, "end point",
-                                                 id++, ros_viz_tools::CYAN,
-                                                 marker_frame_id);
-        markers.append(start_marker);
-        markers.append(end_marker);
+        if (start_point_receive) {
+            // display start and end point selected by mouse.
+            geometry_msgs::Pose start_pose;
+            start_pose.position.x = start_point.path_point.x;
+            start_pose.position.y = start_point.path_point.y;
+            start_pose.position.z = 1.0;
+            auto start_quaternion =
+                tf::createQuaternionFromYaw(start_point.path_point.theta);
+            start_pose.orientation.x = start_quaternion.x();
+            start_pose.orientation.y = start_quaternion.y();
+            start_pose.orientation.z = start_quaternion.z();
+            start_pose.orientation.w = start_quaternion.w();
+            visualization_msgs::Marker start_marker =
+                ros_viz_tools::RosVizTools::newArrow(
+                    scale, start_pose, "start point", id++, ros_viz_tools::CYAN,
+                    marker_frame_id);
+            markers.append(start_marker);
+        }
+        if (end_point_receive) {
+            geometry_msgs::Pose end_pose;
+            end_pose.position.x = end_point.path_point.x;
+            end_pose.position.y = end_point.path_point.y;
+            end_pose.position.z = 1.0;
+            auto end_quaternion =
+                tf::createQuaternionFromYaw(end_point.path_point.theta);
+            end_pose.orientation.x = end_quaternion.x();
+            end_pose.orientation.y = end_quaternion.y();
+            end_pose.orientation.z = end_quaternion.z();
+            end_pose.orientation.w = end_quaternion.w();
+            visualization_msgs::Marker end_marker =
+                ros_viz_tools::RosVizTools::newArrow(
+                    scale, end_pose, "end point", id++, ros_viz_tools::CYAN,
+                    marker_frame_id);
+            markers.append(end_marker);
+        }
 
         if (start_point_receive && end_point_receive &&
             reference_point_receive) {
@@ -196,6 +200,9 @@ int main(int argc, char **argv) {
             if (path_optimizer.Solve(reference_path, &result_path)) {
                 ROS_INFO("Path optimize success!");
             }
+
+            start_point_receive = end_point_receive = reference_point_receive =
+                false;
         }
 
         markers.publish();

@@ -14,6 +14,7 @@
 #include "glog/logging.h"
 #include "path_smoother/reference_path_smoother.h"
 #include "path_smoother/tension_smoother.h"
+#include "tools/map.h"
 #include "tools/vehicle_state.h"
 
 namespace mujianhua {
@@ -37,6 +38,7 @@ class PathOptimizer {
   private:
     VehicleState *vehicle_state_;
     ReferencePath *reference_path_;
+    const Map *grid_map_;
 };
 
 } // namespace planning
