@@ -77,6 +77,54 @@ void goalPointCb(const geometry_msgs::PoseStampedConstPtr &end) {
     }
 }
 
+void test() {
+    reference_path.clear();
+    TrajectoryPoint point1;
+    point1.path_point.x = 65.7857;
+    point1.path_point.y = -33.3962;
+    reference_path.emplace_back(point1);
+    TrajectoryPoint point2;
+    point2.path_point.x = 62.5627;
+    point2.path_point.y = -39.7113;
+    reference_path.emplace_back(point2);
+    TrajectoryPoint point3;
+    point3.path_point.x = 58.0047;
+    point3.path_point.y = -44.3432;
+    reference_path.emplace_back(point3);
+    TrajectoryPoint point4;
+    point4.path_point.x = 53.8879;
+    point4.path_point.y = -46.457;
+    reference_path.emplace_back(point4);
+    TrajectoryPoint point5;
+    point5.path_point.x = 49.8918;
+    point5.path_point.y = -47.9256;
+    reference_path.emplace_back(point5);
+    TrajectoryPoint point6;
+    point6.path_point.x = 46.0646;
+    point6.path_point.y = -48.5767;
+    reference_path.emplace_back(point6);
+    TrajectoryPoint point7;
+    point7.path_point.x = 42.9292;
+    point7.path_point.y = -46.4527;
+    reference_path.emplace_back(point7);
+    TrajectoryPoint point8;
+    point8.path_point.x = 41.4828;
+    point8.path_point.y = -42.5934;
+    reference_path.emplace_back(point8);
+
+    start_point.path_point.x = 66.3021;
+    start_point.path_point.y = -32.6687;
+    start_point.path_point.theta = -1.95023;
+
+    end_point.path_point.x = 41.8851;
+    end_point.path_point.y = -43.8336;
+    end_point.path_point.theta = 1.9078;
+
+    start_point_receive = true;
+    end_point_receive = true;
+    reference_point_receive = true;
+}
+
 int main(int argc, char **argv) {
     ros::init(argc, argv, "test_path_optimizer");
     ros::NodeHandle nh("~");
@@ -123,6 +171,8 @@ int main(int argc, char **argv) {
     // Markers initialization
     ros_viz_tools::RosVizTools markers(nh, "markers");
     std::string marker_frame_id = "/map";
+
+    test();
 
     ros::Rate rate(30.0);
     while (ros::ok()) {
