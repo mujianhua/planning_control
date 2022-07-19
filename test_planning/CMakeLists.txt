@@ -21,6 +21,7 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 message(STATUS "CMAKE SOURCE DIR:" ${CMAKE_MODULE_PATH})
 
 find_package(IPOPT REQUIRED)
+find_package(OsqpEigen REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(gflags REQUIRED)
@@ -50,7 +51,8 @@ set(PATH_OPTIMIZER_SRC
         src/tools/map.cpp
         src/math/math_util.cpp)
 add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
-target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS})
+target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS} ${IPOPT_LIBRARIES}
+        OsqpEigen::OsqpEigen osqp::osqp)
 
 # planning node
 set(SRC

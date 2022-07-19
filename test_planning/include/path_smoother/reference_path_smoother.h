@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include "OsqpEigen/OsqpEigen.h"
 #include "common_me/TrajectoryPoint.h"
 #include "data_struct/reference_path.h"
 #include "glog/logging.h"
