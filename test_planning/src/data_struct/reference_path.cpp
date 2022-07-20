@@ -21,5 +21,9 @@ const tk::spline &ReferencePath::GetYS() const {
     return reference_path_impl_->GetYS();
 }
 
+double ReferencePath::GetLength() const {
+    return reference_path_impl_->GetLength();
+}
+
 } // namespace planning
 } // namespace mujianhua

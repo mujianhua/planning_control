@@ -1,4 +1,6 @@
 #include "path_smoother/reference_path_smoother.h"
+#include "config/planning_flags.h"
+#include "math/math_util.h"
 #include "path_smoother/tension_smoother.h"
 
 namespace mujianhua {
@@ -24,6 +26,10 @@ bool ReferencePathSmoother::Solve(ReferencePath *reference_path) {
     bSpline();
 
     Smooth(reference_path);
+
+    GraphSearchDp(reference_path);
+
+    return true;
 }
 
 void ReferencePathSmoother::bSpline() {
@@ -101,7 +107,16 @@ bool ReferencePathSmoother::SegmentRawReference(
 bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
     const tk::spline &x_s = referemce_path->GetXS();
     const tk::spline &y_s = referemce_path->GetYS();
-    
+    double tmp_s = math::GetProjectPoint(x_s, y_s, start_point_.path_point.x,
+                                         start_point_.path_point.y,
+                                         referemce_path->GetLength())
+                       .path_point.s;
+    layers_s_list_.clear();
+    layers_bounds_.clear();
+    double search_ds = referemce_path->GetLength() > 6.0
+                           ? FLAGS_search_longitudial_spacing
+                           : 0.5;
+    return true;
 }
 
 } // namespace planning

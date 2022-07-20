@@ -22,6 +22,8 @@ class ReferencePath {
     const tk::spline &GetXS() const;
     const tk::spline &GetYS() const;
 
+    double GetLength() const;
+
   private:
     std::shared_ptr<ReferencePathImpl> reference_path_impl_;
 };

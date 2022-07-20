@@ -16,5 +16,7 @@ DECLARE_bool(compute_time_output);
 
 DECLARE_string(smoothing_method);
 
+DECLARE_double(search_longitudial_spacing);
+
 } // namespace planning
 } // namespace mujianhua
