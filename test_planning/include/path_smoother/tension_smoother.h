@@ -23,15 +23,7 @@ class TensionSmoother : public ReferencePathSmoother {
   private:
     bool Smooth(ReferencePath *reference_path) override;
 
-    virtual bool IpoptSmooth(const std::vector<double> &x_list,
-                             const std::vector<double> &y_list,
-                             const std::vector<double> &s_list,
-                             const std::vector<double> &heading_list,
-                             const std::vector<double> &kappa_list,
-                             std::vector<double> *result_x_list,
-                             std::vector<double> *result_y_list,
-                             std::vector<double> *result_s_list);
-
+    // TODO:
     virtual bool OsqpSmooth(const std::vector<double> &x_list,
                             const std::vector<double> &y_list,
                             const std::vector<double> &s_list,
@@ -40,6 +32,15 @@ class TensionSmoother : public ReferencePathSmoother {
                             std::vector<double> *result_x_list,
                             std::vector<double> *result_y_list,
                             std::vector<double> *result_s_list);
+
+    virtual bool IpoptSmooth(const std::vector<double> &x_list,
+                             const std::vector<double> &y_list,
+                             const std::vector<double> &s_list,
+                             const std::vector<double> &heading_list,
+                             const std::vector<double> &kappa_list,
+                             std::vector<double> *result_x_list,
+                             std::vector<double> *result_y_list,
+                             std::vector<double> *result_s_list);
 
     virtual void
     OsqpSetHessianMatrix(size_t size,

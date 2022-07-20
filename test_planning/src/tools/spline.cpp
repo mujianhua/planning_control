@@ -6,6 +6,7 @@ namespace planning {
 namespace tk {
 
 band_matrix::band_matrix(int dim, int n_u, int n_l) { resize(dim, n_u, n_l); }
+
 void band_matrix::resize(int dim, int n_u, int n_l) {
     assert(dim > 0);
     assert(n_u >= 0);
@@ -19,6 +20,7 @@ void band_matrix::resize(int dim, int n_u, int n_l) {
         m_lower[i].resize(dim);
     }
 }
+
 int band_matrix::dim() const {
     if (m_upper.size() > 0) {
         return m_upper[0].size();
@@ -39,6 +41,7 @@ double &band_matrix::operator()(int i, int j) {
     else
         return m_lower[-k][i];
 }
+
 double band_matrix::operator()(int i, int j) const {
     int k = j - i; // what band is the entry
     assert((i >= 0) && (i < dim()) && (j >= 0) && (j < dim()));
@@ -164,7 +167,8 @@ void spline::set_points(const std::vector<double> &x,
         assert(m_x[i] < m_x[i + 1]);
     }
 
-    if (cubic_spline == true) { // cubic spline interpolation
+    if (cubic_spline) {
+        // cubic spline interpolation
         // setting up the matrix and right hand side of the equation system
         // for the parameters b[]
         band_matrix A(n, 1, 1);
@@ -232,7 +236,7 @@ void spline::set_points(const std::vector<double> &x,
     }
 
     // for left extrapolation coefficients
-    m_b0 = (m_force_linear_extrapolation == false) ? m_b[0] : 0.0;
+    m_b0 = !m_force_linear_extrapolation ? m_b[0] : 0.0;
     m_c0 = m_c[0];
 
     // for the right extrapolation coefficients
@@ -242,7 +246,7 @@ void spline::set_points(const std::vector<double> &x,
     m_a[n - 1] = 0.0;
     m_c[n - 1] = 3.0 * m_a[n - 2] * h * h + 2.0 * m_b[n - 2] * h +
                  m_c[n - 2]; // = f'_{n-2}(x_{n-1})
-    if (m_force_linear_extrapolation == true)
+    if (m_force_linear_extrapolation)
         m_b[n - 1] = 0.0;
 }
 

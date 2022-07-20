@@ -73,7 +73,7 @@ class spline {
     // interpolation parameters
     // f(x) = a*(x-x_i)^3 + b*(x-x_i)^2 + c*(x-x_i) + y_i
     std::vector<double> m_a, m_b, m_c; // spline coefficients
-    double m_b0, m_c0;                 // for left extrapol
+    double m_b0{}, m_c0{};                 // for left extrapol
     bd_type m_left, m_right;
     double m_left_value, m_right_value;
     bool m_force_linear_extrapolation;

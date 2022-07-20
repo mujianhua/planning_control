@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include "OsqpEigen/OsqpEigen.h"
 #include "common_me/TrajectoryPoint.h"
 #include "data_struct/reference_path.h"
@@ -53,7 +54,13 @@ class ReferencePathSmoother {
   private:
     virtual bool Smooth(ReferencePath *reference_path) = 0;
 
+    bool GraphSearchDp(ReferencePath *referemce_path);
+
     const std::vector<TrajectoryPoint> initial_points_;
+
+    // Sample points in searching process.
+    std::vector<double> layers_s_list_;
+    std::vector<std::pair<double, double>> layers_bounds_;
 };
 
 } // namespace planning

@@ -3,6 +3,8 @@ project(test_planning)
 
 SET(CMAKE_BUILD_TYPE Debug)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(catkin_deps
         roscpp
         common_me

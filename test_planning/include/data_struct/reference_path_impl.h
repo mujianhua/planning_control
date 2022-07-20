@@ -4,6 +4,7 @@
  */
 
 #include <vector>
+
 #include "common_me/TrajectoryPoint.h"
 #include "tools/spline.h"
 
@@ -17,6 +18,9 @@ class ReferencePathImpl {
     ReferencePathImpl();
     ~ReferencePathImpl();
     void clear();
+    void SetSpline(const tk::spline &x_s, const tk::spline &y_s, double max_s);
+    const tk::spline &GetXS() const;
+    const tk::spline &GetYS() const;
 
   private:
     std::vector<TrajectoryPoint> reference_points_;

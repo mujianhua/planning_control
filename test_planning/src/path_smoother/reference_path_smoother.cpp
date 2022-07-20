@@ -98,5 +98,11 @@ bool ReferencePathSmoother::SegmentRawReference(
     return true;
 }
 
+bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
+    const tk::spline &x_s = referemce_path->GetXS();
+    const tk::spline &y_s = referemce_path->GetYS();
+    
+}
+
 } // namespace planning
 } // namespace mujianhua

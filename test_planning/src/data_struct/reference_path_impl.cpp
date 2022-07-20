@@ -1,5 +1,6 @@
 #include "data_struct/reference_path_impl.h"
 
+
 namespace mujianhua {
 namespace planning {
 
@@ -15,6 +16,16 @@ ReferencePathImpl::~ReferencePathImpl() {
 }
 
 void ReferencePathImpl::clear() { reference_points_.clear(); }
+
+void ReferencePathImpl::SetSpline(const tk::spline &x_s, const tk::spline &y_s,
+                                  double max_s) {
+    *x_s_ = x_s;
+    *y_s_ = y_s;
+    max_s_ = max_s;
+}
+
+const tk::spline &ReferencePathImpl::GetXS() const { return *x_s_; }
+const tk::spline &ReferencePathImpl::GetYS() const { return *y_s_; }
 
 } // namespace planning
 } // namespace mujianhua

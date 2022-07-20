@@ -17,8 +17,13 @@ class ReferencePath {
 
     void clear();
 
+    void SetSpline(const tk::spline &x_s, const tk::spline &y_s, double max_s);
+
+    const tk::spline &GetXS() const;
+    const tk::spline &GetYS() const;
+
   private:
-    std::shared_ptr<ReferencePathImpl> reference_path_impl;
+    std::shared_ptr<ReferencePathImpl> reference_path_impl_;
 };
 
 } // namespace planning

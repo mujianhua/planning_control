@@ -20,6 +20,19 @@ bool TensionSmoother::Smooth(ReferencePath *reference_path) {
     OsqpSmooth(x_list, y_list, s_list, heading_list, kappa_list, &result_x_list,
                &result_y_list, &result_s_list);
 
+    result_x_list = x_list;
+    result_y_list = y_list;
+    result_s_list = s_list;
+
+    tk::spline x_spline, y_spline;
+    x_spline.set_points(result_s_list, result_x_list);
+    y_spline.set_points(result_s_list, result_y_list);
+    double max_result_s = result_s_list.back() + 3.0;
+    reference_path->SetSpline(x_spline, y_spline, max_result_s);
+
+    x_list_ = result_x_list;
+    y_list_ = result_y_list;
+    s_list_ = result_s_list;
     return true;
 }
 
