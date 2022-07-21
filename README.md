@@ -6,9 +6,11 @@
 Email: jianhua_mu@163.com
 
 Dependence and Reference
-* [OSQP](https://osqp.org/)
+* [osqp](https://osqp.org/)
+* [osqpEigen](https://github.com/robotology/osqp-eigen)
 * [Apollo](https://github.com/ApolloAuto/apollo)
 * [Ipopt](https://github.com/coin-or/Ipopt)
+* [spline](https://github.com/ttk592/spline)
 
 # Planning
 无人车路径规划

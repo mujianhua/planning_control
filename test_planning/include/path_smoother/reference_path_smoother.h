@@ -10,6 +10,7 @@
 #include <vector>
 #include "OsqpEigen/OsqpEigen.h"
 #include "common_me/TrajectoryPoint.h"
+#include "data_struct/data_struct.h"
 #include "data_struct/reference_path.h"
 #include "glog/logging.h"
 #include "math/math_util.h"
@@ -61,6 +62,8 @@ class ReferencePathSmoother {
     // Sample points in searching process.
     std::vector<double> layers_s_list_;
     std::vector<std::pair<double, double>> layers_bounds_;
+
+    double target_s_{};
 };
 
 } // namespace planning

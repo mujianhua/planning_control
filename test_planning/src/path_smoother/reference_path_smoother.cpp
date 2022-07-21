@@ -1,5 +1,10 @@
 #include "path_smoother/reference_path_smoother.h"
+#include <cmath>
+#include <cstddef>
+#include <vector>
+#include <glog/logging.h>
 #include "config/planning_flags.h"
+#include "grid_map_core/TypeDefs.hpp"
 #include "math/math_util.h"
 #include "path_smoother/tension_smoother.h"
 
@@ -105,17 +110,105 @@ bool ReferencePathSmoother::SegmentRawReference(
 }
 
 bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
+    static const double search_threshold = fLD::FLAGS_car_width / 2.0 + 0.2;
     const tk::spline &x_s = referemce_path->GetXS();
     const tk::spline &y_s = referemce_path->GetYS();
-    double tmp_s = math::GetProjectPoint(x_s, y_s, start_point_.path_point.x,
-                                         start_point_.path_point.y,
-                                         referemce_path->GetLength())
-                       .path_point.s;
     layers_s_list_.clear();
     layers_bounds_.clear();
     double search_ds = referemce_path->GetLength() > 6.0
                            ? FLAGS_search_longitudial_spacing
                            : 0.5;
+    TrajectoryPoint start_prj_point = math::GetProjectPoint(
+        x_s, y_s, start_point_.path_point.x, start_point_.path_point.y,
+        referemce_path->GetLength());
+
+    double tmp_s = start_prj_point.path_point.s;
+    while (tmp_s < referemce_path->GetLength()) {
+        layers_s_list_.emplace_back(tmp_s);
+        tmp_s += search_ds;
+    }
+    layers_s_list_.emplace_back(referemce_path->GetLength());
+    if (layers_s_list_.empty())
+        return false;
+    target_s_ = layers_s_list_.back();
+    auto vehicle_local = math::Global2Local(start_prj_point, start_point_);
+    if (fabs(vehicle_local.path_point.y) > FLAGS_search_lateral_range) {
+        LOG(ERROR) << "Vehicle start point far from reference path, quit graph "
+                      "searching";
+        return false;
+    }
+    int start_lateral_index = static_cast<int>(
+        (FLAGS_search_lateral_range + vehicle_local.path_point.y) /
+        FLAGS_search_lateral_spacing);
+    std::vector<std::vector<DPPoint>> samples;
+    samples.reserve(layers_s_list_.size());
+
+    for (int i = 0; i < layers_s_list_.size(); ++i) {
+        double cur_s = layers_s_list_[i];
+        double ref_x = x_s(cur_s);
+        double ref_y = y_s(cur_s);
+        double ref_heading = math::GetHeading(x_s, y_s, cur_s);
+        double ref_curvature = math::GetCurvature(x_s, y_s, cur_s);
+        double ref_r = 1.0 / ref_curvature;
+        int lateral_index = 0;
+        double cur_l = -FLAGS_search_lateral_range;
+        while (cur_l <= FLAGS_search_lateral_range) {
+            DPPoint dp_point;
+            dp_point.x = ref_x + cur_l * cos(ref_heading + M_PI_2);
+            dp_point.y = ref_y + cur_l * sin(ref_heading + M_PI_2);
+            dp_point.heading = ref_heading;
+            dp_point.s = cur_s;
+            dp_point.l = cur_l;
+            dp_point.layer_index = i;
+            dp_point.lateral_index = lateral_index;
+            grid_map::Position node_pos(dp_point.x, dp_point.y);
+            dp_point.dis_to_obs = grid_map_.IsInside(node_pos)
+                                      ? grid_map_.GetObstacleDistance(node_pos)
+                                      : -1;
+            if ((ref_curvature < 0 && cur_l < ref_r) ||
+                (ref_curvature > 0 && cur_l > ref_r) ||
+                dp_point.dis_to_obs < search_threshold) {
+                dp_point.is_feasible = false;
+            }
+            if (i == 0 && start_lateral_index != lateral_index) {
+                dp_point.is_feasible = false;
+            }
+            if (i == 0 && start_lateral_index == lateral_index) {
+                dp_point.is_feasible = true;
+                dp_point.dir = start_point_.path_point.theta;
+                dp_point.cost = 0.0;
+            }
+            samples.back().emplace_back(dp_point);
+            ++lateral_index;
+            cur_l += FLAGS_search_lateral_spacing;
+        }
+        // get layer point set rough bound.
+        auto &layer_point_set = samples.back();
+        for (size_t j = 0; j < layer_point_set.size(); j++) {
+            if (j == 0 || !layer_point_set[j - 1].is_feasible ||
+                !layer_point_set[j].is_feasible) {
+                layer_point_set[j].rough_lower_bound = layer_point_set[j].l;
+            } else {
+                layer_point_set[j].rough_lower_bound =
+                    layer_point_set[j].rough_lower_bound;
+            }
+        }
+        for (size_t j = layer_point_set.size() - 1; j >= 0; j--) {
+            if (j == layer_point_set.size() - 1 ||
+                !layer_point_set[j + 1].is_feasible ||
+                !layer_point_set[j].is_feasible) {
+                layer_point_set[j].rough_upper_bound = layer_point_set[j].l;
+            } else {
+                layer_point_set[j].rough_upper_bound =
+                    layer_point_set[j + 1].rough_upper_bound;
+            }
+        }
+    }
+    // calculate cost
+    for (const auto &layer : samples) {
+        for (const auto &point : layer) {
+        }
+    }
     return true;
 }
 

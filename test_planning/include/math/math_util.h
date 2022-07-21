@@ -17,6 +17,8 @@ double Distance(const double &x1, const double &y1, const double &x2,
 
 double GetHeading(const tk::spline &x_s, const tk::spline &y_s, double s);
 
+double GetCurvature(const tk::spline &x_s, const tk::spline &y_s, double s);
+
 TrajectoryPoint GetProjectPoint(const tk::spline &x_s, const tk::spline &y_s,
                                 double target_x, double target_y, double max_s,
                                 double start_s = 0.0);
@@ -24,6 +26,9 @@ TrajectoryPoint GetProjectPoint(const tk::spline &x_s, const tk::spline &y_s,
 TrajectoryPoint GetProjectPointByNewton(const tk::spline &x_s,
                                         const tk::spline &y_s, double target_x,
                                         double target_y, double hint_s);
+
+TrajectoryPoint Global2Local(const TrajectoryPoint &reference,
+                             const TrajectoryPoint &target);
 
 } // namespace math
 } // namespace planning
