@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "Eigen/Dense"
+#include "Eigen/Sparse"
 #include "OsqpEigen/OsqpEigen.h"
 #include "common_me/TrajectoryPoint.h"
 #include "data_struct/data_struct.h"
@@ -57,6 +59,18 @@ class ReferencePathSmoother {
 
     bool GraphSearchDp(ReferencePath *referemce_path);
 
+    bool PostSmooth(ReferencePath *reference_path);
+
+    void SetPostHessianMatrix(Eigen::SparseMatrix<double> *matrix_h);
+
+    void
+    SetPostConstraintMatrix(Eigen::SparseMatrix<double> *matrix_constraints,
+                            Eigen::VectorXd *lower_bound,
+                            Eigen::VectorXd *upper_bound) const;
+
+    void CalculateCost(std::vector<std::vector<DPPoint>> &samples,
+                       int layer_index, int lateral_index);
+
     const std::vector<TrajectoryPoint> initial_points_;
 
     // Sample points in searching process.
@@ -64,6 +78,7 @@ class ReferencePathSmoother {
     std::vector<std::pair<double, double>> layers_bounds_;
 
     double target_s_{};
+    double vehicle_l_wrt_smoothed_ref_;
 };
 
 } // namespace planning

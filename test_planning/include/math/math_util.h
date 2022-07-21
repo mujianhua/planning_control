@@ -10,6 +10,18 @@ namespace math {
 
 using common_me::TrajectoryPoint;
 
+template <typename T> T ConstrainAngle(T angle) {
+    if (angle > M_PI) {
+        angle -= 2 * M_PI;
+        return ConstrainAngle(angle);
+    } else if (angle < -M_PI) {
+        angle += 2 * M_PI;
+        return ConstrainAngle(angle);
+    } else {
+        return angle;
+    }
+}
+
 double Distance(const TrajectoryPoint &p1, const TrajectoryPoint &p2);
 
 double Distance(const double &x1, const double &y1, const double &x2,

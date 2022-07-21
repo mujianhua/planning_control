@@ -1,12 +1,19 @@
 #include "path_smoother/reference_path_smoother.h"
+#include <math.h>
+#include <cfloat>
 #include <cmath>
 #include <cstddef>
 #include <vector>
+#include <Eigen/src/Core/Matrix.h>
+#include <Eigen/src/SparseCore/SparseMatrix.h>
+#include <OsqpEigen/Solver.hpp>
 #include <glog/logging.h>
+#include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "grid_map_core/TypeDefs.hpp"
 #include "math/math_util.h"
 #include "path_smoother/tension_smoother.h"
+#include "tools/spline.h"
 
 namespace mujianhua {
 namespace planning {
@@ -30,9 +37,17 @@ bool ReferencePathSmoother::Solve(ReferencePath *reference_path) {
     }
     bSpline();
 
-    Smooth(reference_path);
+    if (!Smooth(reference_path)) {
+        ROS_ERROR("unable smooth reference path");
+    }
 
-    GraphSearchDp(reference_path);
+    if (!GraphSearchDp(reference_path)) {
+        ROS_ERROR("unable smooth graph search");
+    }
+
+    if (!PostSmooth(reference_path)) {
+        ROS_ERROR("unable post smooth");
+    }
 
     return true;
 }
@@ -137,6 +152,7 @@ bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
                       "searching";
         return false;
     }
+    vehicle_l_wrt_smoothed_ref_ = vehicle_local.path_point.y;
     int start_lateral_index = static_cast<int>(
         (FLAGS_search_lateral_range + vehicle_local.path_point.y) /
         FLAGS_search_lateral_spacing);
@@ -144,6 +160,7 @@ bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
     samples.reserve(layers_s_list_.size());
 
     for (int i = 0; i < layers_s_list_.size(); ++i) {
+        samples.emplace_back(std::vector<DPPoint>());
         double cur_s = layers_s_list_[i];
         double ref_x = x_s(cur_s);
         double ref_y = y_s(cur_s);
@@ -190,10 +207,10 @@ bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
                 layer_point_set[j].rough_lower_bound = layer_point_set[j].l;
             } else {
                 layer_point_set[j].rough_lower_bound =
-                    layer_point_set[j].rough_lower_bound;
+                    layer_point_set[j - 1].rough_lower_bound;
             }
         }
-        for (size_t j = layer_point_set.size() - 1; j >= 0; j--) {
+        for (int j = layer_point_set.size() - 1; j >= 0; j--) {
             if (j == layer_point_set.size() - 1 ||
                 !layer_point_set[j + 1].is_feasible ||
                 !layer_point_set[j].is_feasible) {
@@ -205,11 +222,232 @@ bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
         }
     }
     // calculate cost
+    int max_layer_reached = 0;
     for (const auto &layer : samples) {
+        bool is_layer_feasible = false;
         for (const auto &point : layer) {
+            CalculateCost(samples, point.layer_index, point.lateral_index);
+            if (point.parent)
+                is_layer_feasible = true;
+        }
+        if (layer.front().layer_index != 0 && !is_layer_feasible)
+            break;
+        max_layer_reached = layer.front().layer_index;
+    }
+    // retrieve path.
+    const DPPoint *ptr = nullptr; // 指向的地址的内容不能变，指向的地址是可变的
+    auto min_cost = DBL_MAX;
+    for (const auto &point : samples[max_layer_reached]) {
+        if (point.cost < min_cost) {
+            ptr = &point;
+            min_cost = point.cost;
         }
     }
+    while (ptr) {
+        // 准备后续优化路径的边界
+        if (ptr->lateral_index == 0) {
+            layers_bounds_.emplace_back(-10, 10);
+        } else {
+            static const double check_s = 0.2;
+            static const double check_limit = 6.0;
+            double upper_bound = check_s + ptr->rough_upper_bound;
+            double lower_bound = -check_s + ptr->rough_lower_bound;
+            double ref_x = x_s(ptr->s);
+            double ref_y = y_s(ptr->s);
+            while (upper_bound < check_limit) {
+                grid_map::Position pos;
+                pos(0) = ref_x + upper_bound * cos(ptr->heading + M_PI_2);
+                pos(1) = ref_y + upper_bound * sin(ptr->heading + M_PI_2);
+                if (grid_map_.IsInside(pos) &&
+                    grid_map_.GetObstacleDistance(pos) > search_threshold) {
+                    upper_bound += check_s;
+                } else {
+                    upper_bound -= check_s;
+                    break;
+                }
+            }
+            while (lower_bound > -check_limit) {
+                grid_map::Position pos;
+                pos(0) = ref_x + lower_bound * cos(ptr->heading + M_PI_2);
+                pos(1) = ref_y + lower_bound * sin(ptr->heading + M_PI_2);
+                if (grid_map_.IsInside(pos) &&
+                    grid_map_.GetObstacleDistance(pos) > search_threshold) {
+                    lower_bound -= check_s;
+                } else {
+                    lower_bound += check_s;
+                    break;
+                }
+            }
+            layers_bounds_.emplace_back(lower_bound, upper_bound);
+        }
+        ptr = ptr->parent;
+    }
+    std::reverse(layers_bounds_.begin(), layers_bounds_.end());
+    layers_s_list_.resize(layers_bounds_.size());
     return true;
+}
+
+bool ReferencePathSmoother::PostSmooth(ReferencePath *reference_path) {
+    auto point_num = layers_s_list_.size();
+    if (point_num < 4) {
+        LOG(WARNING) << "ref is too short:" << point_num
+                     << ", quit POST SMOOTHING.";
+    }
+
+    OsqpEigen::Solver solver;
+    solver.settings()->setVerbosity(false);
+    solver.settings()->setWarmStart(true);
+    solver.data()->setNumberOfVariables(3 * point_num);
+    solver.data()->setNumberOfConstraints(3 * point_num - 2);
+
+    Eigen::SparseMatrix<double> hessian;
+    SetPostHessianMatrix(&hessian);
+    Eigen::VectorXd gradient = Eigen::VectorXd::Zero(3 * point_num);
+    Eigen::SparseMatrix<double> linear_matrix;
+    Eigen::VectorXd lower_bound;
+    Eigen::VectorXd upper_bound;
+    SetPostConstraintMatrix(&linear_matrix, &lower_bound, &upper_bound);
+
+    if (!solver.data()->setHessianMatrix(hessian))
+        return false;
+    if (!solver.data()->setGradient(gradient))
+        return false;
+    if (!solver.data()->setLinearConstraintsMatrix(linear_matrix))
+        return false;
+    if (!solver.data()->setLowerBound(lower_bound))
+        return false;
+    if (!solver.data()->setUpperBound(upper_bound))
+        return false;
+
+    if (!solver.initSolver())
+        return false;
+    auto status = solver.solveProblem();
+    const auto &qpsolution = solver.getSolution();
+
+    std::vector<double> x_list, y_list, s_list;
+    const auto &ref_xs = reference_path->GetXS();
+    const auto &ref_ys = reference_path->GetYS();
+    double s = 0;
+    for (int i = 0; i < point_num; i++) {
+        const double ref_s = layers_s_list_[i];
+        double ref_dir = math::GetHeading(ref_xs, ref_ys, ref_s);
+        x_list.push_back(ref_xs(ref_s) + qpsolution(i) * cos(ref_dir + M_PI_2));
+        y_list.push_back(ref_ys(ref_s) + qpsolution(i) * sin(ref_dir + M_PI_2));
+        if (i > 0) {
+            s += sqrt(pow(x_list[i] - x_list[i - 1], 2) +
+                      pow(y_list[i] - y_list[i - 1], 2));
+        }
+        s_list.push_back(s);
+    }
+    tk::spline new_x_s, new_y_s;
+    new_x_s.set_points(s_list, x_list);
+    new_y_s.set_points(s_list, y_list);
+    reference_path->SetSpline(new_x_s, new_y_s, s_list.back());
+
+    return true;
+}
+
+void ReferencePathSmoother::SetPostHessianMatrix(
+    Eigen::SparseMatrix<double> *matrix_h) {
+    size_t size = layers_s_list_.size();
+    const size_t matrix_size = 3 * size;
+    Eigen::MatrixXd hessian =
+        Eigen::MatrixXd::Constant(matrix_size, matrix_size, 0);
+    static const double weight_l = 1;
+    static const double weight_dl = 100;
+    static const double weight_ddl = 1000;
+    for (int i = 0; i < size; ++i) {
+        hessian(i, i) = weight_l;
+        hessian(size + i, size + i) = weight_dl;
+        hessian(size * 2 + i, size * 2 + i) = weight_ddl;
+    }
+    *matrix_h = hessian.sparseView();
+}
+
+void ReferencePathSmoother::SetPostConstraintMatrix(
+    Eigen::SparseMatrix<double> *matrix_constraints,
+    Eigen::VectorXd *lower_bound, Eigen::VectorXd *upper_bound) const {
+    size_t size = layers_s_list_.size();
+    const size_t x_index = 0;
+    const size_t dx_index = x_index + size;
+    const size_t ddx_index = dx_index + size;
+    const size_t cons_x_index = 0;
+    const size_t cons_dx_x_index = cons_x_index + size;
+    const size_t cons_ddx_dx_index = cons_dx_x_index + size - 1;
+    Eigen::MatrixXd cons = Eigen::MatrixXd::Zero(3 * size - 2, 3 * size);
+    // l range
+    for (int i = 0; i < size; ++i) {
+        cons(i, i) = 1;
+    }
+    // dl range
+    for (int i = 0; i < size - 1; ++i) {
+        cons(cons_dx_x_index + i, x_index + i) = -1;
+        cons(cons_dx_x_index + i, x_index + i + 1) = 1;
+        cons(cons_dx_x_index + i, dx_index + i) =
+            -(layers_s_list_[i + 1] - layers_s_list_[i]);
+    }
+    // ddl range
+    for (int i = 0; i < size - 1; ++i) {
+        cons(cons_ddx_dx_index + i, dx_index + i) = -1;
+        cons(cons_ddx_dx_index + i, dx_index + i + 1) = 1;
+        cons(cons_ddx_dx_index + i, ddx_index + i) =
+            -(layers_s_list_[i + 1] - layers_s_list_[i]);
+    }
+    *matrix_constraints = cons.sparseView();
+    // bounds
+    *lower_bound = Eigen::VectorXd::Zero(3 * size - 2);
+    *upper_bound = Eigen::VectorXd::Zero(3 * size - 2);
+    (*lower_bound)(0) = vehicle_l_wrt_smoothed_ref_;
+    (*upper_bound)(0) = vehicle_l_wrt_smoothed_ref_;
+    for (int i = 1; i < size; ++i) {
+        (*lower_bound)(i) = layers_bounds_[i].first;
+        (*upper_bound)(i) = layers_bounds_[i].second;
+    }
+}
+
+void ReferencePathSmoother::CalculateCost(
+    std::vector<std::vector<DPPoint>> &samples, int layer_index,
+    int lateral_index) {
+    // TODO: 加载外部参数调节
+    static const double weight_ref_offest = 1.0;
+    static const double weight_obstacle = 0.5;
+    static const double weight_angle_change = 16.0;
+    static const double weight_ref_angle_diff = 0.5;
+    static const double safe_distance = 3.0;
+    if (layer_index == 0)
+        return;
+    if (!samples[layer_index][lateral_index].is_feasible)
+        return;
+    auto &point = samples[layer_index][lateral_index];
+    double self_cost = 0.0;
+    if (point.dis_to_obs < safe_distance) {
+        self_cost += (safe_distance - point.dis_to_obs) / safe_distance *
+                     weight_obstacle;
+    }
+    self_cost +=
+        fabs(point.l) / fLD::FLAGS_search_lateral_range * weight_ref_offest;
+
+    auto min_cost = DBL_MAX;
+    for (const auto &pre_point : samples[layer_index - 1]) {
+        if (!pre_point.is_feasible)
+            continue;
+        if (fabs(pre_point.l - point.l) > (point.s - pre_point.s))
+            continue;
+        double direction = atan2(point.y - pre_point.y, point.x - pre_point.x);
+        double edge_cost =
+            fabs(math::ConstrainAngle(direction - pre_point.dir)) / M_PI_2 *
+                weight_angle_change +
+            fabs(math::ConstrainAngle(direction - point.heading)) / M_PI_2 *
+                weight_ref_angle_diff;
+        double total_cost = self_cost + edge_cost + pre_point.cost;
+        if (total_cost < min_cost) {
+            min_cost = total_cost;
+            point.parent = &pre_point;
+            point.dir = direction;
+        }
+    }
+    if (point.parent)
+        point.cost = min_cost;
 }
 
 } // namespace planning
