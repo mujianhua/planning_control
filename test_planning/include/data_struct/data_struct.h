@@ -3,6 +3,8 @@
  * @brief
  */
 
+#pragma once
+
 #include <cfloat>
 #include <vector>
 #include "common_me/TrajectoryPoint.h"

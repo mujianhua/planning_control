@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include "common_me/TrajectoryPoint.h"
+#include "config/planning_flags.h"
+#include "gflags/gflags.h"
 #include "tools/spline.h"
 
 namespace mujianhua {
@@ -21,6 +23,8 @@ template <typename T> T ConstrainAngle(T angle) {
         return angle;
     }
 }
+
+bool isEqual(double a, double b);
 
 double Distance(const TrajectoryPoint &p1, const TrajectoryPoint &p2);
 

@@ -4,8 +4,8 @@
  */
 
 #include <memory>
-#include "data_struct/reference_path_impl.h"
 #include <gflags/gflags.h>
+#include "data_struct/reference_path_impl.h"
 
 #pragma once
 
@@ -29,6 +29,11 @@ class ReferencePath {
     double GetLength() const;
 
     void SetLength(double s);
+
+    bool BuildReferenceFromSpline(double delta_s_smaller,
+                                  double delta_s_larger);
+
+    void UpdateBounds(const Map &map);
 
   private:
     std::shared_ptr<ReferencePathImpl> reference_path_impl_;

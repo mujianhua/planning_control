@@ -67,7 +67,8 @@ Visualization Manager:
       Marker Topic: /test_path_optimizer/markers
       Name: MarkerArray
       Namespaces:
-        {}
+        reference point: true
+        start point: true
       Queue Size: 100
       Value: true
   Enabled: true

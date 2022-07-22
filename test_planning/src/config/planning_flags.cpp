@@ -21,6 +21,12 @@ DEFINE_double(search_lateral_spacing, 0.6, "lateral spacing when searching");
 
 DEFINE_double(search_lateral_range, 10.0, "lateral range when searching");
 
+DEFINE_double(safety_margin, 0.3, "mandatory safety margin");
+
+DEFINE_double(epsilon, 1e-6, "use this when comparing double");
+
+DEFINE_double(output_spacing, 0.3, "output interval");
+
 DEFINE_bool(compute_time_output, true, "Output compute detail on screen.");
 
 DEFINE_bool(enable_dynamic_segmentation, true,

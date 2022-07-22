@@ -41,12 +41,17 @@ bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &reference_points,
 }
 
 bool PathOptimizer::ProcessReferencePath() {
-    ProcessInitstate();
+    ProcessInitState();
     SetReferencePathLength();
+    if (!reference_path_->BuildReferenceFromSpline(FLAGS_output_spacing / 2.0,
+                                                   FLAGS_output_spacing)) {
+        ROS_ERROR("unable build reference from spline");
+    }
+    reference_path_->UpdateBounds(*grid_map_);
     return true;
 }
 
-void PathOptimizer::ProcessInitstate() {
+void PathOptimizer::ProcessInitState() {
     TrajectoryPoint init_point;
     init_point.path_point.x = reference_path_->GetXS(0.0);
     init_point.path_point.y = reference_path_->GetYS(0.0);
@@ -57,12 +62,12 @@ void PathOptimizer::ProcessInitstate() {
         math::Global2Local(vehicle_state_->getStartPoint(), init_point);
     double min_distance =
         math::Distance(vehicle_state_->getStartPoint(), init_point);
-    double initial_offest =
+    double initial_offset =
         first_point_local.path_point.y < 0.0 ? min_distance : -min_distance;
     double initial_heading_error =
         math::ConstrainAngle(vehicle_state_->getStartPoint().path_point.theta -
                              init_point.path_point.theta);
-    vehicle_state_->SetInitError(initial_offest, initial_heading_error);
+    vehicle_state_->SetInitError(initial_offset, initial_heading_error);
 }
 
 void PathOptimizer::SetReferencePathLength() {

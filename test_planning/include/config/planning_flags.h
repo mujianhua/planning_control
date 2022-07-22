@@ -22,6 +22,12 @@ DECLARE_double(search_lateral_spacing);
 
 DECLARE_double(search_lateral_range);
 
+DECLARE_double(safety_margin);
+
+DECLARE_double(epsilon);
+
+DECLARE_double(output_spacing);
+
 DECLARE_bool(compute_time_output);
 
 DECLARE_bool(enable_dynamic_segmentation);

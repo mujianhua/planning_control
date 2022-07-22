@@ -38,7 +38,7 @@ class PathOptimizer {
   private:
     bool ProcessReferencePath();
 
-    void ProcessInitstate();
+    void ProcessInitState();
 
     void SetReferencePathLength();
 

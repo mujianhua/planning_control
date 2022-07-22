@@ -36,5 +36,15 @@ void ReferencePath::SetLength(double s) {
     return reference_path_impl_->SetLength(s);
 }
 
+bool ReferencePath::BuildReferenceFromSpline(double delta_s_smaller,
+                                             double delta_s_larger) {
+    return reference_path_impl_->BuildReferenceFromSpline(delta_s_smaller,
+                                                          delta_s_larger);
+}
+
+void ReferencePath::UpdateBounds(const Map &map) {
+    return reference_path_impl_->UpdateBoundsImproved(map);
+}
+
 } // namespace planning
 } // namespace mujianhua
