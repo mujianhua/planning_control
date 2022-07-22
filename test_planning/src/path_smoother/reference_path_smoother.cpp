@@ -139,6 +139,7 @@ bool ReferencePathSmoother::GraphSearchDp(ReferencePath *referemce_path) {
 
     double tmp_s = start_prj_point.path_point.s;
     while (tmp_s < referemce_path->GetLength()) {
+        // 以车辆投影点为起点开始搜索平滑！
         layers_s_list_.emplace_back(tmp_s);
         tmp_s += search_ds;
     }

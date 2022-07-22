@@ -36,6 +36,10 @@ class PathOptimizer {
                std::vector<TrajectoryPoint> *final_path);
 
   private:
+    bool ProcessReferencePath();
+
+    void ProcessInitstate();
+
     VehicleState *vehicle_state_;
     ReferencePath *reference_path_;
     const Map *grid_map_;

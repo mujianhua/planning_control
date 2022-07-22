@@ -22,6 +22,9 @@ class ReferencePath {
     const tk::spline &GetXS() const;
     const tk::spline &GetYS() const;
 
+    double GetXS(double s) const;
+    double GetYS(double s) const;
+
     double GetLength() const;
 
   private:

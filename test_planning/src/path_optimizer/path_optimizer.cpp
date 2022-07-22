@@ -1,4 +1,6 @@
 #include "path_optimizer/path_optimizer.h"
+#include "math/math_util.h"
+#include "tools/vehicle_state.h"
 
 namespace mujianhua {
 namespace planning {
@@ -27,9 +29,29 @@ bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &reference_points,
     auto reference_path_smoother = ReferencePathSmoother::Creat(
         FLAGS_smoothing_method, reference_points,
         vehicle_state_->getStartPoint(), *grid_map_);
-    reference_path_smoother->Solve(reference_path_);
+    if (!reference_path_smoother->Solve(reference_path_)) {
+        ROS_ERROR("reference path optimization FAILED.");
+    }
+
+    if (!ProcessReferencePath()) {
+        ROS_ERROR("process reference path FAILED.");
+    }
 
     return true;
+}
+
+bool PathOptimizer::ProcessReferencePath() { return true; }
+
+void PathOptimizer::ProcessInitstate() {
+    TrajectoryPoint init_point;
+    init_point.path_point.x = reference_path_->GetXS(0.0);
+    init_point.path_point.y = reference_path_->GetYS(0.0);
+    init_point.path_point.theta = math::GetHeading(
+        reference_path_->GetXS(), reference_path_->GetYS(), 0.0);
+    auto start_point_local =
+        math::Global2Local(vehicle_state_->getStartPoint(), init_point);
+    double min_distance =
+        math::Distance(vehicle_state_->getStartPoint(), init_point);
 }
 
 } // namespace planning

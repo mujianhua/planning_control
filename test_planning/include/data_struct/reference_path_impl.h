@@ -21,6 +21,7 @@ class ReferencePathImpl {
     void SetSpline(const tk::spline &x_s, const tk::spline &y_s, double max_s);
     const tk::spline &GetXS() const;
     const tk::spline &GetYS() const;
+
     double GetLength() const;
 
   private:

@@ -21,6 +21,13 @@ const tk::spline &ReferencePath::GetYS() const {
     return reference_path_impl_->GetYS();
 }
 
+double ReferencePath::GetXS(double s) const {
+    return reference_path_impl_->GetXS()(s);
+}
+double ReferencePath::GetYS(double s) const {
+    return reference_path_impl_->GetYS()(s);
+}
+
 double ReferencePath::GetLength() const {
     return reference_path_impl_->GetLength();
 }
