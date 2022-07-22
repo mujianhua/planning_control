@@ -1,3 +1,4 @@
+
 #include "data_struct/reference_path.h"
 
 namespace mujianhua {
@@ -30,6 +31,14 @@ double ReferencePath::GetYS(double s) const {
 
 double ReferencePath::GetLength() const {
     return reference_path_impl_->GetLength();
+}
+
+size_t ReferencePath::GetSize() const {
+    return reference_path_impl_->GetSize();
+}
+
+const std::vector<TrajectoryPoint> &ReferencePath::GetReferencePoints() const {
+    return reference_path_impl_->GetReferencePoints();
 }
 
 void ReferencePath::SetLength(double s) {

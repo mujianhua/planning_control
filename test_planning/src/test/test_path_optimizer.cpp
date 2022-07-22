@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
     ros_viz_tools::RosVizTools markers(nh, "markers");
     std::string marker_frame_id = "/map";
 
-//    test();
+    test();
 
     ros::Rate rate(30.0);
     while (ros::ok()) {

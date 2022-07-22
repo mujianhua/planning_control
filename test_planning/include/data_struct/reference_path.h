@@ -3,11 +3,11 @@
  * @brief
  */
 
+#pragma once
+
 #include <memory>
 #include <gflags/gflags.h>
 #include "data_struct/reference_path_impl.h"
-
-#pragma once
 
 namespace mujianhua {
 namespace planning {
@@ -27,6 +27,10 @@ class ReferencePath {
     double GetYS(double s) const;
 
     double GetLength() const;
+
+    size_t GetSize() const;
+
+    const std::vector<TrajectoryPoint> &GetReferencePoints() const;
 
     void SetLength(double s);
 

@@ -29,6 +29,10 @@ class ReferencePathImpl {
 
     double GetLength() const;
 
+    size_t GetSize() const;
+
+    const std::vector<TrajectoryPoint> &GetReferencePoints() const;
+
     void SetLength(double s);
 
     bool BuildReferenceFromSpline(double delta_s_smaller,

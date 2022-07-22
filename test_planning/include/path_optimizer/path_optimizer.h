@@ -14,6 +14,7 @@
 #include "glog/logging.h"
 #include "path_smoother/reference_path_smoother.h"
 #include "path_smoother/tension_smoother.h"
+#include "solver/base_solver.h"
 #include "tools/map.h"
 #include "tools/vehicle_state.h"
 
@@ -41,6 +42,8 @@ class PathOptimizer {
     void ProcessInitState();
 
     void SetReferencePathLength();
+
+    bool OptimizePath(std::vector<TrajectoryPoint> *final_path);
 
     VehicleState *vehicle_state_;
     ReferencePath *reference_path_;

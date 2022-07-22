@@ -51,7 +51,8 @@ set(PATH_OPTIMIZER_SRC
         src/tools/spline.cpp
         src/tools/vehicle_state.cpp
         src/tools/map.cpp
-        src/math/math_util.cpp)
+        src/math/math_util.cpp
+        src/solver/base_solver.cpp)
 add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
 target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS} ${IPOPT_LIBRARIES}
         OsqpEigen::OsqpEigen osqp::osqp)

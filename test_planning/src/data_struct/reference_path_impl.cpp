@@ -1,3 +1,4 @@
+
 #include "data_struct/reference_path_impl.h"
 #include <config/planning_flags.h>
 #include <math/math_util.h>
@@ -29,6 +30,13 @@ const tk::spline &ReferencePathImpl::GetXS() const { return *x_s_; }
 const tk::spline &ReferencePathImpl::GetYS() const { return *y_s_; }
 
 double ReferencePathImpl::GetLength() const { return max_s_; }
+
+size_t ReferencePathImpl::GetSize() const { reference_points_.size(); }
+
+const std::vector<TrajectoryPoint> &
+ReferencePathImpl::GetReferencePoints() const {
+    return reference_points_;
+}
 
 void ReferencePathImpl::SetLength(double s) { max_s_ = s; }
 
@@ -72,15 +80,19 @@ void ReferencePathImpl::UpdateBoundsImproved(const Map &map) {
     VehicleBound vehicle_bound;
     for (const auto &point : reference_points_) {
         TrajectoryPoint front_center, rear_center;
-        front_center.path_point.x = point.path_point.x + FLAGS_front_length *
-                                    cos(point.path_point.theta);
-        front_center.path_point.y = point.path_point.y + FLAGS_front_length *
-                                    sin(point.path_point.theta);
+        front_center.path_point.x =
+            point.path_point.x +
+            FLAGS_front_length * cos(point.path_point.theta);
+        front_center.path_point.y =
+            point.path_point.y +
+            FLAGS_front_length * sin(point.path_point.theta);
         front_center.path_point.theta = point.path_point.theta;
-        rear_center.path_point.x = point.path_point.x + FLAGS_rear_length *
-                                   cos(point.path_point.theta);
-        rear_center.path_point.y = point.path_point.y + FLAGS_rear_length *
-                                   sin(point.path_point.theta);
+        rear_center.path_point.x =
+            point.path_point.x +
+            FLAGS_rear_length * cos(point.path_point.theta);
+        rear_center.path_point.y =
+            point.path_point.y +
+            FLAGS_rear_length * sin(point.path_point.theta);
         rear_center.path_point.theta = point.path_point.theta;
 
         auto front_center_directional_projection =
@@ -121,6 +133,7 @@ void ReferencePathImpl::UpdateBoundsImproved(const Map &map) {
         bounds_.emplace_back(vehicle_bound);
     }
 }
+
 std::vector<double>
 ReferencePathImpl::GetClearanceWithDirectionStrict(const TrajectoryPoint &point,
                                                    const Map &map) {

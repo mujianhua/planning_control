@@ -37,6 +37,8 @@ bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &reference_points,
         ROS_ERROR("process reference path FAILED.");
     }
 
+    OptimizePath(final_path);
+
     return true;
 }
 
@@ -89,6 +91,12 @@ void PathOptimizer::SetReferencePathLength() {
         vehicle_state_->getTargetPoint().path_point.y,
         reference_path_->GetLength());
     reference_path_->SetLength(target_projection.path_point.s);
+}
+
+bool PathOptimizer::OptimizePath(std::vector<TrajectoryPoint> *final_path) {
+    CHECK_NOTNULL(final_path);
+    final_path->clear();
+    BaseSolver pre_solver(reference_path_, vehicle_state_, 0, false);
 }
 
 } // namespace planning
