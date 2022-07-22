@@ -5,7 +5,11 @@
 
 #include <vector>
 
+#include <glog/logging.h>
 #include "common_me/TrajectoryPoint.h"
+#include "data_struct/data_struct.h"
+#include "math/math_util.h"
+#include "tools/map.h"
 #include "tools/spline.h"
 
 namespace mujianhua {
@@ -24,6 +28,13 @@ class ReferencePathImpl {
 
     double GetLength() const;
 
+    void SetLength(double s);
+
+    bool BuildReferenceFromSpline(double delta_s_smaller,
+                                  double delta_s_larger);
+
+    void UpdateBoundsImproved(const Map &map);
+
   private:
     std::vector<TrajectoryPoint> reference_points_;
     tk::spline *x_s_;
@@ -32,6 +43,7 @@ class ReferencePathImpl {
     tk::spline *original_x_s_;
     tk::spline *original_y_s_;
     double original_max_s_{};
+    std::vector<VehicleBound> bounds_;
 };
 
 } // namespace planning

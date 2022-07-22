@@ -32,5 +32,9 @@ double ReferencePath::GetLength() const {
     return reference_path_impl_->GetLength();
 }
 
+void ReferencePath::SetLength(double s) {
+    return reference_path_impl_->SetLength(s);
+}
+
 } // namespace planning
 } // namespace mujianhua

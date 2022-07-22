@@ -11,5 +11,14 @@ const TrajectoryPoint &VehicleState::getStartPoint() const {
     return start_point_;
 }
 
+const TrajectoryPoint &VehicleState::getTargetPoint() const {
+    return end_point_;
+}
+
+void VehicleState::SetInitError(double init_offest, double init_heading_error) {
+    init_offest_ = init_offest;
+    init_heading_error_ = init_heading_error;
+}
+
 } // namespace planning
 } // namespace mujianhua

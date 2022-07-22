@@ -40,6 +40,8 @@ class PathOptimizer {
 
     void ProcessInitstate();
 
+    void SetReferencePathLength();
+
     VehicleState *vehicle_state_;
     ReferencePath *reference_path_;
     const Map *grid_map_;

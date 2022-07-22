@@ -22,8 +22,14 @@ class VehicleState {
 
     const TrajectoryPoint &getStartPoint() const;
 
+    const TrajectoryPoint &getTargetPoint() const;
+
+    void SetInitError(double init_offest, double init_heading_error);
+
   private:
     TrajectoryPoint start_point_, end_point_;
+    double init_offest_;
+    double init_heading_error_;
 };
 
 } // namespace planning

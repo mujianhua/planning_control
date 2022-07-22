@@ -5,6 +5,7 @@
 
 #include <memory>
 #include "data_struct/reference_path_impl.h"
+#include <gflags/gflags.h>
 
 #pragma once
 
@@ -26,6 +27,8 @@ class ReferencePath {
     double GetYS(double s) const;
 
     double GetLength() const;
+
+    void SetLength(double s);
 
   private:
     std::shared_ptr<ReferencePathImpl> reference_path_impl_;
