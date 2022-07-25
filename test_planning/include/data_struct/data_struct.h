@@ -23,6 +23,9 @@ struct DPPoint {
     bool is_feasible = true;
 };
 
+/**
+ * @brief
+ */
 struct VehicleBound {
     VehicleBound() = default;
     struct SingleBound {

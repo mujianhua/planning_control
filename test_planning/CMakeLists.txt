@@ -48,7 +48,7 @@ set(PATH_OPTIMIZER_SRC
         src/path_optimizer/path_optimizer.cpp
         src/path_smoother/reference_path_smoother.cpp
         src/path_smoother/tension_smoother.cpp
-        src/tools/spline.cpp
+        src/common/spline.cpp
         src/tools/vehicle_state.cpp
         src/tools/map.cpp
         src/math/math_util.cpp
@@ -61,7 +61,7 @@ target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${Open
 set(SRC
         src/lattice_planner.cpp
         src/reference_line_info.cpp
-        src/test/test_planning_node.cpp include/tools/spline.h src/tools/spline.cpp)
+        src/test/test_planning_node.cpp)
 
 add_executable(planning_node ${SRC})
 target_link_libraries(planning_node ${catkin_LIBRARIES})

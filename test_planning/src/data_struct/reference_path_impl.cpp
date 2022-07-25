@@ -3,7 +3,7 @@
 #include <vector>
 #include <config/planning_flags.h>
 #include <math/math_util.h>
-#include "tools/spline.h"
+#include "common/spline.h"
 
 namespace mujianhua {
 namespace planning {

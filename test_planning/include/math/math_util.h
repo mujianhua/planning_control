@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cmath>
+#include "common/spline.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "gflags/gflags.h"
-#include "tools/spline.h"
 
 namespace mujianhua {
 namespace planning {

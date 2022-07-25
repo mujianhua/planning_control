@@ -6,12 +6,12 @@
 #include <memory>
 #include <vector>
 #include <glog/logging.h>
+#include "common/spline.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "data_struct/data_struct.h"
 #include "math/math_util.h"
 #include "tools/map.h"
-#include "tools/spline.h"
 
 namespace mujianhua {
 namespace planning {

@@ -1,6 +1,6 @@
 /**
- * @file
- * @brief
+ * @file planning_flag.h
+ * @brief 规划参数配置
  */
 
 #pragma once

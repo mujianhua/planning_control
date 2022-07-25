@@ -1,5 +1,5 @@
+
 #include "path_smoother/reference_path_smoother.h"
-#include <math.h>
 #include <cfloat>
 #include <cmath>
 #include <cstddef>
@@ -8,12 +8,12 @@
 #include <Eigen/src/SparseCore/SparseMatrix.h>
 #include <OsqpEigen/Solver.hpp>
 #include <glog/logging.h>
+#include "common/spline.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "grid_map_core/TypeDefs.hpp"
 #include "math/math_util.h"
 #include "path_smoother/tension_smoother.h"
-#include "tools/spline.h"
 
 namespace mujianhua {
 namespace planning {
@@ -369,12 +369,12 @@ void ReferencePathSmoother::SetPostConstraintMatrix(
     Eigen::SparseMatrix<double> *matrix_constraints,
     Eigen::VectorXd *lower_bound, Eigen::VectorXd *upper_bound) const {
     size_t size = layers_s_list_.size();
-    const size_t x_index = 0;
-    const size_t dx_index = x_index + size;
-    const size_t ddx_index = dx_index + size;
-    const size_t cons_x_index = 0;
-    const size_t cons_dx_x_index = cons_x_index + size;
-    const size_t cons_ddx_dx_index = cons_dx_x_index + size - 1;
+    const int x_index = 0;
+    const int dx_index = x_index + size;
+    const int ddx_index = dx_index + size;
+    const int cons_x_index = 0;
+    const int cons_dx_x_index = cons_x_index + size;
+    const int cons_ddx_dx_index = cons_dx_x_index + size - 1;
     Eigen::MatrixXd cons = Eigen::MatrixXd::Zero(3 * size - 2, 3 * size);
     // l range
     for (int i = 0; i < size; ++i) {

@@ -1,5 +1,5 @@
 
-#include "tools/spline.h"
+#include "common/spline.h"
 
 namespace mujianhua {
 namespace planning {
