@@ -7,6 +7,14 @@ VehicleState::VehicleState(const TrajectoryPoint &start_point,
                            const TrajectoryPoint &end_point)
     : start_point_(start_point), end_point_(end_point) {}
 
+void VehicleState::SetStartPoint(const TrajectoryPoint &point) {
+    start_point_ = point;
+}
+
+void VehicleState::SetTargetPoint(const TrajectoryPoint &point) {
+    end_point_ = point;
+}
+
 const TrajectoryPoint &VehicleState::getStartPoint() const {
     return start_point_;
 }

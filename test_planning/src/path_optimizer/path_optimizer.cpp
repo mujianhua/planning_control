@@ -1,6 +1,7 @@
 
 #include "path_optimizer/path_optimizer.h"
 #include "math/math_util.h"
+#include "solver/base_solver.h"
 #include "tools/vehicle_state.h"
 
 namespace mujianhua {
@@ -98,9 +99,24 @@ bool PathOptimizer::OptimizePath(std::vector<TrajectoryPoint> *final_path) {
     CHECK_NOTNULL(final_path);
     final_path->clear();
     BaseSolver pre_solver(reference_path_, vehicle_state_, 0, false);
-    pre_solver.Solve(final_path);
+    if (!pre_solver.Solve(final_path)) {
+        ROS_ERROR("pre solving failed!");
+    }
+
+    reference_path_->BuildReferenceFromStates(*final_path);
+    reference_path_->UpdateBounds(*grid_map_);
+    vehicle_state_->SetStartPoint(final_path->front());
+    vehicle_state_->SetTargetPoint(final_path->back());
+    vehicle_state_->SetInitError(0.0, 0.0);
+
+    BaseSolver solver(reference_path_, vehicle_state_, 0, true);
+    solver.Solve(final_path);
 
     return true;
+}
+
+const ReferencePath &PathOptimizer::GetReferencePath() const {
+    return *reference_path_;
 }
 
 } // namespace planning

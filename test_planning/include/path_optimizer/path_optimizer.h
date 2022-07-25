@@ -36,6 +36,8 @@ class PathOptimizer {
     bool Solve(const std::vector<TrajectoryPoint> &reference_points,
                std::vector<TrajectoryPoint> *final_path);
 
+    const ReferencePath &GetReferencePath() const;
+
   private:
     bool ProcessReferencePath();
 

@@ -186,7 +186,7 @@ void BaseSolver::SetConstraintMatrix(
         }
     }
     if (enable_hard_constraint_) {
-        for (size_t i = 0; i < n_; i++) {
+        for (int i = 0; i < n_; i++) {
             (*lower_bound)(hard_constraint_idx + 2 * i, 0) = bounds[i].front.lb;
             (*upper_bound)(hard_constraint_idx + 2 * i, 0) = bounds[i].front.ub;
             (*lower_bound)(hard_constraint_idx + 2 * i + 1, 0) =
@@ -210,8 +210,7 @@ BaseSolver::GetSoftBounds(double lb, double ub, double safety_margin) const {
 void BaseSolver::GetOptimizedPath(
     const Eigen::VectorXd &optimization_result,
     std::vector<TrajectoryPoint> *optimized_path) const {
-    double a0 = optimization_result(0);
-    double a1 = optimization_result(1);
+
     CHECK_EQ(vars_size_, optimization_result.size());
     optimized_path->clear();
     const auto &ref_points = reference_path_->GetReferencePoints();

@@ -1,7 +1,9 @@
 
 #include "data_struct/reference_path_impl.h"
+#include <vector>
 #include <config/planning_flags.h>
 #include <math/math_util.h>
+#include "tools/spline.h"
 
 namespace mujianhua {
 namespace planning {
@@ -69,6 +71,22 @@ bool ReferencePathImpl::BuildReferenceFromSpline(double delta_s_smaller,
             tmp_s += delta_s_larger;
         }
     }
+    return true;
+}
+
+bool ReferencePathImpl::BuildReferenceFromStates(
+    const std::vector<TrajectoryPoint> &states) {
+    reference_points_ = states;
+    std::vector<double> x_set, y_set, s_set;
+    for (const auto &point : states) {
+        x_set.emplace_back(point.path_point.x);
+        y_set.emplace_back(point.path_point.y);
+        s_set.emplace_back(point.path_point.s);
+    }
+    tk::spline x_s, y_s;
+    x_s.set_points(s_set, x_set);
+    y_s.set_points(s_set, y_set);
+    SetSpline(x_s, y_s, max_s_);
     return true;
 }
 

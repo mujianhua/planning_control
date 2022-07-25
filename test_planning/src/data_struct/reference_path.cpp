@@ -51,6 +51,11 @@ bool ReferencePath::BuildReferenceFromSpline(double delta_s_smaller,
                                                           delta_s_larger);
 }
 
+bool ReferencePath::BuildReferenceFromStates(
+    const std::vector<TrajectoryPoint> &states) {
+    return reference_path_impl_->BuildReferenceFromStates(states);
+}
+
 void ReferencePath::UpdateBounds(const Map &map) {
     return reference_path_impl_->UpdateBoundsImproved(map);
 }

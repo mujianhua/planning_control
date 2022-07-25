@@ -38,6 +38,8 @@ class ReferencePath {
     bool BuildReferenceFromSpline(double delta_s_smaller,
                                   double delta_s_larger);
 
+    bool BuildReferenceFromStates(const std::vector<TrajectoryPoint> &states);
+
     void UpdateBounds(const Map &map);
 
     const std::vector<VehicleBound> &GetBounds() const;

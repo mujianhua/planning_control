@@ -2,6 +2,6 @@
 <launch>
 
     <node pkg="test_planning" type="test_path_optimizer" name="test_path_optimizer" output="screen" />
-    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find test_planning)/config/rviz_config.rviz" output="screen" /> -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find test_planning)/config/rviz_config.rviz" output="screen" />
 
 </launch>

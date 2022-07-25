@@ -20,6 +20,10 @@ class VehicleState {
     VehicleState(const TrajectoryPoint &start_point,
                  const TrajectoryPoint &end_point);
 
+    void SetStartPoint(const TrajectoryPoint &point);
+
+    void SetTargetPoint(const TrajectoryPoint &point);
+
     const TrajectoryPoint &getStartPoint() const;
 
     const TrajectoryPoint &getTargetPoint() const;

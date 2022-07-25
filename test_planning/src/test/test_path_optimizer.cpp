@@ -27,7 +27,9 @@
 #include "opencv2/opencv.hpp"
 #include "path_optimizer/path_optimizer.h"
 #include "ros/node_handle.h"
+#include "ros_viz_tools/color.h"
 #include "tools/eigen2cv.h"
+#include "visualization_msgs/Marker.h"
 
 using namespace mujianhua::planning;
 using common_me::TrajectoryPoint;
@@ -171,7 +173,7 @@ int main(int argc, char **argv) {
     ros_viz_tools::RosVizTools markers(nh, "markers");
     std::string marker_frame_id = "/map";
 
-    test();
+    // test();
 
     ros::Rate rate(30.0);
     while (ros::ok()) {
@@ -241,11 +243,11 @@ int main(int argc, char **argv) {
             markers.append(end_marker);
         }
 
+        std::vector<TrajectoryPoint> result_path;
         if (start_point_receive && end_point_receive &&
             reference_point_receive) {
             PathOptimizer path_optimizer(start_point, end_point, grid_map);
 
-            std::vector<TrajectoryPoint> result_path;
             if (path_optimizer.Solve(reference_path, &result_path)) {
                 ROS_INFO("Path optimize success!");
             }
@@ -253,6 +255,27 @@ int main(int argc, char **argv) {
             start_point_receive = end_point_receive = reference_point_receive =
                 false;
         }
+
+        // visualize result path
+        ros_viz_tools::ColorRGBA path_color;
+        path_color.r = 0.063;
+        path_color.g = 0.305;
+        path_color.b = 0.545;
+        visualization_msgs::Marker result_path_marker =
+            markers.newLineStrip(FLAGS_car_width, "optimized path", id++,
+                                 path_color, marker_frame_id);
+        for (int i = 0; i < result_path.size(); i++) {
+            geometry_msgs::Point p;
+            p.x = result_path[i].path_point.x;
+            p.y = result_path[i].path_point.y;
+            p.z = 1.0;
+            result_path_marker.points.push_back(p);
+            const auto k = result_path[i].path_point.kappa;
+            path_color.a = std::min(fabs(k) / 0.15, 1.0);
+            path_color.a = std::max((float)0.1, path_color.a);
+            result_path_marker.colors.emplace_back(path_color);
+        }
+        markers.append(result_path_marker);
 
         markers.publish();
 
