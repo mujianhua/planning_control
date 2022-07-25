@@ -55,5 +55,13 @@ void ReferencePath::UpdateBounds(const Map &map) {
     return reference_path_impl_->UpdateBoundsImproved(map);
 }
 
+const std::vector<VehicleBound> &ReferencePath::GetBounds() const {
+    return reference_path_impl_->GetBounds();
+}
+
+std::shared_ptr<VehicleBound> ReferencePath::IsBlocked() const {
+    return reference_path_impl_->IsBlocked();
+}
+
 } // namespace planning
 } // namespace mujianhua

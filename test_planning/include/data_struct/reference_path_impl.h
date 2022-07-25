@@ -44,6 +44,10 @@ class ReferencePathImpl {
     GetClearanceWithDirectionStrict(const TrajectoryPoint &point,
                                     const Map &map);
 
+    const std::vector<VehicleBound> &GetBounds() const;
+
+    std::shared_ptr<VehicleBound> IsBlocked() const;
+
   private:
     std::vector<TrajectoryPoint> reference_points_;
     tk::spline *x_s_;

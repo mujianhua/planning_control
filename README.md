@@ -14,6 +14,7 @@ Dependence and Reference
 
 # Planning
 无人车路径规划
+$$ \dot{s} = \frac{\rho_s v cos(e_\psi)}{\rho_s - e_y} \quad $$
 
 ## Planner
 

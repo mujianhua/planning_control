@@ -24,12 +24,14 @@ class VehicleState {
 
     const TrajectoryPoint &getTargetPoint() const;
 
-    void SetInitError(double init_offest, double init_heading_error);
+    void SetInitError(double init_offset, double init_heading_error);
+
+    std::vector<double> GetInitError() const;
 
   private:
     TrajectoryPoint start_point_, end_point_;
-    double init_offest_;
-    double init_heading_error_;
+    double init_offset_{};
+    double init_heading_error_{};
 };
 
 } // namespace planning

@@ -15,9 +15,13 @@ const TrajectoryPoint &VehicleState::getTargetPoint() const {
     return end_point_;
 }
 
-void VehicleState::SetInitError(double init_offest, double init_heading_error) {
-    init_offest_ = init_offest;
+void VehicleState::SetInitError(double init_offset, double init_heading_error) {
+    init_offset_ = init_offset;
     init_heading_error_ = init_heading_error;
+}
+
+std::vector<double> VehicleState::GetInitError() const {
+    return {init_offset_, init_heading_error_};
 }
 
 } // namespace planning

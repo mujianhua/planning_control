@@ -1,3 +1,4 @@
+
 #include "path_optimizer/path_optimizer.h"
 #include "math/math_util.h"
 #include "tools/vehicle_state.h"
@@ -97,6 +98,9 @@ bool PathOptimizer::OptimizePath(std::vector<TrajectoryPoint> *final_path) {
     CHECK_NOTNULL(final_path);
     final_path->clear();
     BaseSolver pre_solver(reference_path_, vehicle_state_, 0, false);
+    pre_solver.Solve(final_path);
+
+    return true;
 }
 
 } // namespace planning

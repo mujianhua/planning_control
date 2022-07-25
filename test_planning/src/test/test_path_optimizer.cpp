@@ -26,6 +26,7 @@
 #include "opencv2/core/eigen.hpp"
 #include "opencv2/opencv.hpp"
 #include "path_optimizer/path_optimizer.h"
+#include "ros/node_handle.h"
 #include "tools/eigen2cv.h"
 
 using namespace mujianhua::planning;
@@ -43,11 +44,11 @@ void referenceCb(const geometry_msgs::PointStampedConstPtr &p) {
     TrajectoryPoint point;
     point.path_point.x = p->point.x;
     point.path_point.y = p->point.y;
+    LOG(INFO) << "receive a reference point "
+              << "x: " << point.path_point.x << " y: " << point.path_point.y;
     reference_path.emplace_back(point);
     start_point_receive = end_point_receive = false;
     reference_point_receive = reference_path.size() >= 6;
-    LOG(INFO) << "receive a reference point "
-              << "x: " << point.path_point.x << "\ty: " << point.path_point.y;
 }
 
 void startPointCb(
@@ -55,12 +56,12 @@ void startPointCb(
     start_point.path_point.x = start->pose.pose.position.x;
     start_point.path_point.y = start->pose.pose.position.y;
     start_point.path_point.theta = tf::getYaw(start->pose.pose.orientation);
+    LOG(INFO) << "receive effective start point "
+              << "x: " << start_point.path_point.x
+              << " y: " << start_point.path_point.y
+              << " heading: " << start_point.path_point.theta;
     if (reference_point_receive) {
         start_point_receive = true;
-        LOG(INFO) << "receive effective start point "
-                  << "x: " << start_point.path_point.x
-                  << "\ty: " << start_point.path_point.y
-                  << "\theading: " << start_point.path_point.theta;
     }
 }
 
@@ -68,57 +69,53 @@ void goalPointCb(const geometry_msgs::PoseStampedConstPtr &end) {
     end_point.path_point.x = end->pose.position.x;
     end_point.path_point.y = end->pose.position.y;
     end_point.path_point.theta = tf::getYaw(end->pose.orientation);
+    LOG(INFO) << "receive effective end point "
+              << "x: " << end_point.path_point.x
+              << " y: " << end_point.path_point.y
+              << " heading: " << end_point.path_point.theta;
     if (reference_point_receive) {
         end_point_receive = true;
-        LOG(INFO) << "receive effective end point "
-                  << "x: " << end_point.path_point.x
-                  << "\ty: " << end_point.path_point.y
-                  << "\theading: " << end_point.path_point.theta;
     }
 }
 
 void test() {
     reference_path.clear();
     TrajectoryPoint point1;
-    point1.path_point.x = 65.7857;
-    point1.path_point.y = -33.3962;
+    point1.path_point.x = 64.7571;
+    point1.path_point.y = -37.1454;
     reference_path.emplace_back(point1);
     TrajectoryPoint point2;
-    point2.path_point.x = 62.5627;
-    point2.path_point.y = -39.7113;
+    point2.path_point.x = 63.1541;
+    point2.path_point.y = -40.0129;
     reference_path.emplace_back(point2);
     TrajectoryPoint point3;
-    point3.path_point.x = 58.0047;
-    point3.path_point.y = -44.3432;
+    point3.path_point.x = 61.5568;
+    point3.path_point.y = -42.4973;
     reference_path.emplace_back(point3);
     TrajectoryPoint point4;
-    point4.path_point.x = 53.8879;
-    point4.path_point.y = -46.457;
+    point4.path_point.x = 59.1095;
+    point4.path_point.y = -44.7919;
     reference_path.emplace_back(point4);
     TrajectoryPoint point5;
-    point5.path_point.x = 49.8918;
-    point5.path_point.y = -47.9256;
+    point5.path_point.x = 55.9125;
+    point5.path_point.y = -46.6246;
     reference_path.emplace_back(point5);
     TrajectoryPoint point6;
-    point6.path_point.x = 46.0646;
-    point6.path_point.y = -48.5767;
+    point6.path_point.x = 51.821;
+    point6.path_point.y = -47.1128;
     reference_path.emplace_back(point6);
     TrajectoryPoint point7;
-    point7.path_point.x = 42.9292;
-    point7.path_point.y = -46.4527;
+    point7.path_point.x = 49.1763;
+    point7.path_point.y = -50.2195;
     reference_path.emplace_back(point7);
-    TrajectoryPoint point8;
-    point8.path_point.x = 41.4828;
-    point8.path_point.y = -42.5934;
-    reference_path.emplace_back(point8);
 
-    start_point.path_point.x = 66.3021;
-    start_point.path_point.y = -32.6687;
-    start_point.path_point.theta = -1.95023;
+    start_point.path_point.x = 65.0331;
+    start_point.path_point.y = -37.5212;
+    start_point.path_point.theta = -2.07483;
 
-    end_point.path_point.x = 41.8851;
-    end_point.path_point.y = -43.8336;
-    end_point.path_point.theta = 1.9078;
+    end_point.path_point.x = 49.4499;
+    end_point.path_point.y = -50.5613;
+    end_point.path_point.theta = -1.87097;
 
     start_point_receive = true;
     end_point_receive = true;
@@ -128,6 +125,8 @@ void test() {
 int main(int argc, char **argv) {
     ros::init(argc, argv, "test_path_optimizer");
     ros::NodeHandle nh("~");
+    ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
+                                   ros::console::levels::Debug);
 
     std::string base_dir = ros::package::getPath("test_planning");
     auto log_dir = base_dir + "/log";
@@ -261,6 +260,7 @@ int main(int argc, char **argv) {
         ros::spinOnce();
         rate.sleep();
     }
+    google::ShutdownGoogleLogging();
 
     return 0;
 }

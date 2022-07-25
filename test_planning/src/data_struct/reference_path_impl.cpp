@@ -52,6 +52,7 @@ bool ReferencePathImpl::BuildReferenceFromSpline(double delta_s_smaller,
         point.path_point.y = (*y_s_)(tmp_s);
         point.path_point.theta = math::GetHeading(*x_s_, *y_s_, tmp_s);
         point.path_point.kappa = math::GetCurvature(*x_s_, *y_s_, tmp_s);
+        point.path_point.s = tmp_s;
         reference_points_.emplace_back(point);
         // TODO: ???
         if (FLAGS_enable_dynamic_segmentation) {
@@ -210,6 +211,14 @@ ReferencePathImpl::GetClearanceWithDirectionStrict(const TrajectoryPoint &point,
     left_bound -= safety_margin;
     right_bound += safety_margin;
     return {left_bound, right_bound};
+}
+
+const std::vector<VehicleBound> &ReferencePathImpl::GetBounds() const {
+    return bounds_;
+}
+
+std::shared_ptr<VehicleBound> ReferencePathImpl::IsBlocked() const {
+    return block_bound_;
 }
 
 } // namespace planning
