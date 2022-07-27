@@ -2,9 +2,11 @@
 
 #include <cmath>
 #include "common/spline.h"
+#include "common/vehicle_state2.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "gflags/gflags.h"
+#include "reference_line/reference_point.h"
 
 namespace mujianhua {
 namespace planning {
@@ -45,6 +47,9 @@ TrajectoryPoint GetProjectPointByNewton(const tk::spline &x_s,
 
 TrajectoryPoint Global2Local(const TrajectoryPoint &reference,
                              const TrajectoryPoint &target);
+
+ReferencePoint Global2Local(const ReferencePoint &reference_point,
+                            const VehicleState2 &vehicle_state);
 
 } // namespace math
 } // namespace planning

@@ -48,11 +48,17 @@ set(PATH_OPTIMIZER_SRC
         src/path_optimizer/path_optimizer.cpp
         src/path_smoother/reference_path_smoother.cpp
         src/path_smoother/tension_smoother.cpp
+        src/common/frame.cpp
         src/common/spline.cpp
+        src/common/vehicle_state2.cpp
         src/tools/vehicle_state.cpp
         src/tools/map.cpp
         src/math/math_util.cpp
-        src/solver/base_solver.cpp)
+        src/solver/base_solver.cpp
+        src/reference_line/reference_point.cpp
+        src/reference_line/reference_line.cpp
+        src/reference_line/qp_spline_reference_smoother.cpp)
+        
 add_executable(test_path_optimizer src/test/test_path_optimizer.cpp ${PATH_OPTIMIZER_SRC})
 target_link_libraries(test_path_optimizer ${catkin_LIBRARIES} glog gflags ${OpenCV_LIBS} ${IPOPT_LIBRARIES}
         OsqpEigen::OsqpEigen osqp::osqp)

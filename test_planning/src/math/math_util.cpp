@@ -1,6 +1,8 @@
 #include "math/math_util.h"
 #include <cmath>
+#include "common/vehicle_state2.h"
 #include "common_me/TrajectoryPoint.h"
+#include "reference_line/reference_point.h"
 
 namespace mujianhua {
 namespace planning {
@@ -110,6 +112,16 @@ TrajectoryPoint Global2Local(const TrajectoryPoint &reference,
         target.path_point.theta - reference.path_point.theta;
     point.path_point.kappa = target.path_point.kappa;
     return point;
+}
+
+ReferencePoint Global2Local(const ReferencePoint &reference_point,
+                            const VehicleState2 &vehicle_state) {
+    double dx = vehicle_state.x() - reference_point.x();
+    double dy = vehicle_state.y() - reference_point.y();
+    return {
+        dx * cos(reference_point.theta()) + dy * sin(reference_point.theta()),
+        dy * cos(reference_point.theta()) - dx * sin(reference_point.theta()),
+        reference_point.s(), vehicle_state.heading() - reference_point.theta()};
 }
 
 } // namespace math

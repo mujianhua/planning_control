@@ -8,12 +8,14 @@
 #include <memory>
 #include <vector>
 #include <grid_map_core/grid_map_core.hpp>
+#include "common/planning_dependency_injector.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "data_struct/reference_path.h"
 #include "glog/logging.h"
 #include "path_smoother/reference_path_smoother.h"
 #include "path_smoother/tension_smoother.h"
+#include "reference_line/qp_spline_reference_smoother.h"
 #include "solver/base_solver.h"
 #include "tools/map.h"
 #include "tools/vehicle_state.h"
@@ -50,6 +52,9 @@ class PathOptimizer {
     VehicleState *vehicle_state_;
     ReferencePath *reference_path_;
     const Map *grid_map_;
+
+    std::shared_ptr<PlanningDependencyInjector> injector_;
+    std::shared_ptr<ReferenceLineSmoother> reference_line_smoother_;
 };
 
 } // namespace planning

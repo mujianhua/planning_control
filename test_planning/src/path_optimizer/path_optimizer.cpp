@@ -1,6 +1,13 @@
 
 #include "path_optimizer/path_optimizer.h"
+#include <memory>
+#include <vector>
+#include "common/frame.h"
+#include "common/planning_dependency_injector.h"
+#include "common/vehicle_state2.h"
 #include "math/math_util.h"
+#include "reference_line/reference_line.h"
+#include "reference_line/reference_point.h"
 #include "solver/base_solver.h"
 #include "tools/vehicle_state.h"
 
@@ -11,7 +18,14 @@ PathOptimizer::PathOptimizer(const TrajectoryPoint &start_point,
                              const TrajectoryPoint &end_point,
                              const grid_map::GridMap &map)
     : vehicle_state_(new VehicleState{start_point, end_point}),
-      reference_path_(new ReferencePath), grid_map_(new Map{map}) {}
+      reference_path_(new ReferencePath), grid_map_(new Map{map}) {
+    VehicleState2 start_state(start_point.path_point.x,
+                              start_point.path_point.y,
+                              start_point.path_point.theta);
+
+    reference_line_smoother_ =
+        std::make_shared<QPSplineReferenceLineSmoother>();
+}
 
 PathOptimizer::~PathOptimizer() {
     delete vehicle_state_;
@@ -21,6 +35,26 @@ PathOptimizer::~PathOptimizer() {
 bool PathOptimizer::Solve(const std::vector<TrajectoryPoint> &reference_points,
                           std::vector<TrajectoryPoint> *final_path) {
     CHECK_NOTNULL(final_path);
+
+    // test
+    VehicleState2 vehicle_state(
+        vehicle_state_->getStartPoint().path_point.x,
+        vehicle_state_->getStartPoint().path_point.y,
+        vehicle_state_->getStartPoint().path_point.theta);
+    auto *frame = new Frame(vehicle_state, *grid_map_);
+    std::vector<ReferencePoint> raw_reference_points;
+    for (const auto &reference_point : reference_points) {
+        ReferencePoint ref_point(reference_point.path_point.x,
+                                 reference_point.path_point.y);
+        raw_reference_points.emplace_back(ref_point);
+    }
+    ReferenceLine *smoothed_reference_line;
+    ROS_DEBUG("reference line smoother is %s",
+              reference_line_smoother_->Name().c_str());
+    reference_line_smoother_->Smooth(raw_reference_points,
+                                     smoothed_reference_line, frame);
+
+    // test end
 
     auto t1 = ros::Time::now();
     if (reference_points.empty()) {

@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     //设置要打开的串口名称
     sp.setPort("/dev/ttyUSB0");
     //设置串口通信的波特率
-    sp.setBaudrate(9600);
+    sp.setBaudrate(230400);
     //串口设置timeout
     sp.setTimeout(to);
 
@@ -34,9 +34,6 @@ int main(int argc, char **argv) {
     } else {
         return -1;
     }
-
-    while (sizeof(sp.read()) >= 0)
-        ;
 
     std::queue<int> q[1024];
     ros::Rate loop_rate(100);

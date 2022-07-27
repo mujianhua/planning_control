@@ -9,9 +9,11 @@ namespace planning {
 
 class Map {
   public:
-    Map() = delete;
+    Map() = default;
 
     explicit Map(const grid_map::GridMap &grid_map);
+
+    void Update(grid_map::GridMap &grid_map);
 
     double GetObstacleDistance(const Eigen::Vector2d &pos) const;
 
