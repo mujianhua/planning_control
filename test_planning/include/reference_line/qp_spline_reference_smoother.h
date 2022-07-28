@@ -24,7 +24,7 @@ class QPSplineReferenceLineSmoother : public ReferenceLineSmoother {
         std::shared_ptr<PlanningDependencyInjector> injector);
 
     bool Smooth(const std::vector<PathPoint> &raw_reference_points,
-                ReferenceLine &reference_line, Frame *frame) override;
+                ReferenceLine *reference_line, Frame *frame) override;
 
     const std::string Name() const override;
 
@@ -46,12 +46,12 @@ class QPSplineReferenceLineSmoother : public ReferenceLineSmoother {
                                   std::vector<double> *theta_list,
                                   std::vector<double> *kappa_list);
 
-    bool DPGraphSearch(Frame *frame, ReferenceLine &reference_line);
+    bool DPGraphSearch(Frame *frame, ReferenceLine *reference_line);
 
     void DPCalculateCost(std::vector<std::vector<DP_POINT>> &samples,
                          int layer_index, int lateral_index);
 
-    bool Smooth(ReferenceLine &reference_line);
+    bool Smooth(ReferenceLine *reference_line);
 
     void SetPostHessianMatrix(Eigen::SparseMatrix<double> *matrix_h);
 

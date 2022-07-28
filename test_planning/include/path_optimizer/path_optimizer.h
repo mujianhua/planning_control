@@ -57,7 +57,7 @@ class PathOptimizer {
 
     std::shared_ptr<PlanningDependencyInjector> injector_;
     std::shared_ptr<ReferenceLineSmoother> reference_line_smoother_;
-    ReferenceLine reference_line_;
+    ReferenceLine *reference_line_;
     Frame *frame_;
 
     VehicleState2 *start_state_, *target_state_;

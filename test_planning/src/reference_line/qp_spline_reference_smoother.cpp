@@ -42,7 +42,7 @@ const std::string QPSplineReferenceLineSmoother::Name() const { return name_; }
 
 bool QPSplineReferenceLineSmoother::Smooth(
     const std::vector<PathPoint> &raw_reference_points,
-    ReferenceLine &smoothed_reference_line, Frame *frame) {
+    ReferenceLine *smoothed_reference_line, Frame *frame) {
     if (raw_reference_points.size() < 5) {
         ROS_ERROR("[ReferenceLineSmoother] the initial reference points is too "
                   "little!");
@@ -66,7 +66,7 @@ bool QPSplineReferenceLineSmoother::Smooth(
     x_spline.set_points(s_list, x_list);
     y_spline.set_points(s_list, y_list);
     double max_result_s = s_list.back() + 3.0;
-    smoothed_reference_line.SetSpline(x_spline, y_spline, max_result_s);
+    smoothed_reference_line->SetSpline(x_spline, y_spline, max_result_s);
 
     if (!DPGraphSearch(frame, smoothed_reference_line)) {
         ROS_ERROR("unable add bounds by dp search");
@@ -154,25 +154,25 @@ bool QPSplineReferenceLineSmoother::SegmetRawReferencePoints(
 }
 
 bool QPSplineReferenceLineSmoother::DPGraphSearch(
-    Frame *frame, ReferenceLine &reference_line) {
+    Frame *frame, ReferenceLine *reference_line) {
     static const double search_threshold = FLAGS_car_width / 2.0 + 0.2;
     dp_layers_s_list_.clear();
     layers_bounds_.clear();
-    double search_ds = reference_line.GetLength() > 6.0
+    double search_ds = reference_line->GetLength() > 6.0
                            ? FLAGS_search_longitudial_spacing
                            : 0.5;
 
-    ReferencePoint start_prj_point = reference_line.FindProjectPoint(
+    ReferencePoint start_prj_point = reference_line->FindProjectPoint(
         frame->GetVehicleStartState()->x(), frame->GetVehicleStartState()->y());
 
     double tmp_s = start_prj_point.s();
-    while (tmp_s < reference_line.GetLength()) {
+    while (tmp_s < reference_line->GetLength()) {
         // 以车辆投影点为起点开始搜索平滑！
         dp_layers_s_list_.emplace_back(tmp_s);
         tmp_s += search_ds;
     }
 
-    dp_layers_s_list_.emplace_back(reference_line.GetLength());
+    dp_layers_s_list_.emplace_back(reference_line->GetLength());
     if (dp_layers_s_list_.empty())
         return false;
     auto target_s = dp_layers_s_list_.back();
@@ -194,7 +194,7 @@ bool QPSplineReferenceLineSmoother::DPGraphSearch(
         samples.emplace_back(std::vector<DP_POINT>());
 
         double cur_s = dp_layers_s_list_[i];
-        ReferencePoint ref_point = reference_line.GetRerencePoint(cur_s);
+        ReferencePoint ref_point = reference_line->GetRerencePoint(cur_s);
 
         int lateral_index = 0;
         double cur_l = -FLAGS_search_lateral_range;
@@ -284,7 +284,7 @@ bool QPSplineReferenceLineSmoother::DPGraphSearch(
             static const double check_limit = 6.0;
             double upper_bound = check_s + ptr->rough_upper_bound;
             double lower_bound = -check_s + ptr->rough_lower_bound;
-            ReferencePoint ref_point = reference_line.GetRerencePoint(ptr->s);
+            ReferencePoint ref_point = reference_line->GetRerencePoint(ptr->s);
             while (upper_bound < check_limit) {
                 grid_map::Position pos;
                 pos(0) =
@@ -370,7 +370,7 @@ void QPSplineReferenceLineSmoother::DPCalculateCost(
         point.cost = min_cost;
 }
 
-bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine &reference_line) {
+bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine *reference_line) {
     auto point_num = dp_layers_s_list_.size();
     if (point_num < 4) {
         ROS_WARN("ref is too short: %lu, quit POST SMOOTHING.", point_num);
@@ -411,7 +411,7 @@ bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine &reference_line) {
     double s = 0;
     for (int i = 0; i < point_num; i++) {
         const double ref_s = dp_layers_s_list_[i];
-        ReferencePoint ref_point = reference_line.GetRerencePoint(ref_s);
+        ReferencePoint ref_point = reference_line->GetRerencePoint(ref_s);
         double ref_dir = ref_point.theta();
         x_list.push_back(ref_point.x() + qpsolution(i) * cos(ref_dir + M_PI_2));
         y_list.push_back(ref_point.y() + qpsolution(i) * sin(ref_dir + M_PI_2));
@@ -424,7 +424,7 @@ bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine &reference_line) {
     tk::spline new_x_s, new_y_s;
     new_x_s.set_points(s_list, x_list);
     new_y_s.set_points(s_list, y_list);
-    reference_line.SetSpline(new_x_s, new_y_s, s_list.back());
+    reference_line->SetSpline(new_x_s, new_y_s, s_list.back());
 
     return true;
 }

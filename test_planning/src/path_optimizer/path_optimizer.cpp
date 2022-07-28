@@ -26,6 +26,8 @@ PathOptimizer::PathOptimizer(const PathPoint &start_point,
     target_state_ =
         new VehicleState2(end_point.x, end_point.y, end_point.theta);
 
+    reference_line_ = new ReferenceLine();
+
     reference_line_smoother_ =
         std::make_shared<QPSplineReferenceLineSmoother>();
 }
@@ -40,7 +42,7 @@ bool PathOptimizer::Solve(const std::vector<PathPoint> &raw_reference_points,
 
     ROS_DEBUG("reference line smoother is %s",
               reference_line_smoother_->Name().c_str());
-    reference_line_.Clear();
+    reference_line_->Clear();
     reference_line_smoother_->Smooth(raw_reference_points, reference_line_,
                                      frame_);
 
@@ -69,16 +71,16 @@ bool PathOptimizer::Solve(const std::vector<PathPoint> &raw_reference_points,
 bool PathOptimizer::ProcessReferencePath() {
     ProcessInitState();
     SetReferencePathLength();
-    if (!reference_line_.BuildReferenceLineBySpline(FLAGS_output_spacing / 2.0,
-                                                    FLAGS_output_spacing)) {
+    if (!reference_line_->BuildReferenceLineBySpline(FLAGS_output_spacing / 2.0,
+                                                     FLAGS_output_spacing)) {
         ROS_ERROR("unable build reference from spline");
     }
-    reference_line_.UpdateBounds(frame_);
+    reference_line_->UpdateBounds(frame_);
     return true;
 }
 
 void PathOptimizer::ProcessInitState() {
-    ReferencePoint init_point = reference_line_.GetRerencePoint(0.0);
+    ReferencePoint init_point = reference_line_->GetRerencePoint(0.0);
     // TODO:
     auto first_point_local =
         math::Global2Local(init_point, *frame_->GetVehicleStartState());
@@ -96,27 +98,27 @@ void PathOptimizer::ProcessInitState() {
 
 void PathOptimizer::SetReferencePathLength() {
     ReferencePoint end_ref_point =
-        reference_line_.GetRerencePoint(reference_line_.GetLength());
+        reference_line_->GetRerencePoint(reference_line_->GetLength());
 
     auto vehicle_target_to_end_ref_point =
         math::Global2Local(end_ref_point, *target_state_);
     if (vehicle_target_to_end_ref_point.x() > 0.0)
         return;
-    auto target_projection = reference_line_.FindProjectPoint(
+    auto target_projection = reference_line_->FindProjectPoint(
         target_state_->x(), target_state_->y());
-    reference_line_.SetLength(target_projection.s());
+    reference_line_->SetLength(target_projection.s());
 }
 
 bool PathOptimizer::OptimizePath(std::vector<PathPoint> *final_path) {
     CHECK_NOTNULL(final_path);
     final_path->clear();
-    QPPathOptimizer pre_solver(&reference_line_, frame_, false);
+    QPPathOptimizer pre_solver(reference_line_, frame_, false);
     if (!pre_solver.Solve(final_path)) {
         ROS_ERROR("pre solving failed!");
     }
 
-    reference_line_.BuildReferenceFromStates(*final_path);
-    reference_line_.UpdateBounds(frame_);
+    reference_line_->BuildReferenceFromStates(*final_path);
+    reference_line_->UpdateBounds(frame_);
 
     VehicleState2 start_state = *frame_->GetVehicleStartState();
     start_state.SetInitialError(0.0, 0.0);
@@ -126,14 +128,14 @@ bool PathOptimizer::OptimizePath(std::vector<PathPoint> *final_path) {
                         final_path->back().theta);
     frame_->UpdateVehicleTargetState(target_state);
 
-    QPPathOptimizer solver(&reference_line_, frame_, true);
+    QPPathOptimizer solver(reference_line_, frame_, true);
     solver.Solve(final_path);
 
     return true;
 }
 
 const ReferenceLine &PathOptimizer::GetReferenceLine() const {
-    return reference_line_;
+    return *reference_line_;
 }
 
 } // namespace planning
