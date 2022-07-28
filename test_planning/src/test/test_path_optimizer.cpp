@@ -18,7 +18,6 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
-#include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "data_struct/data_struct.h"
 #include "eigen3/Eigen/Dense"
@@ -33,10 +32,9 @@
 #include "visualization_msgs/Marker.h"
 
 using namespace mujianhua::planning;
-using common_me::TrajectoryPoint;
 
-std::vector<TrajectoryPoint> reference_path;
-TrajectoryPoint start_point, end_point;
+std::vector<PathPoint> reference_path;
+PathPoint start_point, end_point;
 bool start_point_receive = false, end_point_receive = false,
      reference_point_receive = false;
 
@@ -44,11 +42,11 @@ void referenceCb(const geometry_msgs::PointStampedConstPtr &p) {
     if (start_point_receive && end_point_receive) {
         reference_path.clear();
     }
-    TrajectoryPoint point;
-    point.path_point.x = p->point.x;
-    point.path_point.y = p->point.y;
+    PathPoint point;
+    point.x = p->point.x;
+    point.y = p->point.y;
     LOG(INFO) << "receive a reference point "
-              << "x: " << point.path_point.x << " y: " << point.path_point.y;
+              << "x: " << point.x << " y: " << point.y;
     reference_path.emplace_back(point);
     start_point_receive = end_point_receive = false;
     reference_point_receive = reference_path.size() >= 6;
@@ -56,26 +54,24 @@ void referenceCb(const geometry_msgs::PointStampedConstPtr &p) {
 
 void startPointCb(
     const geometry_msgs::PoseWithCovarianceStampedConstPtr &start) {
-    start_point.path_point.x = start->pose.pose.position.x;
-    start_point.path_point.y = start->pose.pose.position.y;
-    start_point.path_point.theta = tf::getYaw(start->pose.pose.orientation);
+    start_point.x = start->pose.pose.position.x;
+    start_point.y = start->pose.pose.position.y;
+    start_point.theta = tf::getYaw(start->pose.pose.orientation);
     LOG(INFO) << "receive effective start point "
-              << "x: " << start_point.path_point.x
-              << " y: " << start_point.path_point.y
-              << " heading: " << start_point.path_point.theta;
+              << "x: " << start_point.x << " y: " << start_point.y
+              << " heading: " << start_point.theta;
     if (reference_point_receive) {
         start_point_receive = true;
     }
 }
 
 void goalPointCb(const geometry_msgs::PoseStampedConstPtr &end) {
-    end_point.path_point.x = end->pose.position.x;
-    end_point.path_point.y = end->pose.position.y;
-    end_point.path_point.theta = tf::getYaw(end->pose.orientation);
+    end_point.x = end->pose.position.x;
+    end_point.y = end->pose.position.y;
+    end_point.theta = tf::getYaw(end->pose.orientation);
     LOG(INFO) << "receive effective end point "
-              << "x: " << end_point.path_point.x
-              << " y: " << end_point.path_point.y
-              << " heading: " << end_point.path_point.theta;
+              << "x: " << end_point.x << " y: " << end_point.y
+              << " heading: " << end_point.theta;
     if (reference_point_receive) {
         end_point_receive = true;
     }
@@ -83,42 +79,42 @@ void goalPointCb(const geometry_msgs::PoseStampedConstPtr &end) {
 
 void test() {
     reference_path.clear();
-    TrajectoryPoint point1;
-    point1.path_point.x = 64.7571;
-    point1.path_point.y = -37.1454;
+    PathPoint point1;
+    point1.x = 64.7571;
+    point1.y = -37.1454;
     reference_path.emplace_back(point1);
-    TrajectoryPoint point2;
-    point2.path_point.x = 63.1541;
-    point2.path_point.y = -40.0129;
+    PathPoint point2;
+    point2.x = 63.1541;
+    point2.y = -40.0129;
     reference_path.emplace_back(point2);
-    TrajectoryPoint point3;
-    point3.path_point.x = 61.5568;
-    point3.path_point.y = -42.4973;
+    PathPoint point3;
+    point3.x = 61.5568;
+    point3.y = -42.4973;
     reference_path.emplace_back(point3);
-    TrajectoryPoint point4;
-    point4.path_point.x = 59.1095;
-    point4.path_point.y = -44.7919;
+    PathPoint point4;
+    point4.x = 59.1095;
+    point4.y = -44.7919;
     reference_path.emplace_back(point4);
-    TrajectoryPoint point5;
-    point5.path_point.x = 55.9125;
-    point5.path_point.y = -46.6246;
+    PathPoint point5;
+    point5.x = 55.9125;
+    point5.y = -46.6246;
     reference_path.emplace_back(point5);
-    TrajectoryPoint point6;
-    point6.path_point.x = 51.821;
-    point6.path_point.y = -47.1128;
+    PathPoint point6;
+    point6.x = 51.821;
+    point6.y = -47.1128;
     reference_path.emplace_back(point6);
-    TrajectoryPoint point7;
-    point7.path_point.x = 49.1763;
-    point7.path_point.y = -50.2195;
+    PathPoint point7;
+    point7.x = 49.1763;
+    point7.y = -50.2195;
     reference_path.emplace_back(point7);
 
-    start_point.path_point.x = 65.0331;
-    start_point.path_point.y = -37.5212;
-    start_point.path_point.theta = -2.07483;
+    start_point.x = 65.0331;
+    start_point.y = -37.5212;
+    start_point.theta = -2.07483;
 
-    end_point.path_point.x = 49.4499;
-    end_point.path_point.y = -50.5613;
-    end_point.path_point.theta = -1.87097;
+    end_point.x = 49.4499;
+    end_point.y = -50.5613;
+    end_point.theta = -1.87097;
 
     start_point_receive = true;
     end_point_receive = true;
@@ -195,10 +191,10 @@ int main(int argc, char **argv) {
             ros_viz_tools::RosVizTools::newSphereList(0.5, "reference point",
                                                       id++, ros_viz_tools::RED,
                                                       marker_frame_id);
-        for (size_t i = 0; i != reference_path.size(); ++i) {
+        for (auto &point : reference_path) {
             geometry_msgs::Point p;
-            p.x = reference_path[i].path_point.x;
-            p.y = reference_path[i].path_point.y;
+            p.x = point.x;
+            p.y = point.y;
             p.z = 1.0;
             reference_marker.points.push_back(p);
         }
@@ -211,11 +207,11 @@ int main(int argc, char **argv) {
         if (start_point_receive) {
             // display start and end point selected by mouse.
             geometry_msgs::Pose start_pose;
-            start_pose.position.x = start_point.path_point.x;
-            start_pose.position.y = start_point.path_point.y;
+            start_pose.position.x = start_point.x;
+            start_pose.position.y = start_point.y;
             start_pose.position.z = 1.0;
             auto start_quaternion =
-                tf::createQuaternionFromYaw(start_point.path_point.theta);
+                tf::createQuaternionFromYaw(start_point.theta);
             start_pose.orientation.x = start_quaternion.x();
             start_pose.orientation.y = start_quaternion.y();
             start_pose.orientation.z = start_quaternion.z();
@@ -228,11 +224,10 @@ int main(int argc, char **argv) {
         }
         if (end_point_receive) {
             geometry_msgs::Pose end_pose;
-            end_pose.position.x = end_point.path_point.x;
-            end_pose.position.y = end_point.path_point.y;
+            end_pose.position.x = end_point.x;
+            end_pose.position.y = end_point.y;
             end_pose.position.z = 1.0;
-            auto end_quaternion =
-                tf::createQuaternionFromYaw(end_point.path_point.theta);
+            auto end_quaternion = tf::createQuaternionFromYaw(end_point.theta);
             end_pose.orientation.x = end_quaternion.x();
             end_pose.orientation.y = end_quaternion.y();
             end_pose.orientation.z = end_quaternion.z();
@@ -292,10 +287,10 @@ int main(int argc, char **argv) {
         visualization_msgs::Marker smoothed_reference_line_marker =
             markers.newLineStrip(0.07, "smoothed reference line", id++,
                                  ros_viz_tools::YELLOW, marker_frame_id);
-        for (size_t i = 0; i != smoothed_reference_line.size(); ++i) {
+        for (auto &point : smoothed_reference_line) {
             geometry_msgs::Point p;
-            p.x = smoothed_reference_line[i].x();
-            p.y = smoothed_reference_line[i].y();
+            p.x = point.x();
+            p.y = point.y();
             p.z = 1.0;
             smoothed_reference_line_marker.points.push_back(p);
         }

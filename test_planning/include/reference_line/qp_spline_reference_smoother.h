@@ -23,7 +23,7 @@ class QPSplineReferenceLineSmoother : public ReferenceLineSmoother {
     QPSplineReferenceLineSmoother(
         std::shared_ptr<PlanningDependencyInjector> injector);
 
-    bool Smooth(std::vector<ReferencePoint> &raw_reference_points,
+    bool Smooth(const std::vector<PathPoint> &raw_reference_points,
                 ReferenceLine &reference_line, Frame *frame) override;
 
     const std::string Name() const override;

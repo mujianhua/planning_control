@@ -33,13 +33,12 @@ class PathOptimizer {
   public:
     PathOptimizer() = delete;
 
-    PathOptimizer(const TrajectoryPoint &start_point,
-                  const TrajectoryPoint &end_point,
+    PathOptimizer(const PathPoint &start_point, const PathPoint &end_point,
                   const grid_map::GridMap &map);
 
     ~PathOptimizer();
 
-    bool Solve(const std::vector<TrajectoryPoint> &reference_points,
+    bool Solve(const std::vector<PathPoint> &reference_points,
                std::vector<TrajectoryPoint> *final_path);
 
     const ReferenceLine &GetReferenceLine() const;
@@ -47,21 +46,12 @@ class PathOptimizer {
   private:
     bool ProcessReferencePath();
 
-    bool ProcessReferencePath2();
-
     void ProcessInitState();
-
-    void ProcessInitState2();
 
     void SetReferencePathLength();
 
-    void SetReferencePathLength2();
+    bool OptimizePath(std::vector<PathPoint> *final_path);
 
-    bool OptimizePath(std::vector<TrajectoryPoint> *final_path);
-
-    bool OptimizePath2(std::vector<PathPoint> *final_path);
-
-    VehicleState *vehicle_state_;
     ReferencePath *reference_path_;
     const Map *grid_map_;
 

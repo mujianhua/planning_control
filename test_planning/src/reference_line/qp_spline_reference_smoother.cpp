@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <utility>
 #include <vector>
+#include "data_struct/data_struct.h"
 #include "reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
 
@@ -13,6 +14,10 @@ namespace {
 
 double Distance(const ReferencePoint &p1, const ReferencePoint &p2) {
     return sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
+}
+
+double Distance(const PathPoint &p1, const PathPoint &p2) {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
 struct DP_POINT {
@@ -36,7 +41,7 @@ QPSplineReferenceLineSmoother::QPSplineReferenceLineSmoother(
 const std::string QPSplineReferenceLineSmoother::Name() const { return name_; }
 
 bool QPSplineReferenceLineSmoother::Smooth(
-    std::vector<ReferencePoint> &raw_reference_points,
+    const std::vector<PathPoint> &raw_reference_points,
     ReferenceLine &smoothed_reference_line, Frame *frame) {
     if (raw_reference_points.size() < 5) {
         ROS_ERROR("[ReferenceLineSmoother] the initial reference points is too "
@@ -90,8 +95,8 @@ bool QPSplineReferenceLineSmoother::SplineInterpolation() {
     tinyspline::BSpline b_spline_raw(ref_points_.size(), 2, degree);
     std::vector<tinyspline::real> ctrl_point_raw = b_spline_raw.controlPoints();
     for (size_t i = 0; i < ref_points_.size(); i++) {
-        ctrl_point_raw[2 * i] = ref_points_[i].x();
-        ctrl_point_raw[2 * i + 1] = ref_points_[i].y();
+        ctrl_point_raw[2 * i] = ref_points_[i].x;
+        ctrl_point_raw[2 * i + 1] = ref_points_[i].y;
     }
     b_spline_raw.setControlPoints(ctrl_point_raw);
 

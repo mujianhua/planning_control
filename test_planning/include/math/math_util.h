@@ -36,6 +36,8 @@ double Distance(const ReferencePoint &point, const VehicleState2 &state);
 double Distance(const double &x1, const double &y1, const double &x2,
                 const double &y2);
 
+double Distance(const PathPoint &p1, const PathPoint &p2);
+
 double GetHeading(const tk::spline &x_s, const tk::spline &y_s, double s);
 
 double GetCurvature(const tk::spline &x_s, const tk::spline &y_s, double s);
