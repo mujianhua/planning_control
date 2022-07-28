@@ -2,9 +2,9 @@
 
 #include <cstddef>
 #include <vector>
+#include "common/data_struct.h"
 #include "common/frame.h"
 #include "common/spline.h"
-#include "data_struct/data_struct.h"
 #include "reference_line/reference_point.h"
 
 namespace mujianhua {

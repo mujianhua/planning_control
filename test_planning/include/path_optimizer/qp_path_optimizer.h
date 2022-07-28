@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstddef>
+#include "common/data_struct.h"
 #include "common/frame.h"
-#include "data_struct/data_struct.h"
 #include "path_optimizer/path_optimizer.h"
 #include "reference_line/reference_line.h"
 
@@ -13,7 +13,7 @@ class QPPathOptimizer {
   public:
     QPPathOptimizer() = delete;
 
-    QPPathOptimizer(ReferenceLine *reference_line, Frame *frame,
+    QPPathOptimizer(const ReferenceLine *reference_line, const Frame *frame,
                     bool enable_hard_constraint);
 
     bool Solve(std::vector<PathPoint> *optimized_path);
@@ -38,8 +38,8 @@ class QPPathOptimizer {
     int slack_size_{};
     int vars_size_{};
     int cons_size_{};
-    ReferenceLine *reference_line_;
-    Frame *frame_;
+    const ReferenceLine *reference_line_;
+    const Frame *frame_;
     OsqpEigen::Solver solver_;
 };
 

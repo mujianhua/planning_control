@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <utility>
 #include <vector>
-#include "data_struct/data_struct.h"
+#include "common/data_struct.h"
 #include "reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
 

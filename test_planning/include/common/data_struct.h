@@ -17,8 +17,10 @@ using common_me::TrajectoryPoint;
 
 struct PathPoint {
     PathPoint() = default;
-    PathPoint(double x, double y, double theta, double kappa, double s)
+    PathPoint(double x, double y, double theta = 0.0, double kappa = 0.0,
+              double s = 0.0)
         : x(x), y(y), theta(theta), kappa(kappa), s(s) {}
+
     double x{}, y{}, theta{}, s{}, kappa{};
 };
 

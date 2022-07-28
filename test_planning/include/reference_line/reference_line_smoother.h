@@ -4,7 +4,7 @@
 #include <vector>
 #include <ros/ros.h>
 #include "common/frame.h"
-#include "math/math_util.h"
+#include "common/math/math_util.h"
 #include "reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
 #include "tinyspline_ros/tinysplinecpp.h"

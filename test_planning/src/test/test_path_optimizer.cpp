@@ -18,10 +18,10 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
+#include "common/data_struct.h"
+#include "common/math/math_util.h"
 #include "config/planning_flags.h"
-#include "data_struct/data_struct.h"
 #include "eigen3/Eigen/Dense"
-#include "math/math_util.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/eigen.hpp"
 #include "opencv2/opencv.hpp"

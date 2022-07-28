@@ -1,15 +1,14 @@
 #include <memory>
 #include <vector>
+#include "common/data_struct.h"
 #include "common/frame.h"
+#include "common/math/math_util.h"
 #include "common/planning_dependency_injector.h"
 #include "common/vehicle_state2.h"
 #include "common_me/TrajectoryPoint.h"
-#include "data_struct/data_struct.h"
-#include "math/math_util.h"
 #include "path_optimizer/qp_path_optimizer.h"
 #include "reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
-#include "solver/base_solver.h"
 #include "tools/vehicle_state.h"
 
 namespace mujianhua {
@@ -18,7 +17,7 @@ namespace planning {
 PathOptimizer::PathOptimizer(const PathPoint &start_point,
                              const PathPoint &end_point,
                              const grid_map::GridMap &map)
-    : reference_path_(new ReferencePath), grid_map_(new Map{map}) {
+    : grid_map_(new Map{map}) {
     VehicleState2 start_state(start_point.x, start_point.y, start_point.theta);
 
     start_state_ =
@@ -32,7 +31,7 @@ PathOptimizer::PathOptimizer(const PathPoint &start_point,
         std::make_shared<QPSplineReferenceLineSmoother>();
 }
 
-PathOptimizer::~PathOptimizer() { delete reference_path_; }
+PathOptimizer::~PathOptimizer() { delete reference_line_; }
 
 bool PathOptimizer::Solve(const std::vector<PathPoint> &raw_reference_points,
                           std::vector<TrajectoryPoint> *final_path) {
@@ -46,7 +45,7 @@ bool PathOptimizer::Solve(const std::vector<PathPoint> &raw_reference_points,
     reference_line_smoother_->Smooth(raw_reference_points, reference_line_,
                                      frame_);
 
-    if (!ProcessReferencePath()) {
+    if (!ProcessReferenceLine()) {
         ROS_ERROR("process reference path FAILED.");
     }
 
@@ -68,9 +67,9 @@ bool PathOptimizer::Solve(const std::vector<PathPoint> &raw_reference_points,
     return true;
 }
 
-bool PathOptimizer::ProcessReferencePath() {
+bool PathOptimizer::ProcessReferenceLine() {
     ProcessInitState();
-    SetReferencePathLength();
+    SetReferenceLineLength();
     if (!reference_line_->BuildReferenceLineBySpline(FLAGS_output_spacing / 2.0,
                                                      FLAGS_output_spacing)) {
         ROS_ERROR("unable build reference from spline");
@@ -96,7 +95,7 @@ void PathOptimizer::ProcessInitState() {
     frame_->UpdateVehicleStartState(start_state);
 }
 
-void PathOptimizer::SetReferencePathLength() {
+void PathOptimizer::SetReferenceLineLength() {
     ReferencePoint end_ref_point =
         reference_line_->GetRerencePoint(reference_line_->GetLength());
 

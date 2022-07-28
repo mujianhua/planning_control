@@ -43,19 +43,15 @@ include_directories(
 # path optimizer
 set(PATH_OPTIMIZER_SRC
         src/config/planning_flags.cpp
-        src/data_struct/reference_path.cpp
-        src/data_struct/reference_path_impl.cpp
         src/path_optimizer/path_optimizer.cpp
         src/path_optimizer/qp_path_optimizer.cpp
-        src/path_smoother/reference_path_smoother.cpp
-        src/path_smoother/tension_smoother.cpp
         src/common/frame.cpp
+        src/common/data_struct.cpp
         src/common/spline.cpp
         src/common/vehicle_state2.cpp
+        src/common/math/math_util.cpp
         src/tools/vehicle_state.cpp
         src/tools/map.cpp
-        src/math/math_util.cpp
-        src/solver/base_solver.cpp
         src/reference_line/reference_point.cpp
         src/reference_line/reference_line.cpp
         src/reference_line/qp_spline_reference_smoother.cpp)

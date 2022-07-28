@@ -1,11 +1,12 @@
 #include "path_optimizer/qp_path_optimizer.h"
-#include "data_struct/data_struct.h"
+#include "common/data_struct.h"
 #include "reference_line/reference_line.h"
 
 namespace mujianhua {
 namespace planning {
 
-QPPathOptimizer::QPPathOptimizer(ReferenceLine *reference_line, Frame *frame,
+QPPathOptimizer::QPPathOptimizer(const ReferenceLine *reference_line,
+                                 const Frame *frame,
                                  bool enable_hard_constraint)
     : n_(reference_line->size()),
       enable_hard_constraint_(enable_hard_constraint),
@@ -52,10 +53,10 @@ bool QPPathOptimizer::Solve(std::vector<PathPoint> *optimized_path) {
 
 void QPPathOptimizer::SetHessianMatrix(
     Eigen::SparseMatrix<double> *matrix_h) const {
-    static const auto weight_l = 0.1;
-    static const auto weight_kappa = 20.0;
-    static const auto weight_d_kappa = 100.0;
-    static const auto weight_slack = 10.0; // 1000.0 - 200 * iter_num_;
+    static constexpr auto weight_l = 0.1;
+    static constexpr auto weight_kappa = 20.0;
+    static constexpr auto weight_d_kappa = 100.0;
+    static constexpr auto weight_slack = 10.0; // 1000.0 - 200 * iter_num_;
 
     Eigen::MatrixXd hessian{
         Eigen::MatrixXd::Constant(vars_size_, vars_size_, 0.0)};
