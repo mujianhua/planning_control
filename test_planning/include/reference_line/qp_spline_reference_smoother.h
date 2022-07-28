@@ -40,11 +40,7 @@ class QPSplineReferenceLineSmoother : public ReferenceLineSmoother {
 
     bool SplineInterpolation();
 
-    bool SegmetRawReferencePoints(std::vector<double> *x_list,
-                                  std::vector<double> *y_list,
-                                  std::vector<double> *s_list,
-                                  std::vector<double> *theta_list,
-                                  std::vector<double> *kappa_list);
+    bool SegmetRawReferencePoints(ReferenceLine *reference_line);
 
     bool DPGraphSearch(Frame *frame, ReferenceLine *reference_line);
 

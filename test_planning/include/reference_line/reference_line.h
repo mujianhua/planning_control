@@ -22,11 +22,11 @@ class ReferenceLine {
     bool BuildReferenceLineBySpline(double delta_s_smaller,
                                     double delta_s_larger);
 
-    bool BuildReferenceFromStates(const std::vector<PathPoint> &points);
+    bool BuildReferenceFromPathPoints(const std::vector<PathPoint> &points);
 
     bool UpdateBounds(Frame *frame);
 
-    const std::vector<ReferencePoint> &reference_points() const;
+    const std::vector<PathPoint> &reference_points() const;
 
     void SetSpline(const tk::spline &x_s, const tk::spline &y_s, double max_s);
 
@@ -57,7 +57,7 @@ class ReferenceLine {
     double GetCurvature(double s) const;
     double GetTheta(double s) const;
 
-    std::vector<ReferencePoint> reference_points_;
+    std::vector<PathPoint> reference_points_;
     tk::spline *x_s_, *y_s_;
     double max_s_;
 

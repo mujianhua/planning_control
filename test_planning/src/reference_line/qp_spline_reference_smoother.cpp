@@ -55,18 +55,17 @@ bool QPSplineReferenceLineSmoother::Smooth(
                   "reference points!");
     }
 
-    std::vector<double> x_list, y_list, s_list, theta_list, kappa_list;
-    if (!SegmetRawReferencePoints(&x_list, &y_list, &s_list, &theta_list,
-                                  &kappa_list)) {
+    // std::vector<double> x_list, y_list, s_list, theta_list, kappa_list;
+    if (!SegmetRawReferencePoints(smoothed_reference_line)) {
         ROS_ERROR(
             "[ReferenceLineSmoother] unable segment raw reference points!");
     }
 
-    tk::spline x_spline, y_spline;
-    x_spline.set_points(s_list, x_list);
-    y_spline.set_points(s_list, y_list);
-    double max_result_s = s_list.back() + 3.0;
-    smoothed_reference_line->SetSpline(x_spline, y_spline, max_result_s);
+    // tk::spline x_spline, y_spline;
+    // x_spline.set_points(s_list, x_list);
+    // y_spline.set_points(s_list, y_list);
+    // double max_result_s = s_list.back() + 3.0;
+    // smoothed_reference_line->SetSpline(x_spline, y_spline, max_result_s);
 
     if (!DPGraphSearch(frame, smoothed_reference_line)) {
         ROS_ERROR("unable add bounds by dp search");
@@ -121,9 +120,7 @@ bool QPSplineReferenceLineSmoother::SplineInterpolation() {
 }
 
 bool QPSplineReferenceLineSmoother::SegmetRawReferencePoints(
-    std::vector<double> *x_list, std::vector<double> *y_list,
-    std::vector<double> *s_list, std::vector<double> *theta_list,
-    std::vector<double> *kappa_list) {
+    ReferenceLine *reference_line) {
     if ((x_list_.size() != s_list_.size()) ||
         (y_list_.size() != s_list_.size())) {
         ROS_ERROR("Raw Path x y and s is not equal!");
@@ -134,28 +131,24 @@ bool QPSplineReferenceLineSmoother::SegmetRawReferencePoints(
     y_spline.set_points(s_list_, y_list_);
     double max_s = s_list_.back();
     double delta_s = 1.0;
-    s_list->emplace_back(0);
-    while (s_list->back() < max_s) {
-        s_list->emplace_back(s_list->back() + delta_s);
-    }
-    for (double length_on_ref_path : *s_list) {
-        double dx = x_spline.deriv(1, length_on_ref_path);
-        double dy = y_spline.deriv(1, length_on_ref_path);
-        double ddx = x_spline.deriv(2, length_on_ref_path);
-        double ddy = y_spline.deriv(2, length_on_ref_path);
-        double theta = atan2(dy, dx);
-        double curvature = (dx * ddy - dy * ddx) / pow(dx * dx + dy * dy, 1.5);
-        theta_list->emplace_back(theta);
-        kappa_list->emplace_back(curvature);
-        x_list->emplace_back(x_spline(length_on_ref_path));
-        y_list->emplace_back(y_spline(length_on_ref_path));
+    std::vector<double> s_list;
+    s_list.emplace_back(0);
+    while (s_list.back() < max_s) {
+        s_list.emplace_back(s_list.back() + delta_s);
     }
     std::vector<PathPoint> points;
-    for (size_t i = 0; i < x_list->size(); i++) {
-        PathPoint p{(*x_list)[i], (*y_list)[i], (*theta_list)[i],
-                    (*kappa_list)[i], (*s_list)[i]};
+    for (double s : s_list) {
+        double dx = x_spline.deriv(1, s);
+        double dy = y_spline.deriv(1, s);
+        double ddx = x_spline.deriv(2, s);
+        double ddy = y_spline.deriv(2, s);
+        double theta = atan2(dy, dx);
+        double curvature = (dx * ddy - dy * ddx) / pow(dx * dx + dy * dy, 1.5);
+        PathPoint p(x_spline(s), y_spline(s), theta, curvature, s);
         points.emplace_back(p);
     }
+    reference_line->BuildReferenceFromPathPoints(points);
+
     return true;
 }
 

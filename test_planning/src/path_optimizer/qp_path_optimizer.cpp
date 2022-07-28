@@ -93,9 +93,9 @@ void QPPathOptimizer::SetConstraintMatrix(
     b(2, 0) = 1;
     std::vector<Eigen::MatrixXd> c_list;
     for (int i = 0; i < n_ - 1; i++) {
-        const auto ref_k = ref_points[i].kappa();
-        const auto ds = ref_points[i + 1].s() - ref_points[i].s();
-        const auto ref_d_k = (ref_points[i + 1].kappa() - ref_k) / ds;
+        const auto ref_k = ref_points[i].kappa;
+        const auto ds = ref_points[i + 1].s - ref_points[i].s;
+        const auto ref_d_k = (ref_points[i + 1].kappa - ref_k) / ds;
         a(1, 0) = -pow(ref_k, 2);
         auto A = a * ds + Eigen::Matrix3d::Identity();
         auto B = b * ds;
@@ -177,7 +177,7 @@ void QPPathOptimizer::SetConstraintMatrix(
     if (FLAGS_constraint_end_heading && reference_line_->IsBlocked()) {
         double end_psi =
             math::ConstrainAngle(frame_->GetVehicleTargetState()->heading() -
-                                 ref_points.back().theta());
+                                 ref_points.back().theta);
         if (end_psi < 70 * M_PI / 180) {
             (*lower_bound)(end_state_idx + 1) = end_psi - 0.087; // e_psi
             (*upper_bound)(end_state_idx + 1) = end_psi + 0.087;
@@ -217,13 +217,13 @@ void QPPathOptimizer::GetOptimizedPath(
     for (int i = 0; i < n_; i++) {
         PathPoint tmp_point;
         ROS_DEBUG("l: %f", optimization_result(3 * i));
-        double angle = ref_points[i].theta();
+        double angle = ref_points[i].theta;
         tmp_point.x =
-            ref_points[i].x() + optimization_result(3 * i) *
-                                    cos(math::ConstrainAngle(angle + M_PI_2));
+            ref_points[i].x + optimization_result(3 * i) *
+                                  cos(math::ConstrainAngle(angle + M_PI_2));
         tmp_point.y =
-            ref_points[i].y() + optimization_result(3 * i) *
-                                    sin(math::ConstrainAngle(angle + M_PI_2));
+            ref_points[i].y + optimization_result(3 * i) *
+                                  sin(math::ConstrainAngle(angle + M_PI_2));
         tmp_point.kappa = optimization_result(3 * i + 2);
         tmp_point.theta =
             math::ConstrainAngle(angle + optimization_result(3 * i + 1));

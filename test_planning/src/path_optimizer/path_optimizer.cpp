@@ -117,7 +117,7 @@ bool PathOptimizer::OptimizePath(std::vector<PathPoint> *final_path) {
         ROS_ERROR("pre solving failed!");
     }
 
-    reference_line_->BuildReferenceFromStates(*final_path);
+    reference_line_->BuildReferenceFromPathPoints(*final_path);
     reference_line_->UpdateBounds(frame_);
 
     VehicleState2 start_state = *frame_->GetVehicleStartState();

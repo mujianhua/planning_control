@@ -20,7 +20,7 @@ ReferenceLine::ReferenceLine(const tk::spline &x_s, const tk::spline &y_s,
     *y_s_ = y_s;
 }
 
-const std::vector<ReferencePoint> &ReferenceLine::reference_points() const {
+const std::vector<PathPoint> &ReferenceLine::reference_points() const {
     return reference_points_;
 }
 
@@ -31,17 +31,17 @@ bool ReferenceLine::BuildReferenceLineBySpline(double delta_s_smaller,
     reference_points_.clear();
     double tmp_s = 0.0;
     while (tmp_s <= max_s_) {
-        ReferencePoint p((*x_s_)(tmp_s), (*y_s_)(tmp_s), tmp_s, GetTheta(tmp_s),
-                         GetCurvature(tmp_s));
+        PathPoint p((*x_s_)(tmp_s), (*y_s_)(tmp_s), GetTheta(tmp_s),
+                    GetCurvature(tmp_s), tmp_s);
         reference_points_.emplace_back(p);
         // TODO: ???
         if (FLAGS_enable_dynamic_segmentation) {
             double k_share =
-                fabs(p.kappa()) > large_k
+                fabs(p.kappa) > large_k
                     ? 1.0
-                    : fabs(p.kappa()) < small_k
+                    : fabs(p.kappa) < small_k
                           ? 0
-                          : (fabs(p.kappa()) - small_k) / (large_k - small_k);
+                          : (fabs(p.kappa) - small_k) / (large_k - small_k);
             tmp_s +=
                 delta_s_larger - k_share * (delta_s_larger - delta_s_smaller);
         } else {
@@ -51,14 +51,12 @@ bool ReferenceLine::BuildReferenceLineBySpline(double delta_s_smaller,
     return true;
 }
 
-bool ReferenceLine::BuildReferenceFromStates(
+bool ReferenceLine::BuildReferenceFromPathPoints(
     const std::vector<PathPoint> &points) {
     reference_points_.clear();
     std::vector<double> x_set, y_set, s_set;
     for (const auto &point : points) {
-        ReferencePoint tmp_point(point.x, point.y, point.s, point.theta,
-                                 point.kappa);
-        reference_points_.emplace_back(tmp_point);
+        reference_points_.emplace_back(point);
         x_set.emplace_back(point.x);
         y_set.emplace_back(point.y);
         s_set.emplace_back(point.s);
@@ -66,7 +64,7 @@ bool ReferenceLine::BuildReferenceFromStates(
     tk::spline x_s, y_s;
     x_s.set_points(s_set, x_set);
     y_s.set_points(s_set, y_set);
-    SetSpline(x_s, y_s, max_s_);
+    SetSpline(x_s, y_s, s_set.back());
 
     return true;
 }
@@ -82,17 +80,17 @@ bool ReferenceLine::UpdateBounds(Frame *frame) {
         VehicleState2 front_center, rear_center;
 
         // TrajectoryPoint front_center, rear_center;
-        front_center.x() = point.x() + FLAGS_front_length * cos(point.theta());
-        front_center.y() = point.y() + FLAGS_front_length * sin(point.theta());
-        front_center.heading() = point.theta();
-        rear_center.x() = point.x() + FLAGS_rear_length * cos(point.theta());
-        rear_center.y() = point.y() + FLAGS_rear_length * sin(point.theta());
-        rear_center.heading() = point.theta();
+        front_center.x() = point.x + FLAGS_front_length * cos(point.theta);
+        front_center.y() = point.y + FLAGS_front_length * sin(point.theta);
+        front_center.heading() = point.theta;
+        rear_center.x() = point.x + FLAGS_rear_length * cos(point.theta);
+        rear_center.y() = point.y + FLAGS_rear_length * sin(point.theta);
+        rear_center.heading() = point.theta;
 
         auto front_center_directional_projection = FindProjectPointByNewton(
-            front_center.x(), front_center.y(), point.s() + FLAGS_front_length);
+            front_center.x(), front_center.y(), point.s + FLAGS_front_length);
         auto rear_center_directional_projection = FindProjectPointByNewton(
-            rear_center.x(), rear_center.y(), point.s() + FLAGS_rear_length);
+            rear_center.x(), rear_center.y(), point.s + FLAGS_rear_length);
 
         auto front_bound = GetClearanceWithDirectionStrict(
             front_center_directional_projection, frame);
@@ -114,7 +112,7 @@ bool ReferenceLine::UpdateBounds(Frame *frame) {
         vehicle_bound.rear.set(rear_bound, rear_center);
         if (math::isEqual(front_bound[0], front_bound[1]) ||
             math::isEqual(rear_bound[0], rear_bound[1])) {
-            ROS_INFO("Path is blocked at s: %f", point.s());
+            ROS_INFO("Path is blocked at s: %f", point.s);
             block_bound_.reset(new VehicleBound2(vehicle_bound));
             break;
         }

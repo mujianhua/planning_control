@@ -240,7 +240,7 @@ int main(int argc, char **argv) {
         }
 
         std::vector<TrajectoryPoint> result_path;
-        std::vector<ReferencePoint> smoothed_reference_line;
+        std::vector<PathPoint> smoothed_reference_line;
         if (start_point_receive && end_point_receive &&
             reference_point_receive) {
             PathOptimizer path_optimizer(start_point, end_point, grid_map);
@@ -289,8 +289,8 @@ int main(int argc, char **argv) {
                                  ros_viz_tools::YELLOW, marker_frame_id);
         for (auto &point : smoothed_reference_line) {
             geometry_msgs::Point p;
-            p.x = point.x();
-            p.y = point.y();
+            p.x = point.x;
+            p.y = point.y;
             p.z = 1.0;
             smoothed_reference_line_marker.points.push_back(p);
         }
