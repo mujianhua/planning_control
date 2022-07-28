@@ -150,6 +150,12 @@ bool QPSplineReferenceLineSmoother::SegmetRawReferencePoints(
         x_list->emplace_back(x_spline(length_on_ref_path));
         y_list->emplace_back(y_spline(length_on_ref_path));
     }
+    std::vector<PathPoint> points;
+    for (size_t i = 0; i < x_list->size(); i++) {
+        PathPoint p{(*x_list)[i], (*y_list)[i], (*theta_list)[i],
+                    (*kappa_list)[i], (*s_list)[i]};
+        points.emplace_back(p);
+    }
     return true;
 }
 
