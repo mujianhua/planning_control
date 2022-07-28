@@ -30,6 +30,8 @@ bool isEqual(double a, double b);
 
 double Distance(const TrajectoryPoint &p1, const TrajectoryPoint &p2);
 
+double Distance(const ReferencePoint &point, const VehicleState2 &state);
+
 double Distance(const double &x1, const double &y1, const double &x2,
                 const double &y2);
 

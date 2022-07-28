@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="serial_demo" type="test_serial" name="test_serial" output="screen" />
+
+</launch>

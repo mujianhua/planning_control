@@ -17,7 +17,7 @@ class ReferenceLineSmoother {
     ReferenceLineSmoother() = default;
 
     virtual bool Smooth(std::vector<ReferencePoint> &raw_reference_points,
-                        ReferenceLine *smoothed_reference_line,
+                        ReferenceLine &smoothed_reference_line,
                         Frame *frame) = 0;
 
     virtual const std::string Name() const = 0;

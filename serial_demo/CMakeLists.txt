@@ -14,7 +14,7 @@ catkin_package(
 )
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -23,5 +23,15 @@ add_executable(serial_demo src/serial_demo.cpp)
 add_dependencies(serial_demo ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
  
 target_link_libraries(serial_demo
+  ${catkin_LIBRARIES}
+)
+
+set (SRC
+      src/wit_serial.cpp)
+add_executable(test_serial src/test_serial.cpp ${SRC})
+ 
+add_dependencies(test_serial ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ 
+target_link_libraries(test_serial
   ${catkin_LIBRARIES}
 )

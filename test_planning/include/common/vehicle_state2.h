@@ -16,11 +16,17 @@ class VehicleState2 {
 
     const double &heading() const;
 
+    const double &lateral_error() const;
+
+    const double &heading_error() const;
+
     double &x();
 
     double &y();
 
     double &heading();
+
+    void SetInitialError(double lateral_error, double heading_error);
 
   private:
     double x_{}, y_{}, heading_{};

@@ -1,6 +1,7 @@
 // serial_demo.cpp
 #include <iostream>
 #include <queue>
+#include <vector>
 #include <ros/ros.h>
 #include <serial/serial.h>
 
@@ -35,7 +36,6 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    std::queue<int> q[1024];
     ros::Rate loop_rate(100);
     while (ros::ok()) {
         //获取缓冲区内的字节数

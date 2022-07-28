@@ -15,14 +15,21 @@ class Frame {
   public:
     Frame() = default;
 
-    Frame(const VehicleState2 &vehicle_state, const Map &map);
+    Frame(const VehicleState2 &vehicle_state, const VehicleState2 &target_state,
+          const Map &map);
 
     const VehicleState2 *GetVehicleStartState() const;
+
+    const VehicleState2 *GetVehicleTargetState() const;
+
+    void UpdateVehicleStartState(VehicleState2 state);
+
+    void UpdateVehicleTargetState(VehicleState2 state);
 
     const Map *GridMap() const;
 
   private:
-    VehicleState2 vehicle_state_;
+    VehicleState2 vehicle_state_, target_state_;
     Map grid_map_;
 };
 

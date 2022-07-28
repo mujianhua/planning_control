@@ -46,6 +46,7 @@ set(PATH_OPTIMIZER_SRC
         src/data_struct/reference_path.cpp
         src/data_struct/reference_path_impl.cpp
         src/path_optimizer/path_optimizer.cpp
+        src/path_optimizer/qp_path_optimizer.cpp
         src/path_smoother/reference_path_smoother.cpp
         src/path_smoother/tension_smoother.cpp
         src/common/frame.cpp

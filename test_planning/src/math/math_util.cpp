@@ -20,6 +20,10 @@ double Distance(const double &x1, const double &y1, const double &x2,
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
+double Distance(const ReferencePoint &point, const VehicleState2 &state) {
+    return sqrt(pow(point.x() - state.x(), 2) + pow(point.y() - state.y(), 2));
+}
+
 double GetHeading(const tk::spline &x_s, const tk::spline &y_s, double s) {
     double x_d1 = x_s.deriv(1, s);
     double y_d1 = y_s.deriv(1, s);

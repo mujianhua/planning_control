@@ -37,7 +37,7 @@ const std::string QPSplineReferenceLineSmoother::Name() const { return name_; }
 
 bool QPSplineReferenceLineSmoother::Smooth(
     std::vector<ReferencePoint> &raw_reference_points,
-    ReferenceLine *smoothed_reference_line, Frame *frame) {
+    ReferenceLine &smoothed_reference_line, Frame *frame) {
     if (raw_reference_points.size() < 5) {
         ROS_ERROR("[ReferenceLineSmoother] the initial reference points is too "
                   "little!");
@@ -61,11 +61,14 @@ bool QPSplineReferenceLineSmoother::Smooth(
     x_spline.set_points(s_list, x_list);
     y_spline.set_points(s_list, y_list);
     double max_result_s = s_list.back() + 3.0;
-    smoothed_reference_line =
-        new ReferenceLine(x_spline, y_spline, max_result_s);
+    smoothed_reference_line.SetSpline(x_spline, y_spline, max_result_s);
 
     if (!DPGraphSearch(frame, smoothed_reference_line)) {
         ROS_ERROR("unable add bounds by dp search");
+    }
+
+    if (!Smooth(smoothed_reference_line)) {
+        ROS_ERROR("...");
     }
 
     return true;
@@ -146,25 +149,25 @@ bool QPSplineReferenceLineSmoother::SegmetRawReferencePoints(
 }
 
 bool QPSplineReferenceLineSmoother::DPGraphSearch(
-    Frame *frame, ReferenceLine *reference_line) {
+    Frame *frame, ReferenceLine &reference_line) {
     static const double search_threshold = FLAGS_car_width / 2.0 + 0.2;
     dp_layers_s_list_.clear();
     layers_bounds_.clear();
-    double search_ds = reference_line->GetLength() > 6.0
+    double search_ds = reference_line.GetLength() > 6.0
                            ? FLAGS_search_longitudial_spacing
                            : 0.5;
 
-    ReferencePoint start_prj_point = reference_line->FindProjectPoint(
+    ReferencePoint start_prj_point = reference_line.FindProjectPoint(
         frame->GetVehicleStartState()->x(), frame->GetVehicleStartState()->y());
 
     double tmp_s = start_prj_point.s();
-    while (tmp_s < reference_line->GetLength()) {
+    while (tmp_s < reference_line.GetLength()) {
         // 以车辆投影点为起点开始搜索平滑！
         dp_layers_s_list_.emplace_back(tmp_s);
         tmp_s += search_ds;
     }
 
-    dp_layers_s_list_.emplace_back(reference_line->GetLength());
+    dp_layers_s_list_.emplace_back(reference_line.GetLength());
     if (dp_layers_s_list_.empty())
         return false;
     auto target_s = dp_layers_s_list_.back();
@@ -175,7 +178,7 @@ bool QPSplineReferenceLineSmoother::DPGraphSearch(
                   "searching");
         return false;
     }
-    double vehicle_l_wrt_smoothed_ref = vehicle_local.y();
+    vehicle_l_wrt_smoothed_ref_ = vehicle_local.y();
     int start_lateral_index =
         static_cast<int>((FLAGS_search_lateral_range + vehicle_local.y()) /
                          FLAGS_search_lateral_spacing);
@@ -186,7 +189,7 @@ bool QPSplineReferenceLineSmoother::DPGraphSearch(
         samples.emplace_back(std::vector<DP_POINT>());
 
         double cur_s = dp_layers_s_list_[i];
-        ReferencePoint ref_point = reference_line->GetRerencePoint(cur_s);
+        ReferencePoint ref_point = reference_line.GetRerencePoint(cur_s);
 
         int lateral_index = 0;
         double cur_l = -FLAGS_search_lateral_range;
@@ -276,7 +279,7 @@ bool QPSplineReferenceLineSmoother::DPGraphSearch(
             static const double check_limit = 6.0;
             double upper_bound = check_s + ptr->rough_upper_bound;
             double lower_bound = -check_s + ptr->rough_lower_bound;
-            ReferencePoint ref_point = reference_line->GetRerencePoint(ptr->s);
+            ReferencePoint ref_point = reference_line.GetRerencePoint(ptr->s);
             while (upper_bound < check_limit) {
                 grid_map::Position pos;
                 pos(0) =
@@ -362,7 +365,7 @@ void QPSplineReferenceLineSmoother::DPCalculateCost(
         point.cost = min_cost;
 }
 
-bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine *reference_line) {
+bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine &reference_line) {
     auto point_num = dp_layers_s_list_.size();
     if (point_num < 4) {
         ROS_WARN("ref is too short: %lu, quit POST SMOOTHING.", point_num);
@@ -373,7 +376,110 @@ bool QPSplineReferenceLineSmoother::Smooth(ReferenceLine *reference_line) {
     solver.settings()->setWarmStart(true);
     solver.data()->setNumberOfVariables(3 * point_num);
     solver.data()->setNumberOfConstraints(3 * point_num - 2);
+
+    Eigen::SparseMatrix<double> hessian;
+    SetPostHessianMatrix(&hessian);
+    Eigen::VectorXd gradient = Eigen::VectorXd::Zero(3 * point_num);
+    Eigen::SparseMatrix<double> linear_matrix;
+    Eigen::VectorXd lower_bound;
+    Eigen::VectorXd upper_bound;
+    SetPostConstraintMatrix(&linear_matrix, &lower_bound, &upper_bound);
+
+    if (!solver.data()->setHessianMatrix(hessian))
+        return false;
+    if (!solver.data()->setGradient(gradient))
+        return false;
+    if (!solver.data()->setLinearConstraintsMatrix(linear_matrix))
+        return false;
+    if (!solver.data()->setLowerBound(lower_bound))
+        return false;
+    if (!solver.data()->setUpperBound(upper_bound))
+        return false;
+
+    if (!solver.initSolver())
+        return false;
+    auto status = solver.solveProblem();
+    const auto &qpsolution = solver.getSolution();
+
+    std::vector<double> x_list, y_list, s_list;
+
+    double s = 0;
+    for (int i = 0; i < point_num; i++) {
+        const double ref_s = dp_layers_s_list_[i];
+        ReferencePoint ref_point = reference_line.GetRerencePoint(ref_s);
+        double ref_dir = ref_point.theta();
+        x_list.push_back(ref_point.x() + qpsolution(i) * cos(ref_dir + M_PI_2));
+        y_list.push_back(ref_point.y() + qpsolution(i) * sin(ref_dir + M_PI_2));
+        if (i > 0) {
+            s += sqrt(pow(x_list[i] - x_list[i - 1], 2) +
+                      pow(y_list[i] - y_list[i - 1], 2));
+        }
+        s_list.push_back(s);
+    }
+    tk::spline new_x_s, new_y_s;
+    new_x_s.set_points(s_list, x_list);
+    new_y_s.set_points(s_list, y_list);
+    reference_line.SetSpline(new_x_s, new_y_s, s_list.back());
+
     return true;
+}
+
+void QPSplineReferenceLineSmoother::SetPostHessianMatrix(
+    Eigen::SparseMatrix<double> *matrix_h) {
+    size_t size = dp_layers_s_list_.size();
+    const size_t matrix_size = 3 * size;
+    Eigen::MatrixXd hessian =
+        Eigen::MatrixXd::Constant(matrix_size, matrix_size, 0);
+    static const double weight_l = 1;
+    static const double weight_dl = 100;
+    static const double weight_ddl = 1000;
+    for (int i = 0; i < size; ++i) {
+        hessian(i, i) = weight_l;
+        hessian(size + i, size + i) = weight_dl;
+        hessian(size * 2 + i, size * 2 + i) = weight_ddl;
+    }
+    *matrix_h = hessian.sparseView();
+}
+
+void QPSplineReferenceLineSmoother::SetPostConstraintMatrix(
+    Eigen::SparseMatrix<double> *matrix_constraints,
+    Eigen::VectorXd *lower_bound, Eigen::VectorXd *upper_bound) const {
+    size_t size = dp_layers_s_list_.size();
+    const int x_index = 0;
+    const int dx_index = x_index + size;
+    const int ddx_index = dx_index + size;
+    const int cons_x_index = 0;
+    const int cons_dx_x_index = cons_x_index + size;
+    const int cons_ddx_dx_index = cons_dx_x_index + size - 1;
+    Eigen::MatrixXd cons = Eigen::MatrixXd::Zero(3 * size - 2, 3 * size);
+    // l range
+    for (int i = 0; i < size; ++i) {
+        cons(i, i) = 1;
+    }
+    // dl range
+    for (int i = 0; i < size - 1; ++i) {
+        cons(cons_dx_x_index + i, x_index + i) = -1;
+        cons(cons_dx_x_index + i, x_index + i + 1) = 1;
+        cons(cons_dx_x_index + i, dx_index + i) =
+            -(dp_layers_s_list_[i + 1] - dp_layers_s_list_[i]);
+    }
+    // ddl range
+    for (int i = 0; i < size - 1; ++i) {
+        cons(cons_ddx_dx_index + i, dx_index + i) = -1;
+        cons(cons_ddx_dx_index + i, dx_index + i + 1) = 1;
+        cons(cons_ddx_dx_index + i, ddx_index + i) =
+            -(dp_layers_s_list_[i + 1] - dp_layers_s_list_[i]);
+    }
+    *matrix_constraints = cons.sparseView();
+    // bounds
+    *lower_bound = Eigen::VectorXd::Zero(3 * size - 2);
+    *upper_bound = Eigen::VectorXd::Zero(3 * size - 2);
+    (*lower_bound)(0) = vehicle_l_wrt_smoothed_ref_;
+    (*upper_bound)(0) = vehicle_l_wrt_smoothed_ref_;
+    for (int i = 1; i < size; ++i) {
+        (*lower_bound)(i) = layers_bounds_[i].first;
+        (*upper_bound)(i) = layers_bounds_[i].second;
+    }
 }
 
 } // namespace planning

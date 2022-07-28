@@ -20,6 +20,7 @@
 #include <tf/transform_datatypes.h>
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
+#include "data_struct/data_struct.h"
 #include "eigen3/Eigen/Dense"
 #include "math/math_util.h"
 #include "opencv2/core/core.hpp"
@@ -173,7 +174,7 @@ int main(int argc, char **argv) {
     ros_viz_tools::RosVizTools markers(nh, "markers");
     std::string marker_frame_id = "/map";
 
-    test();
+    // test();
 
     ros::Rate rate(30.0);
     while (ros::ok()) {
@@ -255,6 +256,13 @@ int main(int argc, char **argv) {
             start_point_receive = end_point_receive = reference_point_receive =
                 false;
         }
+        std::vector<PathPoint> optimization_path;
+        for (const auto &point : result_path) {
+            PathPoint p(point.path_point.x, point.path_point.y,
+                        point.path_point.theta, point.path_point.kappa,
+                        point.path_point.s);
+            optimization_path.emplace_back(p);
+        }
 
         // visualize result path
         ros_viz_tools::ColorRGBA path_color;
@@ -264,13 +272,13 @@ int main(int argc, char **argv) {
         visualization_msgs::Marker result_path_marker =
             markers.newLineStrip(FLAGS_car_width, "optimized path", id++,
                                  path_color, marker_frame_id);
-        for (int i = 0; i < result_path.size(); i++) {
+        for (const auto &point : optimization_path) {
             geometry_msgs::Point p;
-            p.x = result_path[i].path_point.x;
-            p.y = result_path[i].path_point.y;
+            p.x = point.x;
+            p.y = point.y;
             p.z = 1.0;
             result_path_marker.points.push_back(p);
-            const auto k = result_path[i].path_point.kappa;
+            const auto k = point.kappa;
             path_color.a = std::min(fabs(k) / 0.15, 1.0);
             path_color.a = std::max((float)0.1, path_color.a);
             result_path_marker.colors.emplace_back(path_color);

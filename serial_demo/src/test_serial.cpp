@@ -1,8 +1,12 @@
 #include <iostream>
 #include <queue>
+#include <string>
+#include <vector>
 #include <ros/ros.h>
 #include <serial/serial.h>
-#include <string>
+#include "serial_demo/wit_serial.h"
+
+using namespace mujianhua::serial;
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "test_serial");
@@ -14,8 +18,6 @@ int main(int argc, char **argv) {
     sp.setPort("/dev/ttyUSB0");
     sp.setBaudrate(9600);
     sp.setTimeout(to);
-
-    std::queue<u_int8_t> q[1024];
 
     try {
         sp.open();
@@ -30,14 +32,22 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    ros::Rate loop_rate(100);
+    WitSerial wit_serial;
+    ros::Rate loop_rate(10);
     while (ros::ok()) {
         bool wait_read = sp.waitReadable();
         if (wait_read) {
+            std::vector<uint8_t> buffer;
             size_t n = sp.available();
             if (n != 0) {
-                n = sp.read(&q, n);
+                n = sp.read(buffer, n);
             }
+            ROS_INFO("buffer size: %lu", buffer.size());
+            wit_serial.Update(&buffer);
+            wit_serial.ProcessData();
         }
+        loop_rate.sleep();
     }
+    sp.close();
+    return 0;
 }
