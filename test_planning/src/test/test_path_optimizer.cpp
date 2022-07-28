@@ -245,6 +245,7 @@ int main(int argc, char **argv) {
         }
 
         std::vector<TrajectoryPoint> result_path;
+        std::vector<ReferencePoint> smoothed_reference_line;
         if (start_point_receive && end_point_receive &&
             reference_point_receive) {
             PathOptimizer path_optimizer(start_point, end_point, grid_map);
@@ -252,6 +253,8 @@ int main(int argc, char **argv) {
             if (path_optimizer.Solve(reference_path, &result_path)) {
                 ROS_INFO("Path optimize success!");
             }
+            smoothed_reference_line =
+                path_optimizer.GetReferenceLine().reference_points();
 
             start_point_receive = end_point_receive = reference_point_receive =
                 false;
@@ -284,6 +287,70 @@ int main(int argc, char **argv) {
             result_path_marker.colors.emplace_back(path_color);
         }
         markers.append(result_path_marker);
+
+        // visualize smoothed reference line
+        visualization_msgs::Marker smoothed_reference_line_marker =
+            markers.newLineStrip(0.07, "smoothed reference line", id++,
+                                 ros_viz_tools::YELLOW, marker_frame_id);
+        for (size_t i = 0; i != smoothed_reference_line.size(); ++i) {
+            geometry_msgs::Point p;
+            p.x = smoothed_reference_line[i].x();
+            p.y = smoothed_reference_line[i].y();
+            p.z = 1.0;
+            smoothed_reference_line_marker.points.push_back(p);
+        }
+        markers.append(smoothed_reference_line_marker);
+
+        // visualize vehicle geometry
+        ros_viz_tools::ColorRGBA vehicle_color = ros_viz_tools::GRAY;
+        vehicle_color.a = 0.5;
+        visualization_msgs::Marker vehicle_geometry_marker =
+            markers.newLineList(0.03, "vehicle", id++, vehicle_color,
+                                marker_frame_id);
+        static const double length{FLAGS_car_length};
+        static const double width{FLAGS_car_width};
+        static const double rear_d{FLAGS_rear_length};
+        static const double front_d{FLAGS_front_length};
+        for (size_t i = 0; i != optimization_path.size(); ++i) {
+            double heading = optimization_path[i].theta;
+            PathPoint p1, p2, p3, p4;
+            p1.x = front_d;
+            p1.y = width / 2;
+            p2.x = front_d;
+            p2.y = -width / 2;
+            p3.x = rear_d;
+            p3.y = -width / 2;
+            p4.x = rear_d;
+            p4.y = width / 2;
+            auto tmp_relto = optimization_path[i];
+            tmp_relto.theta = heading;
+            p1 = math::Local2Global(tmp_relto, p1);
+            p2 = math::Local2Global(tmp_relto, p2);
+            p3 = math::Local2Global(tmp_relto, p3);
+            p4 = math::Local2Global(tmp_relto, p4);
+            geometry_msgs::Point pp1, pp2, pp3, pp4;
+            pp1.x = p1.x;
+            pp1.y = p1.y;
+            pp1.z = 0.1;
+            pp2.x = p2.x;
+            pp2.y = p2.y;
+            pp2.z = 0.1;
+            pp3.x = p3.x;
+            pp3.y = p3.y;
+            pp3.z = 0.1;
+            pp4.x = p4.x;
+            pp4.y = p4.y;
+            pp4.z = 0.1;
+            vehicle_geometry_marker.points.push_back(pp1);
+            vehicle_geometry_marker.points.push_back(pp2);
+            vehicle_geometry_marker.points.push_back(pp2);
+            vehicle_geometry_marker.points.push_back(pp3);
+            vehicle_geometry_marker.points.push_back(pp3);
+            vehicle_geometry_marker.points.push_back(pp4);
+            vehicle_geometry_marker.points.push_back(pp4);
+            vehicle_geometry_marker.points.push_back(pp1);
+        }
+        markers.append(vehicle_geometry_marker);
 
         markers.publish();
 

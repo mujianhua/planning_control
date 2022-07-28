@@ -235,8 +235,8 @@ bool PathOptimizer::OptimizePath2(std::vector<PathPoint> *final_path) {
     return true;
 }
 
-const ReferencePath &PathOptimizer::GetReferencePath() const {
-    return *reference_path_;
+const ReferenceLine &PathOptimizer::GetReferenceLine() const {
+    return reference_line_;
 }
 
 } // namespace planning

@@ -128,6 +128,16 @@ ReferencePoint Global2Local(const ReferencePoint &reference_point,
         reference_point.s(), vehicle_state.heading() - reference_point.theta()};
 }
 
+PathPoint Local2Global(const PathPoint &reference_point,
+                       const PathPoint &vehicle_point) {
+    double x = vehicle_point.x * cos(reference_point.theta) -
+               vehicle_point.y * sin(reference_point.theta) + reference_point.x;
+    double y = vehicle_point.x * sin(reference_point.theta) +
+               vehicle_point.y * cos(reference_point.theta) + reference_point.y;
+    double theta = reference_point.theta + vehicle_point.theta;
+    return {x, y, theta, vehicle_point.kappa, vehicle_point.s};
+}
+
 } // namespace math
 } // namespace planning
 } // namespace mujianhua

@@ -5,6 +5,7 @@
 #include "common/vehicle_state2.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
+#include "data_struct/data_struct.h"
 #include "gflags/gflags.h"
 #include "reference_line/reference_point.h"
 
@@ -52,6 +53,9 @@ TrajectoryPoint Global2Local(const TrajectoryPoint &reference,
 
 ReferencePoint Global2Local(const ReferencePoint &reference_point,
                             const VehicleState2 &vehicle_state);
+
+PathPoint Local2Global(const PathPoint &reference_point,
+                       const PathPoint &vehicle_point);
 
 } // namespace math
 } // namespace planning

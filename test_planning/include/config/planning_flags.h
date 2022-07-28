@@ -11,6 +11,8 @@
 namespace mujianhua {
 namespace planning {
 
+DECLARE_double(car_length);
+
 DECLARE_double(car_width);
 
 DECLARE_double(front_length);

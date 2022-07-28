@@ -8,6 +8,8 @@
 namespace mujianhua {
 namespace planning {
 
+DEFINE_double(car_length, 4.9, "");
+
 DEFINE_double(car_width, 2.0, "");
 
 DEFINE_double(search_longitudial_spacing, 1.5,
