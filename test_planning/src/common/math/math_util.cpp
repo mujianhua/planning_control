@@ -1,6 +1,6 @@
 #include "common/math/math_util.h"
 #include <cmath>
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"
 #include "reference_line/reference_point.h"
 
@@ -20,7 +20,7 @@ double Distance(const double &x1, const double &y1, const double &x2,
     return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
 }
 
-double Distance(const ReferencePoint &point, const VehicleState2 &state) {
+double Distance(const ReferencePoint &point, const VehicleState &state) {
     return sqrt(pow(point.x() - state.x(), 2) + pow(point.y() - state.y(), 2));
 }
 
@@ -44,7 +44,7 @@ TrajectoryPoint Global2Local(const TrajectoryPoint &reference,
 }
 
 ReferencePoint Global2Local(const ReferencePoint &reference_point,
-                            const VehicleState2 &vehicle_state) {
+                            const VehicleState &vehicle_state) {
     double dx = vehicle_state.x() - reference_point.x();
     double dy = vehicle_state.y() - reference_point.y();
     return {

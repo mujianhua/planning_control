@@ -4,12 +4,11 @@
 #include "common/frame.h"
 #include "common/math/math_util.h"
 #include "common/planning_dependency_injector.h"
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"
 #include "path_optimizer/qp_path_optimizer.h"
 #include "reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
-#include "tools/vehicle_state.h"
 
 namespace mujianhua {
 namespace planning {
@@ -18,15 +17,13 @@ PathOptimizer::PathOptimizer(const PathPoint &start_point,
                              const PathPoint &end_point,
                              const grid_map::GridMap &map)
     : grid_map_(new Map{map}) {
-    VehicleState2 start_state(start_point.x, start_point.y, start_point.theta);
+    VehicleState start_state(start_point.x, start_point.y, start_point.theta);
 
     start_state_ =
-        new VehicleState2(start_point.x, start_point.y, start_point.theta);
-    target_state_ =
-        new VehicleState2(end_point.x, end_point.y, end_point.theta);
+        new VehicleState(start_point.x, start_point.y, start_point.theta);
+    target_state_ = new VehicleState(end_point.x, end_point.y, end_point.theta);
 
     reference_line_ = new ReferenceLine();
-
     reference_line_smoother_ =
         std::make_shared<QPSplineReferenceLineSmoother>();
 }
@@ -39,19 +36,21 @@ bool PathOptimizer::Solve(const std::vector<PathPoint> &raw_reference_points,
 
     frame_ = new Frame(*start_state_, *target_state_, *grid_map_);
 
-    ROS_DEBUG("reference line smoother is %s",
-              reference_line_smoother_->Name().c_str());
+    ROS_INFO("reference line smoother is %s",
+             reference_line_smoother_->Name().c_str());
     reference_line_->Clear();
     reference_line_smoother_->Smooth(raw_reference_points, reference_line_,
                                      frame_);
+    ROS_DEBUG("[PathOptimizer] smooth reference line is done.");
 
     if (!ProcessReferenceLine()) {
         ROS_ERROR("process reference path FAILED.");
     }
+    ROS_DEBUG("[PathOptimizer] process smoothed reference line is done.");
 
     std::vector<PathPoint> optimization_path;
-
     OptimizePath(&optimization_path);
+    ROS_DEBUG("[PathOptimizer] optimize path is done.");
 
     final_path->clear();
     for (const auto &point : optimization_path) {
@@ -89,7 +88,7 @@ void PathOptimizer::ProcessInitState() {
         first_point_local.y() < 0.0 ? min_distance : -min_distance;
     double initial_heading_error = math::ConstrainAngle(
         frame_->GetVehicleStartState()->heading() - init_point.theta());
-    VehicleState2 start_state = *frame_->GetVehicleStartState();
+    VehicleState start_state = *frame_->GetVehicleStartState();
     // TODO:
     start_state.SetInitialError(initial_offset, initial_heading_error);
     frame_->UpdateVehicleStartState(start_state);
@@ -119,10 +118,10 @@ bool PathOptimizer::OptimizePath(std::vector<PathPoint> *final_path) {
     reference_line_->BuildReferenceFromPathPoints(*final_path);
     reference_line_->UpdateBounds(frame_);
 
-    VehicleState2 start_state = *frame_->GetVehicleStartState();
+    VehicleState start_state = *frame_->GetVehicleStartState();
     start_state.SetInitialError(0.0, 0.0);
     frame_->UpdateVehicleStartState(start_state);
-    VehicleState2 target_state = *frame_->GetVehicleTargetState();
+    VehicleState target_state = *frame_->GetVehicleTargetState();
     target_state.Update(final_path->back().x, final_path->back().y,
                         final_path->back().theta);
     frame_->UpdateVehicleTargetState(target_state);

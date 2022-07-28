@@ -4,7 +4,7 @@
 #include "common/data_struct.h"
 #include "common/math/math_util.h"
 #include "common/spline.h"
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "reference_line/reference_point.h"
 
 namespace mujianhua {
@@ -77,7 +77,7 @@ bool ReferenceLine::UpdateBounds(Frame *frame) {
     bounds_.clear();
     VehicleBound2 vehicle_bound;
     for (const auto &point : reference_points_) {
-        VehicleState2 front_center, rear_center;
+        VehicleState front_center, rear_center;
 
         // TrajectoryPoint front_center, rear_center;
         front_center.x() = point.x + FLAGS_front_length * cos(point.theta);

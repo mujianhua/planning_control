@@ -3,7 +3,7 @@
 #include <cmath>
 #include "common/data_struct.h"
 #include "common/spline.h"
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "gflags/gflags.h"
@@ -31,7 +31,7 @@ bool isEqual(double a, double b);
 
 double Distance(const TrajectoryPoint &p1, const TrajectoryPoint &p2);
 
-double Distance(const ReferencePoint &point, const VehicleState2 &state);
+double Distance(const ReferencePoint &point, const VehicleState &state);
 
 double Distance(const double &x1, const double &y1, const double &x2,
                 const double &y2);
@@ -42,7 +42,7 @@ TrajectoryPoint Global2Local(const TrajectoryPoint &reference,
                              const TrajectoryPoint &target);
 
 ReferencePoint Global2Local(const ReferencePoint &reference_point,
-                            const VehicleState2 &vehicle_state);
+                            const VehicleState &vehicle_state);
 
 PathPoint Local2Global(const PathPoint &reference_point,
                        const PathPoint &vehicle_point);

@@ -141,9 +141,10 @@ void QPPathOptimizer::SetConstraintMatrix(
         frame_->GetVehicleStartState()->lateral_error();
     const auto init_heading_error =
         frame_->GetVehicleStartState()->heading_error();
+
     // TODO: kappa
     x0 << init_lateral_error, init_heading_error, 0.0;
-    ROS_DEBUG("initial state: l: %f, e_psi:%f, k:%f", x0(0), x0(1), x0(2));
+
     lower_bound->block(0, 0, 3, 1) = -x0;
     upper_bound->block(0, 0, 3, 1) = -x0;
     for (int i = 0; i < n_ - 1; i++) {

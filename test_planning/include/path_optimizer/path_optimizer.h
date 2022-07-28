@@ -11,14 +11,13 @@
 #include "common/data_struct.h"
 #include "common/frame.h"
 #include "common/planning_dependency_injector.h"
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"
 #include "config/planning_flags.h"
 #include "glog/logging.h"
 #include "reference_line/qp_spline_reference_smoother.h"
 #include "reference_line/reference_line.h"
 #include "tools/map.h"
-#include "tools/vehicle_state.h"
 
 namespace mujianhua {
 namespace planning {
@@ -55,7 +54,7 @@ class PathOptimizer {
     ReferenceLine *reference_line_;
     Frame *frame_;
 
-    VehicleState2 *start_state_, *target_state_;
+    VehicleState *start_state_, *target_state_;
 };
 
 } // namespace planning

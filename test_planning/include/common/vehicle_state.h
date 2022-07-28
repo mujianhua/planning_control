@@ -3,10 +3,10 @@
 namespace mujianhua {
 namespace planning {
 
-class VehicleState2 {
+class VehicleState {
   public:
-    VehicleState2() = default;
-    VehicleState2(double x, double y, double heading);
+    VehicleState() = default;
+    VehicleState(double x, double y, double heading);
 
     void Update(const double &x, const double &y, const double &heading);
 

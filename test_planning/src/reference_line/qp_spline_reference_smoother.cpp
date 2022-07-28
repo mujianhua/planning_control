@@ -54,26 +54,26 @@ bool QPSplineReferenceLineSmoother::Smooth(
         ROS_ERROR("[ReferenceLineSmoother] unable spline interpolate for raw "
                   "reference points!");
     }
+    ROS_DEBUG("[QPSplineReferenceLineSmoother] raw reference points spline "
+              "interpolation done.");
 
-    // std::vector<double> x_list, y_list, s_list, theta_list, kappa_list;
     if (!SegmetRawReferencePoints(smoothed_reference_line)) {
         ROS_ERROR(
             "[ReferenceLineSmoother] unable segment raw reference points!");
     }
-
-    // tk::spline x_spline, y_spline;
-    // x_spline.set_points(s_list, x_list);
-    // y_spline.set_points(s_list, y_list);
-    // double max_result_s = s_list.back() + 3.0;
-    // smoothed_reference_line->SetSpline(x_spline, y_spline, max_result_s);
+    ROS_DEBUG(
+        "[QPSplineReferenceLineSmoother] segment reference points is done.");
 
     if (!DPGraphSearch(frame, smoothed_reference_line)) {
         ROS_ERROR("unable add bounds by dp search");
     }
+    ROS_DEBUG("[QPSplineReferenceLineSmoother] DP search is done.");
 
     if (!Smooth(smoothed_reference_line)) {
         ROS_ERROR("...");
     }
+    ROS_DEBUG(
+        "[QPSplineReferenceLineSmoother] smoothed reference line is done.");
 
     return true;
 }

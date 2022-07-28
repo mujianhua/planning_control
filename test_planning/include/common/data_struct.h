@@ -7,7 +7,7 @@
 
 #include <cfloat>
 #include <vector>
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"
 
 namespace mujianhua {
@@ -71,7 +71,7 @@ struct VehicleBound2 {
             lb = bounds[1];
         }
         void set(const std::vector<double> &bounds,
-                 const VehicleState2 &center) {
+                 const VehicleState &center) {
             ub = bounds[0];
             lb = bounds[1];
             x = center.x();

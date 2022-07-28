@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "common/vehicle_state2.h"
+#include "common/vehicle_state.h"
 #include "tools/map.h"
 
 namespace mujianhua {
@@ -15,21 +15,21 @@ class Frame {
   public:
     Frame() = default;
 
-    Frame(const VehicleState2 &vehicle_state, const VehicleState2 &target_state,
+    Frame(const VehicleState &vehicle_state, const VehicleState &target_state,
           const Map &map);
 
-    const VehicleState2 *GetVehicleStartState() const;
+    const VehicleState *GetVehicleStartState() const;
 
-    const VehicleState2 *GetVehicleTargetState() const;
+    const VehicleState *GetVehicleTargetState() const;
 
-    void UpdateVehicleStartState(VehicleState2 state);
+    void UpdateVehicleStartState(VehicleState state);
 
-    void UpdateVehicleTargetState(VehicleState2 state);
+    void UpdateVehicleTargetState(VehicleState state);
 
     const Map *GridMap() const;
 
   private:
-    VehicleState2 vehicle_state_, target_state_;
+    VehicleState vehicle_state_, target_state_;
     Map grid_map_;
 };
 
