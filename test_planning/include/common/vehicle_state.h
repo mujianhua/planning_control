@@ -10,6 +10,8 @@ class VehicleState {
 
     void Update(const double &x, const double &y, const double &heading);
 
+    void SetInitialError(double lateral_error, double heading_error);
+
     const double &x() const;
 
     const double &y() const;
@@ -25,8 +27,6 @@ class VehicleState {
     double &y();
 
     double &heading();
-
-    void SetInitialError(double lateral_error, double heading_error);
 
   private:
     double x_{}, y_{}, heading_{};

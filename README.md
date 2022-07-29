@@ -11,6 +11,7 @@ Dependence and Reference
 * [Apollo](https://github.com/ApolloAuto/apollo)
 * [Ipopt](https://github.com/coin-or/Ipopt)
 * [spline](https://github.com/ttk592/spline)
+* [path_optimizer](https://github.com/LiJiangnanBit/path_optimizer)
 
 # Planning
 无人车路径规划

@@ -13,7 +13,9 @@ namespace mujianhua {
 namespace planning {
 
 namespace {
+
 struct DP_POINT;
+
 } // namespace
 
 class QPSplineReferenceLineSmoother : public ReferenceLineSmoother {

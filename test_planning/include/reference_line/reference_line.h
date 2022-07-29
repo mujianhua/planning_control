@@ -42,9 +42,9 @@ class ReferenceLine {
 
     const ReferencePoint GetRerencePoint(const double &s) const;
 
-    const std::vector<VehicleBound2> &GetBounds() const;
+    const std::vector<VehicleBound> &GetBounds() const;
 
-    std::shared_ptr<VehicleBound2> IsBlocked() const;
+    std::shared_ptr<VehicleBound> IsBlocked() const;
 
     void Clear();
 
@@ -61,8 +61,8 @@ class ReferenceLine {
     tk::spline *x_s_, *y_s_;
     double max_s_;
 
-    std::vector<VehicleBound2> bounds_;
-    std::shared_ptr<VehicleBound2> block_bound_;
+    std::vector<VehicleBound> bounds_;
+    std::shared_ptr<VehicleBound> block_bound_;
 };
 
 } // namespace planning

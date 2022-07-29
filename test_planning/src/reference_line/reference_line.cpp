@@ -75,7 +75,7 @@ bool ReferenceLine::UpdateBounds(Frame *frame) {
         return false;
     }
     bounds_.clear();
-    VehicleBound2 vehicle_bound;
+    VehicleBound vehicle_bound;
     for (const auto &point : reference_points_) {
         VehicleState front_center, rear_center;
 
@@ -113,7 +113,7 @@ bool ReferenceLine::UpdateBounds(Frame *frame) {
         if (math::isEqual(front_bound[0], front_bound[1]) ||
             math::isEqual(rear_bound[0], rear_bound[1])) {
             ROS_INFO("Path is blocked at s: %f", point.s);
-            block_bound_.reset(new VehicleBound2(vehicle_bound));
+            block_bound_.reset(new VehicleBound(vehicle_bound));
             break;
         }
         bounds_.emplace_back(vehicle_bound);
@@ -291,11 +291,11 @@ void ReferenceLine::Clear() {
 
 const size_t ReferenceLine::size() const { return reference_points_.size(); }
 
-const std::vector<VehicleBound2> &ReferenceLine::GetBounds() const {
+const std::vector<VehicleBound> &ReferenceLine::GetBounds() const {
     return bounds_;
 }
 
-std::shared_ptr<VehicleBound2> ReferenceLine::IsBlocked() const {
+std::shared_ptr<VehicleBound> ReferenceLine::IsBlocked() const {
     return block_bound_;
 }
 

@@ -1,3 +1,4 @@
+
 #include "reference_line/qp_spline_reference_smoother.h"
 #include <cmath>
 #include <cstddef>
