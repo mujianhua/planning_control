@@ -2,6 +2,7 @@
 log/
 tinyspline_ros/
 ros_viz_tools/
+CartesianPlanner/
 
 .vscode
 *.bag
