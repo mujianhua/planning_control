@@ -67,3 +67,10 @@ set(SRC
 
 add_executable(planning_node ${SRC})
 target_link_libraries(planning_node ${catkin_LIBRARIES})
+
+if(CATKIN_ENABLE_TESTING)
+        find_package(rostest)
+        catkin_add_gtest(cartesian_frenet_conversion_test
+                test/cartesian_frenet_conversion_test.cpp
+                src/common/math/cartesian_frenet_conversion.cpp)
+endif()

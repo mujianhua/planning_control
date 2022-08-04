@@ -15,6 +15,10 @@ Dependence and Reference
 
 # Planning
 无人车路径规划
+
+## Reference
+* [frenet cartesian conversion](https://blog.csdn.net/u013468614/article/details/108748016)
+
 $$ \dot{s} = \frac{\rho_s v cos(e_\psi)}{\rho_s - e_y} \quad $$
 
 ## Planner

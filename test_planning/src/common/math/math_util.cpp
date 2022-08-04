@@ -8,6 +8,14 @@ namespace mujianhua {
 namespace planning {
 namespace math {
 
+double NormalizeAngle(const double angle) {
+    double a = std::fmod(angle + M_PI, M_PI * 2.0);
+    if (a < 0.0) {
+        a += (2.0 * M_PI);
+    }
+    return a - M_PI;
+}
+
 bool isEqual(double a, double b) { return fabs(a - b) < FLAGS_epsilon; }
 
 double Distance(const TrajectoryPoint &point1, const TrajectoryPoint &point2) {

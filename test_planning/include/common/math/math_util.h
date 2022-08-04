@@ -15,6 +15,11 @@ namespace math {
 
 using common_me::TrajectoryPoint;
 
+/**
+ * @brief normalize angle to [-pi, pi]
+ */
+double NormalizeAngle(const double angle);
+
 template <typename T> T ConstrainAngle(T angle) {
     if (angle > M_PI) {
         angle -= 2 * M_PI;
