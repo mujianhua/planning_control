@@ -24,6 +24,8 @@ class PlanningBase {
   protected:
     size_t seq_num_ = 0;
 
+    LocalView local_view_;
+
     std::shared_ptr<common::DependencyInjector> injector_;
     std::unique_ptr<common::Frame> frame_;
     std::unique_ptr<Planner> planner_;

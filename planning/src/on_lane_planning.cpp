@@ -16,18 +16,6 @@ bool OnLanePlanning::Init() {
     return true;
 }
 
-void OnLanePlanning::RunOnce(const LocalView &local_view) {
-    ROS_DEBUG("NOW begin to plan!");
-
-    const auto frame_num = static_cast<uint32_t>(seq_num_++);
-    if (!InitFrame(frame_num)) {
-        ROS_ERROR("Fail to init frame");
-    }
-    ROS_DEBUG("[OnLanePlanning] init frame done.");
-
-    planner_->Plan(*local_view.vehicle_state, frame_.get());
-}
-
 bool OnLanePlanning::InitFrame(const uint32_t sequence_num) {
     frame_ = std::make_unique<common::Frame>(sequence_num, reference_line_);
     if (frame_ == nullptr) {
@@ -36,6 +24,20 @@ bool OnLanePlanning::InitFrame(const uint32_t sequence_num) {
     }
 
     return true;
+}
+
+void OnLanePlanning::RunOnce(const LocalView &local_view) {
+    ROS_DEBUG("NOW begin to plan!");
+
+    local_view_ = local_view;
+
+    const auto frame_num = static_cast<uint32_t>(seq_num_++);
+    if (!InitFrame(frame_num)) {
+        ROS_ERROR("Fail to init frame");
+    }
+    ROS_DEBUG("[OnLanePlanning] init frame done.");
+
+    planner_->Plan(*local_view.vehicle_state, frame_.get());
 }
 
 } // namespace planning

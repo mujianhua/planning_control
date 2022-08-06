@@ -15,6 +15,7 @@ class Frame {
   private:
     uint32_t sequence_num_ = 0;
     const ReferenceLine *reference_line_;
+    // LocalView local_view_;
 };
 
 } // namespace common

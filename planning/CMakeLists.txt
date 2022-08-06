@@ -41,11 +41,14 @@ set(SRC
         src/common/math/line_segment2d.cpp
         src/common/math/polygon2d.cpp
         src/common/math/vec2d.cpp
+        src/visualization/plot.cpp
+        src/visualization/color.cpp
         src/reference_line/reference_line.cpp
         src/reference_line/reference_line_provider.cpp
         src/planner/cartesian_planner.cpp
         src/planning_base.cpp
-        src/on_lane_planning.cpp)
+        src/on_lane_planning.cpp
+        src/planning_node.cpp)
 
-add_executable(test_${PROJECT_NAME} src/test_planning_node.cpp ${SRC})
+add_executable(test_${PROJECT_NAME} test/test_planning_node.cpp ${SRC})
 target_link_libraries(test_${PROJECT_NAME} ${catkin_LIBRARIES})

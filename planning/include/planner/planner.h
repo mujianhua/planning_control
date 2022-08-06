@@ -5,14 +5,11 @@
 #include <utility>
 #include "common/dependency_injector.h"
 #include "common/frame.h"
+#include "common/vehicle_state.h"
 #include "reference_line/reference_line.h"
 
 namespace mujianhua {
 namespace planning {
-
-struct State {
-    double x, y, theta, v, phi, a, omega;
-};
 
 class Planner {
   public:
@@ -23,7 +20,7 @@ class Planner {
 
     virtual std::string Name() = 0;
 
-    virtual bool Plan(const State &start_state,
+    virtual bool Plan(const common::State &start_state,
                       common::Frame *frame) = 0;
 
   private:
