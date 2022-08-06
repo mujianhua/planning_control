@@ -1,6 +1,7 @@
 #include "on_lane_planning.h"
 #include <memory>
 #include <ros/ros.h>
+#include "common/frame.h"
 #include "planner/cartesian_planner.h"
 #include "reference_line/reference_line_provider.h"
 
@@ -15,7 +16,27 @@ bool OnLanePlanning::Init() {
     return true;
 }
 
-void OnLanePlanning::RunOnce() { ROS_DEBUG("NOW begin to plan!"); }
+void OnLanePlanning::RunOnce(const LocalView &local_view) {
+    ROS_DEBUG("NOW begin to plan!");
+
+    const auto frame_num = static_cast<uint32_t>(seq_num_++);
+    if (!InitFrame(frame_num)) {
+        ROS_ERROR("Fail to init frame");
+    }
+    ROS_DEBUG("[OnLanePlanning] init frame done.");
+
+    planner_->Plan(*local_view.vehicle_state, frame_.get());
+}
+
+bool OnLanePlanning::InitFrame(const uint32_t sequence_num) {
+    frame_ = std::make_unique<common::Frame>(sequence_num, reference_line_);
+    if (frame_ == nullptr) {
+        ROS_ERROR("Fail to init frame: nullptr.");
+        return false;
+    }
+
+    return true;
+}
 
 } // namespace planning
 } // namespace mujianhua

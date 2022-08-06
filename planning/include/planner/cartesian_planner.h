@@ -16,6 +16,9 @@ class CartesianPlanner : public Planner {
 
     std::string Name() override { return "Cartesian Planner"; };
 
+    bool Plan(const State &start_state,
+              common::Frame *frame) override;
+
   private:
     std::shared_ptr<common::DependencyInjector> injector_;
 };

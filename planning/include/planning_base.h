@@ -3,6 +3,8 @@
 #include <memory>
 #include <utility>
 #include "common/dependency_injector.h"
+#include "common/frame.h"
+#include "common/local_view.h"
 #include "planner/planner.h"
 
 namespace mujianhua {
@@ -17,10 +19,14 @@ class PlanningBase {
 
     virtual bool Init();
 
-    virtual void RunOnce() = 0;
+    virtual void RunOnce(const LocalView &local_view) = 0;
 
   protected:
+    size_t seq_num_ = 0;
+
     std::shared_ptr<common::DependencyInjector> injector_;
+    std::unique_ptr<common::Frame> frame_;
+    std::unique_ptr<Planner> planner_;
 };
 
 } // namespace planning

@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+    <node pkg="cartesian_planner" type="reference_publisher.py" name="reference_publisher_node" output="screen" args="path static pedestrian dynamic serialize" />
     <node pkg="planning" type="test_planning" name="test_planning" output="screen" />
+    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find planning)/rviz/config.rviz"/> -->
 </launch>
