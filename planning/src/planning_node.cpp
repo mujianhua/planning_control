@@ -5,10 +5,12 @@
 #include <vector>
 #include <ros/ros.h>
 #include "common/dependency_injector.h"
+#include "common/discretized_trajectory.h"
 #include "common/math/polygon2d.h"
 #include "common/math/pose.h"
 #include "common/obstacle.h"
 #include "common/vehicle_state.h"
+#include "config/planning_config.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "on_lane_planning.h"
 #include "planning/CenterLine.h"
@@ -22,8 +24,11 @@ namespace mujianhua {
 namespace planning {
 
 PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
+    PlanningConfig planning_config;
+
     injector_ = std::make_shared<common::DependencyInjector>();
     planning_ = std::make_shared<OnLanePlanning>(injector_);
+    planning_->Init(planning_config);
     obstacles_ = std::make_shared<common::IndexedObstacles>();
 
     reference_line_subscriber_ = nh_.subscribe(
@@ -37,20 +42,14 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
 }
 
 void PlanningNode::Proc() {
-    common::State state{};
-    state.x = 0.0;
-    state.y = 0.0;
-    state.theta = 0.0;
-    state.v = 5.0;
-    state.phi = 0.0;
-    state.a = 0.0;
-    state.omega = 0.0;
+    common::State state(0.0, 0.0, 0.0, 5.0);
     local_view_.vehicle_state = std::make_shared<common::State>(state);
     local_view_.obstacles = obstacles_;
 
-    planning_->Init();
     planning_->UpdateReferenceLine(reference_line_);
-    planning_->RunOnce(local_view_);
+
+    common::DiscretizedTrajectory adc_trajectory_pb;
+    planning_->RunOnce(local_view_, &adc_trajectory_pb);
 }
 
 void PlanningNode::ObstaclesCallback(const ::planning::ObstaclesConstPtr &msg) {

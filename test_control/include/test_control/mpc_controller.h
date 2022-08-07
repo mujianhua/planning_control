@@ -33,9 +33,10 @@ class MPCController : public Controller {
     bool Init(const ControlConf *control_conf, const VehiclePara *vehicle_para,
               std::shared_ptr<VehicleStateProvider> vehicle_state) override;
 
-    bool ComputeControlCommand(test_control::chassis_cmd *cmd,
-                               test_control::simple_mpc_debug *debug,
-                               const ADCTrajectory *trajectory) override;
+    bool
+    ComputeControlCommand(test_control::chassis_cmd *cmd,
+                          test_control::simple_mpc_debug *debug,
+                          const DiscretizedTrajectory *trajectory) override;
 
     const std::string Name() const override;
 

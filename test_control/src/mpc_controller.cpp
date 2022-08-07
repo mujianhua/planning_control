@@ -124,9 +124,9 @@ bool MPCController::Init(const ControlConf *control_conf,
     return true;
 }
 
-bool MPCController::ComputeControlCommand(test_control::chassis_cmd *cmd,
-                                          test_control::simple_mpc_debug *debug,
-                                          const ADCTrajectory *trajectory) {
+bool MPCController::ComputeControlCommand(
+    test_control::chassis_cmd *cmd, test_control::simple_mpc_debug *debug,
+    const DiscretizedTrajectory *trajectory) {
     // 有实时的规划轨迹时,轨迹分析器放到此处...
     trajectory_analyzer_ = std::move(TrajectoryAnalyzer(trajectory));
 
@@ -172,9 +172,9 @@ void MPCController::UpdateState(test_control::simple_mpc_debug *debug) {
               matrix_state_(3, 0), matrix_state_(4, 0), matrix_state_(5, 0));
 }
 
-void MPCController::ComputeLateralErrors(const double x, const double y,
-                                         const double theta,
-                                         test_control::simple_mpc_debug *debug) {
+void MPCController::ComputeLateralErrors(
+    const double x, const double y, const double theta,
+    test_control::simple_mpc_debug *debug) {
     const auto match_point =
         trajectory_analyzer_.QueryNearestPointByPosition(x, y, debug);
     const double delta_theta = match_point.theta - theta; // TODO: 有问题...

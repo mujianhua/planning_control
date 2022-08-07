@@ -34,7 +34,7 @@ class ControlNode {
 
         chassis_sub_ = nh_.subscribe("/chassis_data", 1,
                                      &ControlNode::ReceiveChassisDataCb, this);
-        trajectory = new ADCTrajectory();
+        trajectory = new DiscretizedTrajectory();
     }
 
     void ReceiveChassisDataCb(const test_control::chassis_data &msg) {
@@ -56,29 +56,31 @@ class ControlNode {
 
     void LoadConfig(ControlConf &control_conf, VehiclePara &vehicle_para) {
         nh_.param("test_control/ControlConfig/ts", control_conf.ts, 0.0);
-        nh_.param("test_control/ControlConfig/horizon", control_conf.horizon, 0);
+        nh_.param("test_control/ControlConfig/horizon", control_conf.horizon,
+                  0);
         nh_.param("test_control/ControlConfig/state_size",
                   control_conf.state_size, 0);
         nh_.param("test_control/ControlConfig/control_size",
                   control_conf.control_size, 0);
 
-        nh_.param("test_control/ControlConfig/max_vy", control_conf.max_vy, 0.0);
+        nh_.param("test_control/ControlConfig/max_vy", control_conf.max_vy,
+                  0.0);
         nh_.param("test_control/ControlConfig/max_yawrate",
                   control_conf.max_yawrate, 0.0);
         nh_.param("test_control/ControlConfig/max_roll", control_conf.max_roll,
                   0.0);
         nh_.param("test_control/ControlConfig/max_rollrate",
                   control_conf.max_rollrate, 0.0);
-        nh_.param("test_control/ControlConfig/max_fwa", control_conf.max_fwa_deg,
-                  0.0);
+        nh_.param("test_control/ControlConfig/max_fwa",
+                  control_conf.max_fwa_deg, 0.0);
 
         nh_.param("test_control/ControlConfig/mpc_max_iteration",
                   control_conf.mpc_max_iteration, 0);
         std::vector<int> matrix_q(control_conf.state_size);
         std::vector<int> matrix_r(control_conf.control_size);
         nh_.param("test_control/ControlConfig/mpc_matrix_q_vy", matrix_q[0], 0);
-        nh_.param("test_control/ControlConfig/mpc_matrix_q_yawrate", matrix_q[1],
-                  0);
+        nh_.param("test_control/ControlConfig/mpc_matrix_q_yawrate",
+                  matrix_q[1], 0);
         nh_.param("test_control/ControlConfig/mpc_matrix_q_rollrate",
                   matrix_q[2], 0);
         nh_.param("test_control/ControlConfig/mpc_matrix_q_roll", matrix_q[3],
@@ -86,7 +88,8 @@ class ControlNode {
         nh_.param("test_control/ControlConfig/mpc_matrix_q_ey", matrix_q[4], 0);
         nh_.param("test_control/ControlConfig/mpc_matrix_q_epsi", matrix_q[5],
                   0);
-        nh_.param("test_control/ControlConfig/mpc_matrix_r_fwa", matrix_r[0], 0);
+        nh_.param("test_control/ControlConfig/mpc_matrix_r_fwa", matrix_r[0],
+                  0);
         control_conf.mpc_matrix_q = matrix_q;
         control_conf.mpc_matrix_r = matrix_r;
 
@@ -124,7 +127,7 @@ class ControlNode {
     // frequency
     double time_cache_ = 0.0;
     double controller_frequency_ = 100.0;
-    ADCTrajectory *trajectory;
+    DiscretizedTrajectory *trajectory;
 };
 
 int main(int argc, char **argv) {

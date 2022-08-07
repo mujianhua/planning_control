@@ -44,7 +44,7 @@ add_definitions(${EIGEN_DEFINITIONS})
 set(SRC 
     src/test_control_node.cpp
     src/mpc_controller.cpp
-    src/ADCTrajectory.cpp
+    src/DiscretizedTrajectory.cpp
     src/trajectory_analyzer.cpp
     src/vehicle_state_provider.cpp
     src/math/mpc_osqp.cpp)

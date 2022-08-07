@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include "common/obstacle.h"
-#include "planner/planner.h"
+#include "common/vehicle_state.h"
 
 namespace mujianhua {
 namespace planning {

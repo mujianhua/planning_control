@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include "common/dependency_injector.h"
+#include "common/discretized_trajectory.h"
 #include "common/frame.h"
 #include "common/vehicle_state.h"
 #include "reference_line/reference_line.h"
@@ -18,12 +19,16 @@ class Planner {
     explicit Planner(std::shared_ptr<common::DependencyInjector> injector)
         : injector_(std::move(injector)) {}
 
+    virtual bool Init(const PlanningConfig &config) = 0;
+
     virtual std::string Name() = 0;
 
-    virtual bool Plan(const common::State &start_state,
-                      common::Frame *frame) = 0;
+    virtual bool
+    Plan(const common::State &start_state, common::Frame *frame,
+         common::DiscretizedTrajectory *ptr_computed_trajectory) = 0;
 
-  private:
+  protected:
+    PlanningConfig config_;
     std::shared_ptr<common::DependencyInjector> injector_;
 };
 

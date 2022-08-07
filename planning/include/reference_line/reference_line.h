@@ -27,7 +27,13 @@ class ReferenceLine {
 
     ReferenceLine(const ReferencePoints &points);
 
+    common::math::Vec2d GetProjection(const common::math::Vec2d &xy) const;
+
     TrajectoryPoint EvaluateStation(double station) const;
+
+    ReferencePoints::const_iterator
+    QueryNearestPoint(const common::math::Vec2d &point,
+                      double *out_distance = nullptr) const;
 
     ReferencePoints::const_iterator
     QueryLowerBoundStationPoint(double station) const;

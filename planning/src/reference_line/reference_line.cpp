@@ -31,6 +31,40 @@ TrajectoryPoint LinearInterpolateTrajectory(const TrajectoryPoint &p0,
     return pt;
 }
 
+common::math::Vec2d
+ReferenceLine::GetProjection(const common::math::Vec2d &xy) const {
+    long point_idx =
+        std::distance(reference_points_.begin(), QueryNearestPoint(xy));
+    auto project_point = reference_points_[point_idx];
+    auto index_start = std::max(0l, point_idx - 1);
+    auto index_end =
+        std::min(reference_points_.size() - 1, (ulong)point_idx + 1);
+
+    if (index_start < index_end) {
+        double v0x = xy.x() - reference_points_[index_start].x;
+        double v0y = xy.y() - reference_points_[index_start].y;
+
+        double v1x =
+            reference_points_[index_end].x - reference_points_[index_start].x;
+        double v1y =
+            reference_points_[index_end].y - reference_points_[index_start].y;
+
+        double v1_norm = std::sqrt(v1x * v1x + v1y * v1y);
+        double dot = v0x * v1x + v0y * v1y;
+
+        double delta_s = dot / v1_norm;
+        project_point = LinearInterpolateTrajectory(
+            reference_points_[index_start], reference_points_[index_end],
+            reference_points_[index_start].s + delta_s);
+    }
+
+    double nr_x = xy.x() - project_point.x, nr_y = xy.y() - project_point.y;
+    double lateral =
+        copysign(hypot(nr_x, nr_y), nr_y * cos(project_point.theta) -
+                                        nr_x * sin(project_point.theta));
+    return {project_point.s, lateral};
+}
+
 TrajectoryPoint ReferenceLine::EvaluateStation(double station) const {
     auto iter = QueryLowerBoundStationPoint(station);
 
@@ -41,6 +75,28 @@ TrajectoryPoint ReferenceLine::EvaluateStation(double station) const {
     auto prev = std::prev(iter, 1);
 
     return LinearInterpolateTrajectory(*prev, *iter, station);
+}
+
+ReferenceLine::ReferencePoints::const_iterator
+ReferenceLine::QueryNearestPoint(const common::math::Vec2d &point,
+                                 double *out_distance) const {
+    auto nearest_iter = reference_points_.begin();
+    double nearest_distance = std::numeric_limits<double>::max();
+
+    for (auto iter = reference_points_.begin(); iter != reference_points_.end();
+         iter++) {
+        double dx = iter->x - point.x(), dy = iter->y - point.y();
+        double distance = dx * dx + dy * dy;
+        if (distance < nearest_distance) {
+            nearest_iter = iter;
+            nearest_distance = distance;
+        }
+    }
+
+    if (out_distance != nullptr) {
+        *out_distance = sqrt(nearest_distance);
+    }
+    return nearest_iter;
 }
 
 ReferenceLine::ReferencePoints::const_iterator

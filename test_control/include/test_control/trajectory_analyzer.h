@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ADCTrajectory.h"
+#include "DiscretizedTrajectory.h"
 #include "test_control/simple_mpc_debug.h"
 
 namespace mujianhua {
@@ -10,7 +10,7 @@ class TrajectoryAnalyzer {
   public:
     TrajectoryAnalyzer() = default;
 
-    TrajectoryAnalyzer(const ADCTrajectory *trajectory);
+    TrajectoryAnalyzer(const DiscretizedTrajectory *trajectory);
 
     /**
      * @brief Deconstructor
@@ -25,7 +25,7 @@ class TrajectoryAnalyzer {
                                 const double y) const;
 
   private:
-    const ADCTrajectory *trajectory_;
+    const DiscretizedTrajectory *trajectory_;
 };
 
 } // namespace control

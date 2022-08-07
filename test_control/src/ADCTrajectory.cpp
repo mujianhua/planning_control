@@ -3,12 +3,12 @@
  * @brief
  */
 
-#include "test_control/ADCTrajectory.h"
+#include "test_control/DiscretizedTrajectory.h"
 
 namespace mujianhua {
 namespace control {
 
-ADCTrajectory::ADCTrajectory() {
+DiscretizedTrajectory::DiscretizedTrajectory() {
     std::string line, number;
     std::ifstream f(
         "/home/mujianhua/catkin_ws/src/test_control/data/path_data.csv",

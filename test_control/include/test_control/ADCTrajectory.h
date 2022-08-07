@@ -15,9 +15,9 @@ struct PathPoint {
     double kappa;
     double s;
 };
-class ADCTrajectory {
+class DiscretizedTrajectory {
   public:
-    explicit ADCTrajectory();
+    explicit DiscretizedTrajectory();
 
     std::vector<PathPoint> PathPoints;
 };

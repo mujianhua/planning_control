@@ -3,7 +3,10 @@
 namespace mujianhua {
 namespace planning {
 
-bool PlanningBase::Init() { return true; }
+bool PlanningBase::Init(const PlanningConfig &config) {
+    config_ = config;
+    return true;
+}
 
 } // namespace planning
 } // namespace mujianhua

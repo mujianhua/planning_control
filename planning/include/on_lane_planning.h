@@ -14,9 +14,10 @@ class OnLanePlanning : public PlanningBase {
         const std::shared_ptr<common::DependencyInjector> &injector)
         : PlanningBase(injector) {}
 
-    bool Init() override;
+    bool Init(const PlanningConfig &config) override;
 
-    void RunOnce(const LocalView &local_view) override;
+    void RunOnce(const LocalView &local_view,
+                 common::DiscretizedTrajectory *const adc_trajectory) override;
 
     void UpdateReferenceLine(const ReferenceLine *reference_line) {
         reference_line_ = reference_line;

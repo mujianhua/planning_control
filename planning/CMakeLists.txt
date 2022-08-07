@@ -46,6 +46,7 @@ set(SRC
         src/reference_line/reference_line.cpp
         src/reference_line/reference_line_provider.cpp
         src/planner/cartesian_planner.cpp
+        src/planner/dp_plan.cpp
         src/planning_base.cpp
         src/on_lane_planning.cpp
         src/planning_node.cpp)

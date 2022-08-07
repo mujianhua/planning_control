@@ -15,7 +15,8 @@ double PointDistanceSquare(const PathPoint &path_point, const double x,
     return dx * dx + dy * dy;
 }
 
-TrajectoryAnalyzer::TrajectoryAnalyzer(const ADCTrajectory *trajectory) {
+TrajectoryAnalyzer::TrajectoryAnalyzer(
+    const DiscretizedTrajectory *trajectory) {
     trajectory_ = trajectory;
 }
 
