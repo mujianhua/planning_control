@@ -25,7 +25,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 constexpr double kMathEpsilon = 1e-10;
@@ -124,6 +124,5 @@ class Vec2d {
 Vec2d operator*(const double ratio, const Vec2d &vec);
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

@@ -26,10 +26,10 @@ namespace planning {
 PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
     PlanningConfig planning_config;
 
-    injector_ = std::make_shared<common::DependencyInjector>();
+    injector_ = std::make_shared<DependencyInjector>();
     planning_ = std::make_shared<OnLanePlanning>(injector_);
     planning_->Init(planning_config);
-    obstacles_ = std::make_shared<common::IndexedObstacles>();
+    obstacles_ = std::make_shared<IndexedObstacles>();
 
     reference_line_subscriber_ = nh_.subscribe(
         "/center_line", 1, &PlanningNode::CenterLineCallback, this);
@@ -42,26 +42,26 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
 }
 
 void PlanningNode::Proc() {
-    common::State state(0.0, 0.0, 0.0, 5.0);
-    local_view_.vehicle_state = std::make_shared<common::State>(state);
+    State state(0.0, 0.0, 0.0, 5.0);
+    local_view_.vehicle_state = std::make_shared<State>(state);
     local_view_.obstacles = obstacles_;
 
     planning_->UpdateReferenceLine(reference_line_);
 
-    common::DiscretizedTrajectory adc_trajectory_pb;
+    DiscretizedTrajectory adc_trajectory_pb;
     planning_->RunOnce(local_view_, &adc_trajectory_pb);
 }
 
 void PlanningNode::ObstaclesCallback(const ::planning::ObstaclesConstPtr &msg) {
     size_t count = 0;
     for (auto &obstacle : msg->obstacles) {
-        std::vector<common::math::Vec2d> points;
+        std::vector<math::Vec2d> points;
         for (auto &pt : obstacle.points) {
             points.emplace_back(pt.x, pt.y);
         }
         visualization_static_obstacles_.emplace_back(points);
-        common::Obstacle obs("static" + std::to_string(++count),
-                             common::math::Polygon2d{points}, true);
+        Obstacle obs("static" + std::to_string(++count),
+                     math::Polygon2d{points}, true);
         obstacles_->Add("static" + std::to_string(count), obs);
     }
     Visualize();
@@ -71,20 +71,19 @@ void PlanningNode::DynamicObstaclesCallback(
     const ::planning::DynamicObstaclesConstPtr &msg) {
     size_t count = 0;
     for (auto &obstacle : msg->obstacles) {
-        common::DynamicObstacle dynamic_obstacle;
+        DynamicObstacle dynamic_obstacle;
         for (auto &tp : obstacle.trajectory) {
-            common::math::Pose coord(tp.x, tp.y, tp.theta);
-            std::vector<common::math::Vec2d> points;
+            math::Pose coord(tp.x, tp.y, tp.theta);
+            std::vector<math::Vec2d> points;
             for (auto &pt : obstacle.polygon.points) {
                 points.push_back(coord.transform({pt.x, pt.y, 0.0}));
             }
 
-            dynamic_obstacle.emplace_back(tp.time,
-                                          common::math::Polygon2d{points});
+            dynamic_obstacle.emplace_back(tp.time, math::Polygon2d{points});
         }
         visualization_dynamic_obstacles_.emplace_back(dynamic_obstacle);
-        common::Obstacle obs("dynamic" + std::to_string(++count),
-                             dynamic_obstacle, false);
+        Obstacle obs("dynamic" + std::to_string(++count), dynamic_obstacle,
+                     false);
 
         obstacles_->Add("dynamic" + std::to_string(count), obs);
     }

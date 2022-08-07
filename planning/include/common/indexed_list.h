@@ -6,7 +6,6 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
 
 template <typename I, typename T> class IndexedList {
   public:
@@ -75,6 +74,5 @@ class ThreadSafeIndexedList : public IndexedList<I, T> {
     mutable boost::shared_mutex mutex_;
 };
 
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

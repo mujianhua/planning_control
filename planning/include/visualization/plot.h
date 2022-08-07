@@ -26,8 +26,8 @@ namespace mujianhua {
 namespace planning {
 namespace visualization {
 
-using common::math::Polygon2d;
-using common::math::Vec2d;
+using math::Polygon2d;
+using math::Vec2d;
 
 using Vector = std::vector<double>;
 
@@ -50,7 +50,7 @@ void PlotPolygon(const Polygon2d &polygon, double width = 0.1,
                  Color color = Color::White, int id = -1,
                  const std::string &ns = "");
 
-void PlotObstacles(const std::shared_ptr<common::IndexedObstacles> obstacles);
+void PlotObstacles(const std::shared_ptr<IndexedObstacles> obstacles);
 
 void PlotTrajectory(const Vector &xs, const Vector &ys, const Vector &vs,
                     double max_velocity = 10.0, double width = 0.1,

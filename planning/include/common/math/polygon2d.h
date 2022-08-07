@@ -31,7 +31,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 /**
@@ -334,6 +334,5 @@ class Polygon2d {
 };
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

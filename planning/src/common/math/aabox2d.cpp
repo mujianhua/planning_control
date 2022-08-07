@@ -24,8 +24,8 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
 namespace math {
+
 AABox2d::AABox2d(const Vec2d &center, const double length, const double width)
     : center_(center), length_(length), width_(width),
       half_length_(length / 2.0), half_width_(width / 2.0) {
@@ -146,6 +146,5 @@ void AABox2d::MergeFrom(const Vec2d &other_point) {
 }
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

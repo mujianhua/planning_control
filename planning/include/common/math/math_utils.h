@@ -32,7 +32,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 double Sqr(const double x);
@@ -272,6 +272,5 @@ inline std::vector<double> ARange(double start, double end, double step) {
 }
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

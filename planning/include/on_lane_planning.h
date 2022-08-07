@@ -10,14 +10,13 @@ namespace planning {
 
 class OnLanePlanning : public PlanningBase {
   public:
-    explicit OnLanePlanning(
-        const std::shared_ptr<common::DependencyInjector> &injector)
+    explicit OnLanePlanning(const std::shared_ptr<DependencyInjector> &injector)
         : PlanningBase(injector) {}
 
     bool Init(const PlanningConfig &config) override;
 
     void RunOnce(const LocalView &local_view,
-                 common::DiscretizedTrajectory *const adc_trajectory) override;
+                 DiscretizedTrajectory *const adc_trajectory) override;
 
     void UpdateReferenceLine(const ReferenceLine *reference_line) {
         reference_line_ = reference_line;

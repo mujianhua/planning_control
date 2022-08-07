@@ -5,15 +5,39 @@
 namespace mujianhua {
 namespace planning {
 
+constexpr double kSampleStep = 0.1;
+
 ReferenceLine::ReferenceLine(const std::vector<TrajectoryPoint> &points)
-    : reference_points_(points) {}
+    : reference_points_(points) {
+    SetRoadBarrier();
+}
+
+void ReferenceLine::SetRoadBarrier() {
+    road_barrier_.clear();
+
+    double start_s = reference_points_.front().s;
+    double back_s = reference_points_.back().s;
+    int sample_points = int((back_s - start_s) / kSampleStep);
+    for (int i = 0; i <= sample_points; i++) {
+        double s = start_s + i * kSampleStep;
+        auto ref = EvaluateStation(s);
+
+        road_barrier_.push_back(GetCartesian(s, ref.left_bound));
+        road_barrier_.push_back(GetCartesian(s, -ref.right_bound));
+    }
+
+    std::sort(road_barrier_.begin(), road_barrier_.end(),
+              [](const math::Vec2d &a, const math::Vec2d &b) {
+                  return a.x() < b.x();
+              });
+}
 
 TrajectoryPoint LinearInterpolateTrajectory(const TrajectoryPoint &p0,
                                             const TrajectoryPoint &p1,
                                             double s) {
     double s0 = p0.s;
     double s1 = p1.s;
-    if (std::abs(s1 - s0) < common::math::kMathEpsilon) {
+    if (std::abs(s1 - s0) < math::kMathEpsilon) {
         return p0;
     }
 
@@ -22,7 +46,7 @@ TrajectoryPoint LinearInterpolateTrajectory(const TrajectoryPoint &p0,
     pt.s = s;
     pt.x = (1 - weight) * p0.x + weight * p1.x;
     pt.y = (1 - weight) * p0.y + weight * p1.y;
-    pt.theta = common::math::slerp(p0.theta, p0.s, p1.theta, p1.s, s);
+    pt.theta = math::slerp(p0.theta, p0.s, p1.theta, p1.s, s);
     pt.kappa = (1 - weight) * p0.kappa + weight * p1.kappa;
     pt.velocity = (1 - weight) * p0.velocity + weight * p1.velocity;
     pt.left_bound = (1 - weight) * p0.left_bound + weight * p1.left_bound;
@@ -31,8 +55,7 @@ TrajectoryPoint LinearInterpolateTrajectory(const TrajectoryPoint &p0,
     return pt;
 }
 
-common::math::Vec2d
-ReferenceLine::GetProjection(const common::math::Vec2d &xy) const {
+math::Vec2d ReferenceLine::GetProjection(const math::Vec2d &xy) const {
     long point_idx =
         std::distance(reference_points_.begin(), QueryNearestPoint(xy));
     auto project_point = reference_points_[point_idx];
@@ -78,7 +101,7 @@ TrajectoryPoint ReferenceLine::EvaluateStation(double station) const {
 }
 
 ReferenceLine::ReferencePoints::const_iterator
-ReferenceLine::QueryNearestPoint(const common::math::Vec2d &point,
+ReferenceLine::QueryNearestPoint(const math::Vec2d &point,
                                  double *out_distance) const {
     auto nearest_iter = reference_points_.begin();
     double nearest_distance = std::numeric_limits<double>::max();
@@ -111,8 +134,7 @@ ReferenceLine::QueryLowerBoundStationPoint(double station) const {
         [](const TrajectoryPoint &t, double station) { return t.s < station; });
 }
 
-common::math::Vec2d ReferenceLine::GetCartesian(double station,
-                                                double lateral) const {
+math::Vec2d ReferenceLine::GetCartesian(double station, double lateral) const {
     auto ref = EvaluateStation(station);
     return {ref.x - lateral * sin(ref.theta), ref.y + lateral * cos(ref.theta)};
 }

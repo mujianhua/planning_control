@@ -4,7 +4,6 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
 
 class DependencyInjector {
   public:
@@ -17,6 +16,5 @@ class DependencyInjector {
     PlanningConfig planning_config_;
 };
 
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

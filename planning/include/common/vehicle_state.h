@@ -1,7 +1,6 @@
 #pragma once
 namespace mujianhua {
 namespace planning {
-namespace common {
 
 struct State {
     State(double xx = 0.0, double yy = 0.0, double ttheta = 0.0,
@@ -11,6 +10,5 @@ struct State {
     double x, y, theta, v, phi, a, omega;
 };
 
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

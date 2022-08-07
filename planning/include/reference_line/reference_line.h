@@ -27,18 +27,24 @@ class ReferenceLine {
 
     ReferenceLine(const ReferencePoints &points);
 
-    common::math::Vec2d GetProjection(const common::math::Vec2d &xy) const;
+    void SetRoadBarrier();
+
+    const std::vector<math::Vec2d> *GetRoadBarrier() const {
+        return &road_barrier_;
+    }
+
+    math::Vec2d GetProjection(const math::Vec2d &xy) const;
 
     TrajectoryPoint EvaluateStation(double station) const;
 
     ReferencePoints::const_iterator
-    QueryNearestPoint(const common::math::Vec2d &point,
+    QueryNearestPoint(const math::Vec2d &point,
                       double *out_distance = nullptr) const;
 
     ReferencePoints::const_iterator
     QueryLowerBoundStationPoint(double station) const;
 
-    common::math::Vec2d GetCartesian(double station, double lateral) const;
+    math::Vec2d GetCartesian(double station, double lateral) const;
 
     inline const ReferencePoints &reference_points() const {
         return reference_points_;
@@ -46,6 +52,8 @@ class ReferenceLine {
 
   private:
     ReferencePoints reference_points_;
+
+    std::vector<math::Vec2d> road_barrier_;
 };
 
 } // namespace planning

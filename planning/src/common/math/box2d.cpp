@@ -25,7 +25,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 namespace {
 
@@ -324,6 +324,5 @@ void Box2d::LateralExtend(const double extension_length) {
 }
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

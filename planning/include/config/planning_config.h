@@ -95,7 +95,7 @@ struct PlanningConfig {
      */
     double opti_varepsilon_tol = 1e-4;
 
-    common::VehicleParam vehicle;
+    VehicleParam vehicle;
 };
 
 } // namespace planning

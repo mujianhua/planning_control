@@ -21,7 +21,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 double Sqr(const double x) { return x * x; }
@@ -99,6 +99,5 @@ std::vector<double> ToContinuousAngle(const std::vector<double> &angle) {
 }
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

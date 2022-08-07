@@ -15,14 +15,13 @@ class PlanningBase {
   public:
     PlanningBase() = delete;
 
-    explicit PlanningBase(std::shared_ptr<common::DependencyInjector> injector)
+    explicit PlanningBase(std::shared_ptr<DependencyInjector> injector)
         : injector_(std::move(injector)) {}
 
     virtual bool Init(const PlanningConfig &config);
 
-    virtual void
-    RunOnce(const LocalView &local_view,
-            common::DiscretizedTrajectory *const adc_trajectory) = 0;
+    virtual void RunOnce(const LocalView &local_view,
+                         DiscretizedTrajectory *const adc_trajectory) = 0;
 
   protected:
     PlanningConfig config_;
@@ -31,8 +30,8 @@ class PlanningBase {
 
     LocalView local_view_;
 
-    std::shared_ptr<common::DependencyInjector> injector_;
-    std::unique_ptr<common::Frame> frame_;
+    std::shared_ptr<DependencyInjector> injector_;
+    std::unique_ptr<Frame> frame_;
     std::unique_ptr<Planner> planner_;
 };
 

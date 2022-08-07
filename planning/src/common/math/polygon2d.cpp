@@ -27,7 +27,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 Polygon2d::Polygon2d(const Box2d &box) {
@@ -617,6 +617,5 @@ Polygon2d Polygon2d::ExpandByDistance(const double distance) const {
 }
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

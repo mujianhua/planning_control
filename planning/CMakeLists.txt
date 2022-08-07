@@ -32,9 +32,17 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+find_package(HSL)
+if(NOT ${HSL_FOUND})
+  set(WITH_HSL OFF)
+endif()
+add_definitions(-DWITH_HSL)
+
 set(SRC
         src/common/frame.cpp
         src/common/obstacle.cpp
+        src/common/discretized_trajectory.cpp
         src/common/math/math_utils.cpp
         src/common/math/aabox2d.cpp
         src/common/math/box2d.cpp
@@ -43,13 +51,16 @@ set(SRC
         src/common/math/vec2d.cpp
         src/visualization/plot.cpp
         src/visualization/color.cpp
+        src/constraint_checker/collision_checker.cpp
         src/reference_line/reference_line.cpp
         src/reference_line/reference_line_provider.cpp
         src/planner/cartesian_planner.cpp
         src/planner/dp_plan.cpp
+        src/trajectory_optimization/trajectory_optimizer.cpp
+        src/trajectory_optimization/trajectory_nlp_optimizer.cpp
         src/planning_base.cpp
         src/on_lane_planning.cpp
         src/planning_node.cpp)
 
 add_executable(test_${PROJECT_NAME} test/test_planning_node.cpp ${SRC})
-target_link_libraries(test_${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(test_${PROJECT_NAME} ${catkin_LIBRARIES} casadi)

@@ -6,7 +6,6 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
 
 class Frame {
   public:
@@ -15,14 +14,16 @@ class Frame {
 
     const ReferenceLine *reference_line() const { return reference_line_; }
 
+    const std::vector<const Obstacle *> obstacles() const;
+
     uint32_t SequenceNum() const;
 
   private:
     uint32_t sequence_num_ = 0;
     const ReferenceLine *reference_line_;
+    IndexedObstacles obstacles_;
     LocalView local_view_;
 };
 
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

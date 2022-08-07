@@ -24,7 +24,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 namespace {
 
@@ -251,6 +251,5 @@ std::vector<Vec2d> LineSegment2d::SamplePoints(double step) {
 }
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

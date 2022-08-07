@@ -6,7 +6,6 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
 
 using DynamicObstacle = std::vector<std::pair<double, math::Polygon2d>>;
 
@@ -22,7 +21,12 @@ class Obstacle {
 
     const std::string &Id() const { return id_; }
 
-    const math::Polygon2d &PerceptionPolygon() const { return polygon2d_; }
+    const math::Polygon2d *PerceptionPolygon() const { return &polygon2d_; }
+
+    const std::vector<std::pair<double, math::Polygon2d>> *
+    PerceptionDynamicPolygons() const {
+        return &polygon2ds_;
+    }
 
     inline bool IsStatic() const { return is_static_; }
 
@@ -37,6 +41,5 @@ class Obstacle {
 using IndexedObstacles = IndexedList<std::string, Obstacle>;
 using ThreadSafeIndexedObstacles = ThreadSafeIndexedList<std::string, Obstacle>;
 
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

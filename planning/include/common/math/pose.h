@@ -6,7 +6,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 class Pose {
@@ -47,6 +47,5 @@ class Pose {
 };
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

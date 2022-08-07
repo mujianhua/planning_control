@@ -104,11 +104,11 @@ void PlotPolygon(const Polygon2d &polygon, double width, Color color, int id,
     PlotPolygon(xs, ys, width, color, id, ns);
 }
 
-void PlotObstacles(const std::shared_ptr<common::IndexedObstacles> obstacles) {
+void PlotObstacles(const std::shared_ptr<IndexedObstacles> obstacles) {
     for (const auto &obs : obstacles->Items()) {
         int idx = 0;
         if (obs->IsStatic()) {
-            PlotPolygon(obs->PerceptionPolygon(), 0.1, Color::Magenta, idx++,
+            PlotPolygon(*obs->PerceptionPolygon(), 0.1, Color::Magenta, idx++,
                         "Obstacles");
         }
     }

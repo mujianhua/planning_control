@@ -47,14 +47,14 @@ class PlanningNode {
         dynamic_obstacles_subscriber_, goal_subscriber_;
 
     std::shared_ptr<OnLanePlanning> planning_;
-    std::shared_ptr<common::DependencyInjector> injector_;
+    std::shared_ptr<DependencyInjector> injector_;
     ReferenceLine *reference_line_{};
 
     LocalView local_view_;
-    std::shared_ptr<common::IndexedObstacles> obstacles_;
+    std::shared_ptr<IndexedObstacles> obstacles_;
 
-    std::vector<common::DynamicObstacle> visualization_dynamic_obstacles_;
-    std::vector<common::math::Polygon2d> visualization_static_obstacles_;
+    std::vector<DynamicObstacle> visualization_dynamic_obstacles_;
+    std::vector<math::Polygon2d> visualization_static_obstacles_;
 };
 
 } // namespace planning

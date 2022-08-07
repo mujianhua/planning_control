@@ -28,7 +28,7 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
+
 namespace math {
 
 /**
@@ -230,6 +230,5 @@ class LineSegment2d {
 };
 
 } // namespace math
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

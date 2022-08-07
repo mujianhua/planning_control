@@ -18,7 +18,6 @@
 
 namespace mujianhua {
 namespace planning {
-namespace common {
 
 class VehicleParam {
   public:
@@ -94,6 +93,5 @@ class VehicleParam {
     }
 };
 
-} // namespace common
 } // namespace planning
 } // namespace mujianhua

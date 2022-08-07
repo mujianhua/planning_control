@@ -9,8 +9,8 @@ namespace mujianhua {
 namespace planning {
 
 struct LocalView {
-    std::shared_ptr<common::State> vehicle_state;
-    std::shared_ptr<common::IndexedObstacles> obstacles;
+    std::shared_ptr<State> vehicle_state;
+    std::shared_ptr<IndexedObstacles> obstacles;
 };
 
 } // namespace planning

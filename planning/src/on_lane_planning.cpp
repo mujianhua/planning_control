@@ -23,8 +23,8 @@ bool OnLanePlanning::Init(const PlanningConfig &config) {
 }
 
 bool OnLanePlanning::InitFrame(const uint32_t sequence_num) {
-    frame_ = std::make_unique<common::Frame>(sequence_num, reference_line_,
-                                             local_view_);
+    frame_ =
+        std::make_unique<Frame>(sequence_num, reference_line_, local_view_);
     if (frame_ == nullptr) {
         ROS_ERROR("Fail to init frame: nullptr.");
         return false;
@@ -33,9 +33,8 @@ bool OnLanePlanning::InitFrame(const uint32_t sequence_num) {
     return true;
 }
 
-void OnLanePlanning::RunOnce(
-    const LocalView &local_view,
-    common::DiscretizedTrajectory *const adc_trajectory) {
+void OnLanePlanning::RunOnce(const LocalView &local_view,
+                             DiscretizedTrajectory *const adc_trajectory) {
     ROS_DEBUG("NOW begin to plan!");
 
     local_view_ = local_view;
