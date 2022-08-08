@@ -45,6 +45,8 @@ void PlanningNode::Proc() {
     State state(0.0, 0.0, 0.0, 5.0);
     local_view_.vehicle_state = std::make_shared<State>(state);
     local_view_.obstacles = obstacles_;
+    local_view_.dynamic_obstacles = dynamic_obstacles_;
+    local_view_.static_obstacles = static_obstacles_;
 
     planning_->UpdateReferenceLine(reference_line_);
 
@@ -59,7 +61,7 @@ void PlanningNode::ObstaclesCallback(const ::planning::ObstaclesConstPtr &msg) {
         for (auto &pt : obstacle.points) {
             points.emplace_back(pt.x, pt.y);
         }
-        visualization_static_obstacles_.emplace_back(points);
+        static_obstacles_.emplace_back(points);
         Obstacle obs("static" + std::to_string(++count),
                      math::Polygon2d{points}, true);
         obstacles_->Add("static" + std::to_string(count), obs);
@@ -81,7 +83,7 @@ void PlanningNode::DynamicObstaclesCallback(
 
             dynamic_obstacle.emplace_back(tp.time, math::Polygon2d{points});
         }
-        visualization_dynamic_obstacles_.emplace_back(dynamic_obstacle);
+        dynamic_obstacles_.emplace_back(dynamic_obstacle);
         Obstacle obs("dynamic" + std::to_string(++count), dynamic_obstacle,
                      false);
 
@@ -131,17 +133,16 @@ void PlanningNode::Visualize() {
                         "Road Right");
 
     int idx = 0;
-    for (auto &obstacle : visualization_static_obstacles_) {
+    for (auto &obstacle : static_obstacles_) {
         visualization::PlotPolygon(obstacle, 0.1, visualization::Color::Magenta,
                                    idx++, "Obstacles");
     }
 
     // plot first frame of dynamic obstacles
     idx = 1;
-    for (auto &obstacle : visualization_dynamic_obstacles_) {
+    for (auto &obstacle : dynamic_obstacles_) {
         auto color = visualization::Color::fromHSV(
-            int((double)idx / visualization_dynamic_obstacles_.size() * 320),
-            1.0, 1.0);
+            int((double)idx / dynamic_obstacles_.size() * 320), 1.0, 1.0);
         color.set_alpha(0.5);
         visualization::PlotPolygon(obstacle[0].second, 0.1, color, idx,
                                    "Online Obstacle");

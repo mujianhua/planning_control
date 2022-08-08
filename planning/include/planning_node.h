@@ -53,8 +53,8 @@ class PlanningNode {
     LocalView local_view_;
     std::shared_ptr<IndexedObstacles> obstacles_;
 
-    std::vector<DynamicObstacle> visualization_dynamic_obstacles_;
-    std::vector<math::Polygon2d> visualization_static_obstacles_;
+    std::vector<DynamicObstacle> dynamic_obstacles_;
+    std::vector<math::Polygon2d> static_obstacles_;
 };
 
 } // namespace planning

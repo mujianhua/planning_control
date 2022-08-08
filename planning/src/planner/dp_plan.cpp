@@ -76,7 +76,7 @@ double DPPlan::GetCollisionCost(StateIndex parent_ind, StateIndex cur_ind) {
         double parent_time = parent_ind.t < 0 ? 0.0 : time_[parent_ind.t];
         double time = parent_time + i * (unit_time_ / nseg_);
 
-        if (collision_checker_->InCollision(time, pose)) {
+        if (frame_->InCollision(time, pose)) {
             return config_.dp_w_obstacle;
         }
     }
@@ -163,6 +163,9 @@ bool DPPlan::Plan(const State &start_state, const Frame *frame,
 
     auto sl =
         frame_->reference_line()->GetProjection({start_state.x, start_state.y});
+    state_.start_s = sl.x();
+    state_.start_l = sl.y();
+    state_.start_theta = start_state.theta;
 
     // reset state space
     for (int i = 0; i < NT; i++) {

@@ -25,6 +25,8 @@ class CollisionChecker {
     bool InCollision(double time, const math::Pose &pose,
                      double collision_buffer = 0.0);
 
+    bool CheckCollision(double time, const math::Box2d &rect);
+
   private:
     bool CheckStaticCollision(const math::Box2d &rect);
 

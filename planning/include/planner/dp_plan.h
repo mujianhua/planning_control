@@ -12,7 +12,6 @@ namespace {
 constexpr int NT = 5;
 constexpr int NS = 7;
 constexpr int NL = 10;
-
 } // namespace
 
 class DPPlan {

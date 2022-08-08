@@ -48,6 +48,14 @@ bool CollisionChecker::InCollision(double time, const math::Pose &pose,
     return false;
 }
 
+bool CollisionChecker::CheckCollision(double time, const math::Box2d &rect) {
+    if (CheckDynamicCollision(time, rect)) {
+        return true;
+    }
+
+    return CheckStaticCollision(rect);
+}
+
 bool CollisionChecker::CheckStaticCollision(const math::Box2d &rect) {
 
     for (auto &obstacle : static_obstacles_) {
@@ -88,7 +96,7 @@ bool CollisionChecker::CheckStaticCollision(const math::Box2d &rect) {
 
 bool CollisionChecker::CheckDynamicCollision(double time,
                                              const math::Box2d &rect) {
-    ros::Time t = ros::Time::now();
+
     for (auto &obstacle : dynamic_obstacles_) {
         if (obstacle.front().first > time || obstacle.back().first < time) {
             continue;
@@ -103,7 +111,7 @@ bool CollisionChecker::CheckDynamicCollision(double time,
             return true;
         }
     }
-    ROS_INFO("CHECK TIME is %ld", (ros::Time::now() - t).toNSec());
+
     return false;
 }
 

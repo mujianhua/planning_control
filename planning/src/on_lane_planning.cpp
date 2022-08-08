@@ -23,8 +23,8 @@ bool OnLanePlanning::Init(const PlanningConfig &config) {
 }
 
 bool OnLanePlanning::InitFrame(const uint32_t sequence_num) {
-    frame_ =
-        std::make_unique<Frame>(sequence_num, reference_line_, local_view_);
+    frame_ = std::make_unique<Frame>(sequence_num, reference_line_, local_view_,
+                                     config_);
     if (frame_ == nullptr) {
         ROS_ERROR("Fail to init frame: nullptr.");
         return false;
