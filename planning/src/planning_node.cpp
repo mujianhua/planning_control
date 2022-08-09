@@ -15,37 +15,30 @@
 #include "planning/CenterLine.h"
 #include "planning/DynamicObstacles.h"
 #include "planning/Obstacles.h"
-#include "planning/planning.h"
+#include "planning/cartesian_planner.h"
+#include "planning/indexed_list.h"
 
-#include "planning/visualization/plot.h"
+#include "planning/reference_line.h"
+#include "visualization/plot.h"
 
 using namespace planning;
 
-class CartesianPlannerNode {
+class PlanningNode {
   public:
-    explicit CartesianPlannerNode(const ros::NodeHandle &nh) : nh_(nh) {
-        env_ = std::make_shared<Environment>(config_);
-        planner_ = std::make_shared<CartesianPlanner>(config_, env_);
+    explicit PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
+        frame_ = std::make_shared<Frame>(config_);
+        planner_ = std::make_shared<CartesianPlanner>(config_, frame_);
 
         center_line_subscriber_ = nh_.subscribe(
-            "/center_line", 1, &CartesianPlannerNode::CenterLineCallback, this);
+            "/center_line", 1, &PlanningNode::CenterLineCallback, this);
         obstacles_subscriber_ = nh_.subscribe(
-            "/obstacles", 1, &CartesianPlannerNode::ObstaclesCallback, this);
-        dynamic_obstacles_subscriber_ = nh_.subscribe(
-            "/dynamic_obstacles", 1,
-            &CartesianPlannerNode::DynamicObstaclesCallback, this);
+            "/obstacles", 1, &PlanningNode::ObstaclesCallback, this);
+        dynamic_obstacles_subscriber_ =
+            nh_.subscribe("/dynamic_obstacles", 1,
+                          &PlanningNode::DynamicObstaclesCallback, this);
 
-        goal_subscriber_ =
-            nh_.subscribe("/move_base_simple/goal", 1,
-                          &CartesianPlannerNode::PlanCallback, this);
-
-        state_.x = 0.0;
-        state_.y = 0.0;
-        state_.theta = 0.0;
-        state_.v = 5.0;
-        state_.phi = 0.0;
-        state_.a = 0.0;
-        state_.omega = 0.0;
+        goal_subscriber_ = nh_.subscribe("/move_base_simple/goal", 1,
+                                         &PlanningNode::PlanCallback, this);
     }
 
     void CenterLineCallback(const CenterLineConstPtr &msg) {
@@ -62,27 +55,30 @@ class CartesianPlannerNode {
             data.push_back(tp);
         }
 
-        env_->SetReference(DiscretizedTrajectory(data));
-        env_->Visualize();
+        frame_->SetReferenceLine(ReferenceLine(data));
+        frame_->Visualize();
     }
 
     void ObstaclesCallback(const ObstaclesConstPtr &msg) {
-        env_->obstacles().clear();
+        frame_->obstacles().clear();
+        size_t count = 0;
         for (auto &obstacle : msg->obstacles) {
             std::vector<math::Vec2d> points;
             for (auto &pt : obstacle.points) {
                 points.emplace_back(pt.x, pt.y);
             }
-            env_->obstacles().emplace_back(points);
+            frame_->obstacles().emplace_back(points);
+            frame_->index_static_obstacles().Add(
+                "static" + std::to_string(++count), math::Polygon2d(points));
         }
-        env_->Visualize();
+        frame_->Visualize();
     }
 
     void DynamicObstaclesCallback(const DynamicObstaclesConstPtr &msg) {
-        env_->dynamic_obstacles().clear();
+        frame_->dynamic_obstacles().clear();
+        size_t count = 0;
         for (auto &obstacle : msg->obstacles) {
-            Environment::DynamicObstacle dynamic_obstacle;
-
+            Frame::DynamicObstacle dynamic_obstacle;
             for (auto &tp : obstacle.trajectory) {
                 math::Pose coord(tp.x, tp.y, tp.theta);
                 std::vector<math::Vec2d> points;
@@ -93,23 +89,27 @@ class CartesianPlannerNode {
 
                 dynamic_obstacle.emplace_back(tp.time, points);
             }
-
-            env_->dynamic_obstacles().push_back(dynamic_obstacle);
+            // TODO:
+            frame_->index_dynamic_obstacles().Add(
+                "dynamic" + std::to_string(++count), dynamic_obstacle);
+            frame_->dynamic_obstacles().push_back(dynamic_obstacle);
         }
-        env_->Visualize();
+        frame_->Visualize();
     }
 
     void PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
         DiscretizedTrajectory result;
 
+        state_ = CartesianPlanner::StartState(0.0, 0.0, 0.0, 5.0);
+
         if (planner_->Plan(state_, result)) {
             double dt = config_.tf / (double)(config_.nfe - 1);
             for (int i = 0; i < config_.nfe; i++) {
                 double time = dt * i;
-                auto dynamic_obstacles = env_->QueryDynamicObstacles(time);
+                auto dynamic_obstacles = frame_->QueryDynamicObstacles(time);
                 for (auto &obstacle : dynamic_obstacles) {
                     int hue = int((double)obstacle.first /
-                                  env_->dynamic_obstacles().size() * 320);
+                                  frame_->dynamic_obstacles().size() * 320);
 
                     visualization::PlotPolygon(
                         obstacle.second, 0.2,
@@ -130,9 +130,9 @@ class CartesianPlannerNode {
   private:
     ros::NodeHandle nh_;
     planning::CartesianPlannerConfig config_;
-    Env env_;
+    std::shared_ptr<Frame> frame_;
     std::shared_ptr<planning::CartesianPlanner> planner_;
-    CartesianPlanner::StartState state_;
+    CartesianPlanner::StartState state_{};
 
     ros::Subscriber center_line_subscriber_, obstacles_subscriber_,
         dynamic_obstacles_subscriber_, goal_subscriber_;
@@ -189,7 +189,7 @@ int main(int argc, char **argv) {
 
     visualization::Init(nh, "map", "planning_markers");
 
-    CartesianPlannerNode node(nh);
+    PlanningNode node(nh);
     ros::spin();
     return 0;
 }

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(planning)
 SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 add_compile_options(-std=c++11 -O3)
 
 find_package(catkin REQUIRED COMPONENTS
@@ -45,35 +46,27 @@ if(WITH_HSL)
 endif()
 
 set(SRC
-  src/planning/math/aabox2d.cpp
-  src/planning/math/box2d.cpp
-  src/planning/math/line_segment2d.cpp
-  src/planning/math/math_utils.cpp
-  src/planning/math/polygon2d.cpp
-  src/planning/math/vec2d.cpp
-  src/planning/planning.cpp
+  src/math/aabox2d.cpp
+  src/math/box2d.cpp
+  src/math/line_segment2d.cpp
+  src/math/math_utils.cpp
+  src/math/polygon2d.cpp
+  src/math/vec2d.cpp
+  src/visualization/plot.cpp
+  src/visualization/color.cpp
+  src/planning/cartesian_planner.cpp
+  src/planning/reference_line.cpp
   src/planning/discretized_trajectory.cpp
-  src/planning/environment.cpp
+  src/planning/frame.cpp
   src/planning/dp_planner.cpp
   src/planning/trajectory_nlp.cpp
-  src/planning/trajectory_optimizer.cpp
-  src/planning/visualization/plot.cpp
-  src/planning/visualization/color.cpp)
-
-# add_library(${PROJECT_NAME} ${SRC})
-
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-# target_link_libraries(${PROJECT_NAME} casadi)
+  src/planning/trajectory_optimizer.cpp)
 
 add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC})
-
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
-#   ${PROJECT_NAME}
     casadi
 )
