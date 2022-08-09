@@ -1,66 +1,79 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(planning)
+SET(CMAKE_BUILD_TYPE Debug)
+add_compile_options(-std=c++11 -O3)
 
 find_package(catkin REQUIRED COMPONENTS
-        roscpp
-        message_generation
-        geometry_msgs
-        )
+  roscpp
+  message_generation
+  geometry_msgs
+)
 
 add_message_files(
-        FILES
-        CenterLinePoint.msg
-        CenterLine.msg
-        DynamicObstacle.msg
-        DynamicObstacles.msg
-        Obstacles.msg
-        DynamicTrajectoryPoint.msg
+  FILES
+  CenterLinePoint.msg
+  CenterLine.msg
+  DynamicObstacle.msg
+  DynamicObstacles.msg
+  Obstacles.msg
+  DynamicTrajectoryPoint.msg
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
 catkin_package(
-        INCLUDE_DIRS include
-        CATKIN_DEPENDS roscpp message_runtime
-        #  LIBRARIES planning
-        #  CATKIN_DEPENDS roscpp rospy std_msgs
-        #  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES planning
+  CATKIN_DEPENDS roscpp message_runtime
 )
 
 include_directories(
-        include
-        ${catkin_INCLUDE_DIRS}
+  include
+  ${catkin_INCLUDE_DIRS}
 )
+
+option(WITH_HSL "Compile solver with coinhsl" ON)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(HSL)
 if(NOT ${HSL_FOUND})
   set(WITH_HSL OFF)
 endif()
-add_definitions(-DWITH_HSL)
+
+if(WITH_HSL)
+  add_definitions(-DWITH_HSL)
+endif()
 
 set(SRC
-        src/common/frame.cpp
-        src/common/obstacle.cpp
-        src/common/discretized_trajectory.cpp
-        src/common/math/math_utils.cpp
-        src/common/math/aabox2d.cpp
-        src/common/math/box2d.cpp
-        src/common/math/line_segment2d.cpp
-        src/common/math/polygon2d.cpp
-        src/common/math/vec2d.cpp
-        src/visualization/plot.cpp
-        src/visualization/color.cpp
-        src/constraint_checker/collision_checker.cpp
-        src/reference_line/reference_line.cpp
-        src/reference_line/reference_line_provider.cpp
-        src/planner/cartesian_planner.cpp
-        src/planner/dp_plan.cpp
-        src/trajectory_optimization/trajectory_optimizer.cpp
-        src/trajectory_optimization/trajectory_nlp_optimizer.cpp
-        src/planning_base.cpp
-        src/on_lane_planning.cpp
-        src/planning_node.cpp)
+  src/planning/math/aabox2d.cpp
+  src/planning/math/box2d.cpp
+  src/planning/math/line_segment2d.cpp
+  src/planning/math/math_utils.cpp
+  src/planning/math/polygon2d.cpp
+  src/planning/math/vec2d.cpp
+  src/planning/planning.cpp
+  src/planning/discretized_trajectory.cpp
+  src/planning/environment.cpp
+  src/planning/dp_planner.cpp
+  src/planning/trajectory_nlp.cpp
+  src/planning/trajectory_optimizer.cpp
+  src/planning/visualization/plot.cpp
+  src/planning/visualization/color.cpp)
 
-add_executable(test_${PROJECT_NAME} test/test_planning_node.cpp ${SRC})
-target_link_libraries(test_${PROJECT_NAME} ${catkin_LIBRARIES} casadi)
+# add_library(${PROJECT_NAME} ${SRC})
+
+# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+# target_link_libraries(${PROJECT_NAME} casadi)
+
+add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC})
+
+# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
+
+add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(${PROJECT_NAME}_node
+  ${catkin_LIBRARIES}
+#   ${PROJECT_NAME}
+    casadi
+)

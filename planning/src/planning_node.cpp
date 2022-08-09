@@ -1,156 +1,195 @@
-#include "planning_node.h"
-#include <cstddef>
-#include <memory>
-#include <string>
-#include <vector>
+/***********************************************************************************
+ *  C++ Source Codes for "Autonomous Driving on Curvy Roads without Reliance on
+ *  Frenet Frame: A Cartesian-based Trajectory Planning Method".
+ ***********************************************************************************
+ *  Copyright (C) 2022 Bai Li
+ *  Users are suggested to cite the following article when they use the source
+ *codes. Bai Li et al., "Autonomous Driving on Curvy Roads without Reliance on
+ *  Frenet Frame: A Cartesian-based Trajectory Planning Method",
+ *  IEEE Transactions on Intelligent Transportation Systems, 2022.
+ ***********************************************************************************/
+
 #include <ros/ros.h>
-#include "common/dependency_injector.h"
-#include "common/discretized_trajectory.h"
-#include "common/math/polygon2d.h"
-#include "common/math/pose.h"
-#include "common/obstacle.h"
-#include "common/vehicle_state.h"
-#include "config/planning_config.h"
+
 #include "geometry_msgs/PoseStamped.h"
-#include "on_lane_planning.h"
 #include "planning/CenterLine.h"
 #include "planning/DynamicObstacles.h"
 #include "planning/Obstacles.h"
-#include "planning_base.h"
-#include "reference_line/reference_line.h"
-#include "visualization/plot.h"
+#include "planning/planning.h"
 
-namespace mujianhua {
-namespace planning {
+#include "planning/visualization/plot.h"
 
-PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
-    PlanningConfig planning_config;
+using namespace planning;
 
-    injector_ = std::make_shared<DependencyInjector>();
-    planning_ = std::make_shared<OnLanePlanning>(injector_);
-    planning_->Init(planning_config);
-    obstacles_ = std::make_shared<IndexedObstacles>();
+class CartesianPlannerNode {
+  public:
+    explicit CartesianPlannerNode(const ros::NodeHandle &nh) : nh_(nh) {
+        env_ = std::make_shared<Environment>(config_);
+        planner_ = std::make_shared<CartesianPlanner>(config_, env_);
 
-    reference_line_subscriber_ = nh_.subscribe(
-        "/center_line", 1, &PlanningNode::CenterLineCallback, this);
-    obstacles_subscriber_ =
-        nh_.subscribe("/obstacles", 1, &PlanningNode::ObstaclesCallback, this);
-    dynamic_obstacles_subscriber_ = nh_.subscribe(
-        "/dynamic_obstacles", 1, &PlanningNode::DynamicObstaclesCallback, this);
-    goal_subscriber_ = nh_.subscribe("/move_base_simple/goal", 1,
-                                     &PlanningNode::PlanCallback, this);
-}
+        center_line_subscriber_ = nh_.subscribe(
+            "/center_line", 1, &CartesianPlannerNode::CenterLineCallback, this);
+        obstacles_subscriber_ = nh_.subscribe(
+            "/obstacles", 1, &CartesianPlannerNode::ObstaclesCallback, this);
+        dynamic_obstacles_subscriber_ = nh_.subscribe(
+            "/dynamic_obstacles", 1,
+            &CartesianPlannerNode::DynamicObstaclesCallback, this);
 
-void PlanningNode::Proc() {
-    State state(0.0, 0.0, 0.0, 5.0);
-    local_view_.vehicle_state = std::make_shared<State>(state);
-    local_view_.obstacles = obstacles_;
-    local_view_.dynamic_obstacles = dynamic_obstacles_;
-    local_view_.static_obstacles = static_obstacles_;
+        goal_subscriber_ =
+            nh_.subscribe("/move_base_simple/goal", 1,
+                          &CartesianPlannerNode::PlanCallback, this);
 
-    planning_->UpdateReferenceLine(reference_line_);
-
-    DiscretizedTrajectory adc_trajectory_pb;
-    planning_->RunOnce(local_view_, &adc_trajectory_pb);
-}
-
-void PlanningNode::ObstaclesCallback(const ::planning::ObstaclesConstPtr &msg) {
-    size_t count = 0;
-    for (auto &obstacle : msg->obstacles) {
-        std::vector<math::Vec2d> points;
-        for (auto &pt : obstacle.points) {
-            points.emplace_back(pt.x, pt.y);
-        }
-        static_obstacles_.emplace_back(points);
-        Obstacle obs("static" + std::to_string(++count),
-                     math::Polygon2d{points}, true);
-        obstacles_->Add("static" + std::to_string(count), obs);
+        state_.x = 0.0;
+        state_.y = 0.0;
+        state_.theta = 0.0;
+        state_.v = 5.0;
+        state_.phi = 0.0;
+        state_.a = 0.0;
+        state_.omega = 0.0;
     }
-    Visualize();
-}
 
-void PlanningNode::DynamicObstaclesCallback(
-    const ::planning::DynamicObstaclesConstPtr &msg) {
-    size_t count = 0;
-    for (auto &obstacle : msg->obstacles) {
-        DynamicObstacle dynamic_obstacle;
-        for (auto &tp : obstacle.trajectory) {
-            math::Pose coord(tp.x, tp.y, tp.theta);
+    void CenterLineCallback(const CenterLineConstPtr &msg) {
+        Trajectory data;
+        for (auto &pt : msg->points) {
+            TrajectoryPoint tp;
+            tp.s = pt.s;
+            tp.x = pt.x;
+            tp.y = pt.y;
+            tp.theta = pt.theta;
+            tp.kappa = pt.kappa;
+            tp.left_bound = pt.left_bound;
+            tp.right_bound = pt.right_bound;
+            data.push_back(tp);
+        }
+
+        env_->SetReference(DiscretizedTrajectory(data));
+        env_->Visualize();
+    }
+
+    void ObstaclesCallback(const ObstaclesConstPtr &msg) {
+        env_->obstacles().clear();
+        for (auto &obstacle : msg->obstacles) {
             std::vector<math::Vec2d> points;
-            for (auto &pt : obstacle.polygon.points) {
-                points.push_back(coord.transform({pt.x, pt.y, 0.0}));
+            for (auto &pt : obstacle.points) {
+                points.emplace_back(pt.x, pt.y);
+            }
+            env_->obstacles().emplace_back(points);
+        }
+        env_->Visualize();
+    }
+
+    void DynamicObstaclesCallback(const DynamicObstaclesConstPtr &msg) {
+        env_->dynamic_obstacles().clear();
+        for (auto &obstacle : msg->obstacles) {
+            Environment::DynamicObstacle dynamic_obstacle;
+
+            for (auto &tp : obstacle.trajectory) {
+                math::Pose coord(tp.x, tp.y, tp.theta);
+                std::vector<math::Vec2d> points;
+                for (auto &pt : obstacle.polygon.points) {
+                    points.push_back(coord.transform({pt.x, pt.y, 0.0}));
+                }
+                math::Polygon2d polygon(points);
+
+                dynamic_obstacle.emplace_back(tp.time, points);
             }
 
-            dynamic_obstacle.emplace_back(tp.time, math::Polygon2d{points});
+            env_->dynamic_obstacles().push_back(dynamic_obstacle);
         }
-        dynamic_obstacles_.emplace_back(dynamic_obstacle);
-        Obstacle obs("dynamic" + std::to_string(++count), dynamic_obstacle,
-                     false);
-
-        obstacles_->Add("dynamic" + std::to_string(count), obs);
+        env_->Visualize();
     }
-    Visualize();
+
+    void PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
+        DiscretizedTrajectory result;
+
+        if (planner_->Plan(state_, result)) {
+            double dt = config_.tf / (double)(config_.nfe - 1);
+            for (int i = 0; i < config_.nfe; i++) {
+                double time = dt * i;
+                auto dynamic_obstacles = env_->QueryDynamicObstacles(time);
+                for (auto &obstacle : dynamic_obstacles) {
+                    int hue = int((double)obstacle.first /
+                                  env_->dynamic_obstacles().size() * 320);
+
+                    visualization::PlotPolygon(
+                        obstacle.second, 0.2,
+                        visualization::Color::fromHSV(hue, 1.0, 1.0),
+                        obstacle.first, "Online Obstacle");
+                }
+
+                auto &pt = result.data().at(i);
+                PlotVehicle(1, {pt.x, pt.y, pt.theta},
+                            atan(pt.kappa * config_.vehicle.wheel_base));
+                ros::Duration(dt).sleep();
+            }
+
+            visualization::Trigger();
+        }
+    }
+
+  private:
+    ros::NodeHandle nh_;
+    planning::CartesianPlannerConfig config_;
+    Env env_;
+    std::shared_ptr<planning::CartesianPlanner> planner_;
+    CartesianPlanner::StartState state_;
+
+    ros::Subscriber center_line_subscriber_, obstacles_subscriber_,
+        dynamic_obstacles_subscriber_, goal_subscriber_;
+
+    void PlotVehicle(int id, const math::Pose &pt, double phi) {
+        auto tires = GenerateTireBoxes({pt.x(), pt.y(), pt.theta()}, phi);
+
+        int tire_id = 1;
+        for (auto &tire : tires) {
+            visualization::PlotPolygon(math::Polygon2d(tire), 0.1,
+                                       visualization::Color::White,
+                                       id * (tire_id++), "Tires");
+        }
+        visualization::PlotPolygon(math::Polygon2d(config_.vehicle.GenerateBox(
+                                       {pt.x(), pt.y(), pt.theta()})),
+                                   0.2, visualization::Color::Yellow, id,
+                                   "Footprint");
+        visualization::Trigger();
+    }
+
+    std::array<math::Box2d, 4> GenerateTireBoxes(const math::Pose pose,
+                                                 double phi = 0.0) const {
+        auto front_pose = pose.extend(config_.vehicle.wheel_base);
+        auto track_width = config_.vehicle.width - 0.195;
+        double rear_track_width_2 = track_width / 2,
+               front_track_width_2 = track_width / 2;
+        double box_length = 0.6345;
+        double sin_t = sin(pose.theta());
+        double cos_t = cos(pose.theta());
+        return {
+            math::Box2d({pose.x() - rear_track_width_2 * sin_t,
+                         pose.y() + rear_track_width_2 * cos_t},
+                        pose.theta(), box_length, 0.195),
+            math::Box2d({pose.x() + rear_track_width_2 * sin_t,
+                         pose.y() - rear_track_width_2 * cos_t},
+                        pose.theta(), box_length, 0.195),
+            math::Box2d({front_pose.x() - front_track_width_2 * sin_t,
+                         front_pose.y() + front_track_width_2 * cos_t},
+                        front_pose.theta() + phi, box_length, 0.195),
+            math::Box2d({front_pose.x() + front_track_width_2 * sin_t,
+                         front_pose.y() - front_track_width_2 * cos_t},
+                        front_pose.theta() + phi, box_length, 0.195),
+        };
+    }
+};
+
+int main(int argc, char **argv) {
+    ros::init(argc, argv, "planning_node");
+
+    ros::NodeHandle nh;
+
+    ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
+                                   ros::console::levels::Debug);
+
+    visualization::Init(nh, "map", "planning_markers");
+
+    CartesianPlannerNode node(nh);
+    ros::spin();
+    return 0;
 }
-
-void PlanningNode::CenterLineCallback(
-    const ::planning::CenterLineConstPtr &msg) {
-    std::vector<TrajectoryPoint> points;
-    for (const auto pt : msg->points) {
-        TrajectoryPoint p;
-        p.s = pt.s;
-        p.x = pt.x;
-        p.y = pt.y;
-        p.theta = pt.theta;
-        p.kappa = pt.kappa;
-        p.left_bound = pt.left_bound;
-        p.right_bound = pt.right_bound;
-        points.push_back(p);
-    }
-    reference_line_ = new ReferenceLine(points);
-    Visualize();
-}
-
-void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
-    Proc();
-}
-
-void PlanningNode::Visualize() {
-    std::vector<double> lb_x, lb_y, ub_x, ub_y;
-
-    for (auto &point : reference_line_->reference_points()) {
-        auto lb = reference_line_->GetCartesian(point.s, point.left_bound);
-        auto ub = reference_line_->GetCartesian(point.s, -point.right_bound);
-
-        lb_x.push_back(lb.x());
-        lb_y.push_back(lb.y());
-        ub_x.push_back(ub.x());
-        ub_y.push_back(ub.y());
-    }
-
-    visualization::Plot(lb_x, lb_y, 0.1, visualization::Color::Grey, 1,
-                        "Road Left");
-    visualization::Plot(ub_x, ub_y, 0.1, visualization::Color::Grey, 1,
-                        "Road Right");
-
-    int idx = 0;
-    for (auto &obstacle : static_obstacles_) {
-        visualization::PlotPolygon(obstacle, 0.1, visualization::Color::Magenta,
-                                   idx++, "Obstacles");
-    }
-
-    // plot first frame of dynamic obstacles
-    idx = 1;
-    for (auto &obstacle : dynamic_obstacles_) {
-        auto color = visualization::Color::fromHSV(
-            int((double)idx / dynamic_obstacles_.size() * 320), 1.0, 1.0);
-        color.set_alpha(0.5);
-        visualization::PlotPolygon(obstacle[0].second, 0.1, color, idx,
-                                   "Online Obstacle");
-        idx++;
-    }
-
-    visualization::Trigger();
-}
-
-} // namespace planning
-} // namespace mujianhua

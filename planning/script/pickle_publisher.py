@@ -28,23 +28,19 @@ def main():
     with open(pickle_path) as f:
         reference = pickle.load(f)
 
-        center_pub = rospy.Publisher(
-            '/center_line', CenterLine, queue_size=1, latch=True)
+        center_pub = rospy.Publisher('/center_line', CenterLine, queue_size=1, latch=True)
         center_pub.publish(reference['center'])
 
         if 'static' in reference:
-            obstacles_pub = rospy.Publisher(
-                '/obstacles', Obstacles, queue_size=1, latch=True)
+            obstacles_pub = rospy.Publisher('/obstacles', Obstacles, queue_size=1, latch=True)
             obstacles_pub.publish(reference['static'])
 
         if 'dynamic' in reference:
-            obstacles_pub = rospy.Publisher(
-                '/dynamic_obstacles', DynamicObstacles, queue_size=1, latch=True)
+            obstacles_pub = rospy.Publisher('/dynamic_obstacles', DynamicObstacles, queue_size=1, latch=True)
             obstacles_pub.publish(reference['dynamic'])
 
         if 'path' in sys.argv:
-            ref_pub = rospy.Publisher(
-                '/center_line_path', Path, queue_size=1, latch=True)
+            ref_pub = rospy.Publisher('/center_line_path', Path, queue_size=1, latch=True)
             msg = Path()
             msg.header.stamp = rospy.Time.now()
             msg.header.frame_id = 'map'

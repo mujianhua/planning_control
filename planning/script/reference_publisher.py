@@ -17,7 +17,7 @@ import pickle
 import os
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
-from cartesian_planner.msg import CenterLine, CenterLinePoint, Obstacles, DynamicObstacles, DynamicObstacle, \
+from planning.msg import CenterLine, CenterLinePoint, Obstacles, DynamicObstacles, DynamicObstacle, \
     DynamicTrajectoryPoint
 from geometry_msgs.msg import Polygon, Point32
 
