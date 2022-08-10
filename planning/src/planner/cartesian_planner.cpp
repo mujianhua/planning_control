@@ -9,8 +9,8 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "planning/cartesian_planner.h"
-#include "planning/dp_planner.h"
+#include "planner/cartesian_planner.h"
+#include "planner/dp_planner.h"
 #include "visualization/plot.h"
 
 namespace planning {

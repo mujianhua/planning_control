@@ -12,6 +12,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 #include "math/polygon2d.h"
@@ -45,6 +46,14 @@ class Frame {
         return index_dynamic_obstacles_;
     }
 
+    void AddObstacle(const std::string &id, const DynamicObstacle &obs);
+
+    void AddObstacle(const std::string &id, const StaticObstacle &obs);
+
+    void ClearStaticObstacles() { index_static_obstacles_.ClearAll(); }
+
+    void ClearDynamicObstacles() { index_dynamic_obstacles_.ClearAll(); }
+
     const ReferenceLine &reference_line() const { return reference_line_; }
 
     void SetReferenceLine(const ReferenceLine &reference);
@@ -59,19 +68,21 @@ class Frame {
     void Visualize();
 
   private:
+    bool CheckStaticCollision(const math::Box2d &rect);
+
+    bool CheckDynamicCollision(double time, const math::Box2d &rect);
+
+  private:
     PlanningConfig config_;
     std::vector<DynamicObstacle> dynamic_obstacles_;
     std::vector<StaticObstacle> static_obstacles_;
 
+    // TODO:
     IndexedDynamicObstacles index_dynamic_obstacles_;
     IndexedStaticObstacle index_static_obstacles_;
 
     ReferenceLine reference_line_;
     std::vector<math::Vec2d> road_barrier_;
-
-    bool CheckStaticCollision(const math::Box2d &rect);
-
-    bool CheckDynamicCollision(double time, const math::Box2d &rect);
 };
 
 } // namespace planning

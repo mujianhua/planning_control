@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include "planning_config.h"
+#include "planning/planning_config.h"
 
-#include "dp_planner.h"
-#include "planning/planner.h"
-#include "trajectory_optimizer.h"
+#include "planner/dp_planner.h"
+#include "planner/planner.h"
+#include "planning/trajectory_optimizer.h"
 
 namespace planning {
 
@@ -26,6 +26,8 @@ class CartesianPlanner : public Planner {
 
     bool Plan(const StartState &state, const std::shared_ptr<Frame> &frame,
               DiscretizedTrajectory &result) override;
+
+    std::string Name() override { return "Cartesian Planner"; }
 
   private:
     PlanningConfig config_;

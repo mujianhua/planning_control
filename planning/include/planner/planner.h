@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "planning/discretized_trajectory.h"
 #include "planning/frame.h"
 #include "planning/planning_config.h"
@@ -24,6 +26,8 @@ class Planner {
     virtual bool Plan(const StartState &state,
                       const std::shared_ptr<Frame> &frame,
                       DiscretizedTrajectory &result) = 0;
+
+    virtual std::string Name() = 0;
 
   protected:
     PlanningConfig config_;

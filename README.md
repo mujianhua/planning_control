@@ -12,6 +12,7 @@ Dependence and Reference
 * [Ipopt](https://github.com/coin-or/Ipopt)
 * [spline](https://github.com/ttk592/spline)
 * [path_optimizer](https://github.com/LiJiangnanBit/path_optimizer)
+* [CartesianPlanner](https://github.com/libai1943/CartesianPlanner)
 
 # Planning
 无人车路径规划

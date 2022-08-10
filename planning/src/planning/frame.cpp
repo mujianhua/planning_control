@@ -18,6 +18,14 @@ namespace planning {
 
 constexpr double kSampleStep = 0.1;
 
+void Frame::AddObstacle(const std::string &id, const DynamicObstacle &obs) {
+    index_dynamic_obstacles_.Add(id, obs);
+}
+
+void Frame::AddObstacle(const std::string &id, const StaticObstacle &obs) {
+    index_static_obstacles_.Add(id, obs);
+}
+
 void Frame::SetReferenceLine(const ReferenceLine &reference) {
     reference_line_ = reference;
 

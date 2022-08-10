@@ -12,13 +12,16 @@
 #include <ros/ros.h>
 
 #include "geometry_msgs/PoseStamped.h"
+
+#include "planner/cartesian_planner.h"
+#include "planner/planner.h"
+
 #include "planning/CenterLine.h"
 #include "planning/DynamicObstacles.h"
 #include "planning/Obstacles.h"
-#include "planning/cartesian_planner.h"
-#include "planning/indexed_list.h"
 
-#include "planning/planner.h"
+#include "planning/indexed_list.h"
+#include "planning/planning_config.h"
 #include "planning/reference_line.h"
 #include "visualization/plot.h"
 
@@ -28,7 +31,10 @@ class PlanningNode {
   public:
     explicit PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
         frame_ = std::make_shared<Frame>(config_);
-        planner_ = std::make_shared<CartesianPlanner>(config_);
+
+        if (FLAGS_planner == "Cartesian") {
+            planner_ = std::make_shared<CartesianPlanner>(config_);
+        }
 
         center_line_subscriber_ = nh_.subscribe(
             "/center_line", 1, &PlanningNode::CenterLineCallback, this);
@@ -60,6 +66,7 @@ class PlanningNode {
         frame_->Visualize();
     }
 
+    // TODO: 处理不同plan中的相同障碍物,进行编号
     void ObstaclesCallback(const ObstaclesConstPtr &msg) {
         frame_->obstacles().clear();
         size_t count = 0;
@@ -69,9 +76,10 @@ class PlanningNode {
                 points.emplace_back(pt.x, pt.y);
             }
             frame_->obstacles().emplace_back(points);
-            frame_->index_static_obstacles().Add(
-                "static" + std::to_string(++count), math::Polygon2d(points));
+            frame_->AddObstacle("static" + std::to_string(++count),
+                                math::Polygon2d(points));
         }
+        // frame_->index_static_obstacles().Clear("static2");
         frame_->Visualize();
     }
 
@@ -91,8 +99,8 @@ class PlanningNode {
                 dynamic_obstacle.emplace_back(tp.time, points);
             }
             // TODO:
-            frame_->index_dynamic_obstacles().Add(
-                "dynamic" + std::to_string(++count), dynamic_obstacle);
+            frame_->AddObstacle("dynamic" + std::to_string(++count),
+                                dynamic_obstacle);
             frame_->dynamic_obstacles().push_back(dynamic_obstacle);
         }
         frame_->Visualize();
@@ -181,8 +189,8 @@ class PlanningNode {
 };
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "planning_node");
 
+    ros::init(argc, argv, "planning_node");
     ros::NodeHandle nh;
 
     ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
@@ -191,6 +199,7 @@ int main(int argc, char **argv) {
     visualization::Init(nh, "map", "planning_markers");
 
     PlanningNode node(nh);
+
     ros::spin();
     return 0;
 }

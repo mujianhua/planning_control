@@ -19,11 +19,11 @@ namespace planning {
 DiscretizedTrajectory::DiscretizedTrajectory(const DiscretizedTrajectory &rhs,
                                              size_t begin, size_t end) {
     if (end < 0) {
-        end = rhs.data_.size();
+        end = rhs.trajectory_points_.size();
     }
-    data_.resize(end - begin);
-    std::copy_n(std::next(rhs.data_.begin(), begin), data_.size(),
-                data_.begin());
+    trajectory_points_.resize(end - begin);
+    std::copy_n(std::next(rhs.trajectory_points_.begin(), begin),
+                trajectory_points_.size(), trajectory_points_.begin());
 }
 
 } // namespace planning

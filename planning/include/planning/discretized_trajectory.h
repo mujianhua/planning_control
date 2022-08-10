@@ -35,12 +35,12 @@ class DiscretizedTrajectory {
                           size_t end = -1);
 
     explicit DiscretizedTrajectory(std::vector<TrajectoryPoint> points)
-        : data_(std::move(points)) {}
+        : trajectory_points_(std::move(points)) {}
 
-    inline const DataType &data() const { return data_; }
+    inline const DataType &data() const { return trajectory_points_; }
 
   protected:
-    std::vector<TrajectoryPoint> data_;
+    std::vector<TrajectoryPoint> trajectory_points_;
 };
 
 } // namespace planning

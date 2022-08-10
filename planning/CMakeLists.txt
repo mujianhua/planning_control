@@ -10,6 +10,8 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
 )
 
+find_package(gflags REQUIRED)
+
 add_message_files(
   FILES
   CenterLinePoint.msg
@@ -52,15 +54,17 @@ set(SRC
   src/math/math_utils.cpp
   src/math/polygon2d.cpp
   src/math/vec2d.cpp
+  src/math/cartesian_frenet_conversion.cpp
   src/visualization/plot.cpp
   src/visualization/color.cpp
-  src/planning/cartesian_planner.cpp
+  src/planning/planning_config.cpp
   src/planning/reference_line.cpp
   src/planning/discretized_trajectory.cpp
   src/planning/frame.cpp
-  src/planning/dp_planner.cpp
   src/planning/trajectory_nlp.cpp
-  src/planning/trajectory_optimizer.cpp)
+  src/planning/trajectory_optimizer.cpp
+  src/planner/cartesian_planner.cpp
+  src/planner/dp_planner.cpp)
 
 add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC})
 
@@ -69,4 +73,5 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
     casadi
+    gflags
 )

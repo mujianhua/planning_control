@@ -16,12 +16,12 @@
 #include <memory>
 #include <tuple>
 
-#include "frame.h"
 #include "math/polygon2d.h"
 #include "math/pose.h"
 #include "math/vec2d.h"
 #include "planning/discretized_trajectory.h"
-#include "planning_config.h"
+#include "planning/frame.h"
+#include "planning/planning_config.h"
 
 namespace planning {
 using math::Polygon2d;

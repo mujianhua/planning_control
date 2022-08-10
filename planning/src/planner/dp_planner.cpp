@@ -9,7 +9,7 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "planning/dp_planner.h"
+#include "planner/dp_planner.h"
 
 #include <bitset>
 #include <sstream>

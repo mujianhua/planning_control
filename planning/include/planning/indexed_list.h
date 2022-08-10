@@ -46,6 +46,19 @@ template <typename I, typename T> class IndexedList {
         return *this;
     }
 
+    void ClearAll() {
+        object_list_.clear();
+        object_dict_.clear();
+    }
+
+    void Clear(const I id) {
+        object_dict_.erase(object_dict_.find(id));
+        object_list_.clear();
+        for (const auto &iter : object_dict_) {
+            object_list_.push_back(&iter.second);
+        }
+    }
+
   private:
     std::vector<const T *> object_list_;
     std::unordered_map<I, T> object_dict_;
