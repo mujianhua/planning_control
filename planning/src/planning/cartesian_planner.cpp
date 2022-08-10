@@ -10,17 +10,20 @@
  ***********************************************************************************/
 
 #include "planning/cartesian_planner.h"
+#include "planning/dp_planner.h"
 #include "visualization/plot.h"
 
 namespace planning {
 
 bool CartesianPlanner::Plan(const StartState &state,
+                            const std::shared_ptr<Frame> &frame,
                             DiscretizedTrajectory &result) {
+
     ros::Time start_time = ros::Time::now();
     ros::Time current_time = start_time;
 
     DiscretizedTrajectory coarse_trajectory;
-    if (!dp_.Plan(state.x, state.y, state.theta, coarse_trajectory)) {
+    if (!dp_.Plan(state.x, state.y, state.theta, frame, coarse_trajectory)) {
         ROS_ERROR("DP failed");
         return false;
     }
@@ -52,7 +55,7 @@ bool CartesianPlanner::Plan(const StartState &state,
     visualization::Trigger();
 
     States optimized;
-    if (!opti_.OptimizeIteratively(coarse_trajectory, opti_constraints,
+    if (!opti_.OptimizeIteratively(coarse_trajectory, frame, opti_constraints,
                                    optimized)) {
         ROS_ERROR("Optimization failed");
         return false;

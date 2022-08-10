@@ -35,7 +35,7 @@ struct Constraints {
 
 class TrajectoryNLP {
   public:
-    explicit TrajectoryNLP(const CartesianPlannerConfig &);
+    explicit TrajectoryNLP(const PlanningConfig &);
 
     double SolveIteratively(double w_inf, const Constraints &constraints,
                             const States &guess,
@@ -43,7 +43,7 @@ class TrajectoryNLP {
                             States &result);
 
   private:
-    CartesianPlannerConfig config_;
+    PlanningConfig config_;
     Dict nlp_config_;
     Function iterative_solver_;
     Function infeasibility_evaluator_;

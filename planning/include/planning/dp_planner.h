@@ -37,10 +37,10 @@ constexpr int NL = 10;
 
 class DpPlanner {
   public:
-    DpPlanner(const CartesianPlannerConfig &config,
-              const std::shared_ptr<Frame> &frame);
+    DpPlanner(const PlanningConfig &config);
 
     bool Plan(double start_x, double start_y, double start_theta,
+              const std::shared_ptr<Frame> &frame,
               DiscretizedTrajectory &result);
 
   private:
@@ -72,7 +72,7 @@ class DpPlanner {
     };
 
     std::shared_ptr<Frame> frame_;
-    CartesianPlannerConfig config_;
+    PlanningConfig config_;
 
     int nseg_;
     double unit_time_;

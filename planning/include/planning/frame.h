@@ -29,7 +29,7 @@ class Frame {
     using IndexedDynamicObstacles = IndexedList<std::string, DynamicObstacle>;
     using IndexedStaticObstacle = IndexedList<std::string, StaticObstacle>;
 
-    explicit Frame(const CartesianPlannerConfig &config) : config_(config) {}
+    explicit Frame(const PlanningConfig &config) : config_(config) {}
 
     std::vector<math::Polygon2d> &obstacles() { return static_obstacles_; }
 
@@ -59,7 +59,7 @@ class Frame {
     void Visualize();
 
   private:
-    CartesianPlannerConfig config_;
+    PlanningConfig config_;
     std::vector<DynamicObstacle> dynamic_obstacles_;
     std::vector<StaticObstacle> static_obstacles_;
 

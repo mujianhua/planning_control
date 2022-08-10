@@ -14,29 +14,21 @@
 #include "planning_config.h"
 
 #include "dp_planner.h"
+#include "planning/planner.h"
 #include "trajectory_optimizer.h"
 
 namespace planning {
 
-class CartesianPlanner {
+class CartesianPlanner : public Planner {
   public:
-    struct StartState {
-        StartState(double xx = 0.0, double yy = 0.0, double ttheta = 0.0,
-                   double vv = 0.0, double pphi = 0.0, double aa = 0.0,
-                   double oomega = 0.0)
-            : x(xx), y(yy), theta(ttheta), v(vv), phi(pphi), a(aa),
-              omega(oomega) {}
-        double x, y, theta, v, phi, a, omega;
-    };
+    explicit CartesianPlanner(const PlanningConfig &config)
+        : Planner(config_), dp_(config), opti_(config) {}
 
-    explicit CartesianPlanner(const CartesianPlannerConfig &config,
-                              const std::shared_ptr<Frame> &frame)
-        : config_(config), dp_(config, frame), opti_(config, frame) {}
-
-    bool Plan(const StartState &state, DiscretizedTrajectory &result);
+    bool Plan(const StartState &state, const std::shared_ptr<Frame> &frame,
+              DiscretizedTrajectory &result) override;
 
   private:
-    CartesianPlannerConfig config_;
+    PlanningConfig config_;
     DpPlanner dp_;
     TrajectoryOptimizer opti_;
 };

@@ -15,7 +15,7 @@
 
 namespace planning {
 
-struct CartesianPlannerConfig {
+struct PlanningConfig {
     /**
      * Number of finite elements used to discretize an OCP
      */

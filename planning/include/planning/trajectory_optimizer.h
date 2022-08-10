@@ -27,14 +27,14 @@ using math::Polygon2d;
 
 class TrajectoryOptimizer {
   public:
-    TrajectoryOptimizer(const CartesianPlannerConfig &config,
-                        const std::shared_ptr<Frame> &frame);
+    TrajectoryOptimizer(const PlanningConfig &config);
 
     bool OptimizeIteratively(const DiscretizedTrajectory &coarse,
+                             const std::shared_ptr<Frame> &frame,
                              const Constraints &constraints, States &result);
 
   private:
-    CartesianPlannerConfig config_;
+    PlanningConfig config_;
     std::shared_ptr<Frame> frame_;
     VehicleParam vehicle_;
     TrajectoryNLP nlp_;

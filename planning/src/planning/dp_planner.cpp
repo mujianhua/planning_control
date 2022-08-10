@@ -24,10 +24,8 @@ namespace planning {
 
 constexpr double kMathEpsilon = 1e-3;
 
-DpPlanner::DpPlanner(const CartesianPlannerConfig &config,
-                     const std::shared_ptr<Frame> &frame)
-    : frame_(frame), config_(config), nseg_(config.nfe / NT),
-      unit_time_(config.tf / NT) {
+DpPlanner::DpPlanner(const PlanningConfig &config)
+    : config_(config), nseg_(config.nfe / NT), unit_time_(config.tf / NT) {
     time_ = math::LinSpaced<NT>(unit_time_, config.tf);
     station_ =
         math::LinSpaced<NS>(0, unit_time_ * config_.vehicle.max_velocity);
@@ -140,7 +138,9 @@ std::pair<double, double> DpPlanner::GetCost(StateIndex parent_ind,
 }
 
 bool DpPlanner::Plan(double start_x, double start_y, double start_theta,
+                     const std::shared_ptr<Frame> &frame,
                      DiscretizedTrajectory &result) {
+    frame_ = frame;
     auto sl = frame_->reference_line().GetProjection({start_x, start_y});
     state_.start_s = sl.x();
     state_.start_l = sl.y();

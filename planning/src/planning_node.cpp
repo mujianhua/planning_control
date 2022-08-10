@@ -18,6 +18,7 @@
 #include "planning/cartesian_planner.h"
 #include "planning/indexed_list.h"
 
+#include "planning/planner.h"
 #include "planning/reference_line.h"
 #include "visualization/plot.h"
 
@@ -27,7 +28,7 @@ class PlanningNode {
   public:
     explicit PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
         frame_ = std::make_shared<Frame>(config_);
-        planner_ = std::make_shared<CartesianPlanner>(config_, frame_);
+        planner_ = std::make_shared<CartesianPlanner>(config_);
 
         center_line_subscriber_ = nh_.subscribe(
             "/center_line", 1, &PlanningNode::CenterLineCallback, this);
@@ -102,7 +103,7 @@ class PlanningNode {
 
         state_ = CartesianPlanner::StartState(0.0, 0.0, 0.0, 5.0);
 
-        if (planner_->Plan(state_, result)) {
+        if (planner_->Plan(state_, frame_, result)) {
             double dt = config_.tf / (double)(config_.nfe - 1);
             for (int i = 0; i < config_.nfe; i++) {
                 double time = dt * i;
@@ -129,9 +130,9 @@ class PlanningNode {
 
   private:
     ros::NodeHandle nh_;
-    planning::CartesianPlannerConfig config_;
+    planning::PlanningConfig config_;
     std::shared_ptr<Frame> frame_;
-    std::shared_ptr<planning::CartesianPlanner> planner_;
+    std::shared_ptr<Planner> planner_;
     CartesianPlanner::StartState state_{};
 
     ros::Subscriber center_line_subscriber_, obstacles_subscriber_,

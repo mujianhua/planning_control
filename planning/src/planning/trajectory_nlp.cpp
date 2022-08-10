@@ -13,8 +13,7 @@
 
 namespace planning {
 
-TrajectoryNLP::TrajectoryNLP(const CartesianPlannerConfig &config)
-    : config_(config) {
+TrajectoryNLP::TrajectoryNLP(const PlanningConfig &config) : config_(config) {
     nlp_config_ = {{"ipopt", Dict({
 #ifdef WITH_HSL
                                  {"linear_solver", "ma27"},

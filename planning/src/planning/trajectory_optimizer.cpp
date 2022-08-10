@@ -18,15 +18,15 @@
 
 namespace planning {
 
-TrajectoryOptimizer::TrajectoryOptimizer(const CartesianPlannerConfig &config,
-                                         const std::shared_ptr<Frame> &frame)
-    : config_(config), frame_(frame), nlp_(config) {
+TrajectoryOptimizer::TrajectoryOptimizer(const PlanningConfig &config)
+    : config_(config), nlp_(config) {
     vehicle_ = config_.vehicle;
 }
 
 bool TrajectoryOptimizer::OptimizeIteratively(
-    const DiscretizedTrajectory &coarse, const Constraints &constraints,
-    States &result) {
+    const DiscretizedTrajectory &coarse, const std::shared_ptr<Frame> &frame,
+    const Constraints &constraints, States &result) {
+    frame_ = frame;
     States guess;
     for (auto &pt : coarse.data()) {
         guess.x.push_back(pt.x);
