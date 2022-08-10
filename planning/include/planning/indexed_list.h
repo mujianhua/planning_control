@@ -30,6 +30,8 @@ template <typename I, typename T> class IndexedList {
         }
     }
 
+    const size_t Size() { return object_list_.size(); }
+
     const std::vector<const T *> &Items() const { return object_list_; }
 
     const std::unordered_map<I, T> &Dict() const { return object_dict_; }

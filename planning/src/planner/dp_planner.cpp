@@ -64,7 +64,7 @@ double DpPlanner::GetCollisionCost(StateIndex parent_ind, StateIndex cur_ind) {
         last_s = pt.x();
 
         auto cart = frame_->reference_line().GetCartesian(pt.x(), pt.y());
-        auto ref = frame_->reference_line().EvaluateStation(pt.x());
+        auto ref = frame_->reference_line().GetMatchPoint(pt.x());
         double lb = std::min(0.0, -ref.right_bound + safe_margin_);
         double ub = std::max(0.0, ref.left_bound - safe_margin_);
         if (pt.y() < lb - kMathEpsilon || pt.y() > ub + kMathEpsilon) {
@@ -141,7 +141,7 @@ bool DpPlanner::Plan(double start_x, double start_y, double start_theta,
                      const std::shared_ptr<Frame> &frame,
                      DiscretizedTrajectory &result) {
     frame_ = frame;
-    auto sl = frame_->reference_line().GetProjection({start_x, start_y});
+    auto sl = frame_->reference_line().XYToSL({start_x, start_y});
     state_.start_s = sl.x();
     state_.start_l = sl.y();
     state_.start_theta = start_theta;
@@ -240,7 +240,7 @@ bool DpPlanner::Plan(double start_x, double start_y, double start_theta,
 
             auto xy = frame_->reference_line().GetCartesian(segment[j].x(),
                                                             segment[j].y());
-            auto tp = frame_->reference_line().EvaluateStation(segment[j].x());
+            auto tp = frame_->reference_line().GetMatchPoint(segment[j].x());
             int n = i * nseg_ + j;
             data[n].s = segment[j].x();
             data[n].x = xy.x();

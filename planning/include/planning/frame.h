@@ -1,13 +1,7 @@
-/***********************************************************************************
- *  C++ Source Codes for "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method".
- ***********************************************************************************
- *  Copyright (C) 2022 Bai Li
- *  Users are suggested to cite the following article when they use the source
- *codes. Bai Li et al., "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method",
- *  IEEE Transactions on Intelligent Transportation Systems, 2022.
- ***********************************************************************************/
+/**
+ * @file frame.h
+ * @brief planning dependency, processing reference line and obstacles.
+ */
 
 #pragma once
 
@@ -32,11 +26,9 @@ class Frame {
 
     explicit Frame(const PlanningConfig &config) : config_(config) {}
 
-    std::vector<math::Polygon2d> &obstacles() { return static_obstacles_; }
+    const ReferenceLine &reference_line() const { return reference_line_; }
 
-    std::vector<DynamicObstacle> &dynamic_obstacles() {
-        return dynamic_obstacles_;
-    }
+    void SetReferenceLine(const ReferenceLine &reference);
 
     IndexedStaticObstacle &index_static_obstacles() {
         return index_static_obstacles_;
@@ -54,10 +46,6 @@ class Frame {
 
     void ClearDynamicObstacles() { index_dynamic_obstacles_.ClearAll(); }
 
-    const ReferenceLine &reference_line() const { return reference_line_; }
-
-    void SetReferenceLine(const ReferenceLine &reference);
-
     bool CheckCollision(double time, const math::Box2d &rect);
 
     bool CheckOptimizationCollision(double time, const math::Pose &pose,
@@ -74,8 +62,6 @@ class Frame {
 
   private:
     PlanningConfig config_;
-    std::vector<DynamicObstacle> dynamic_obstacles_;
-    std::vector<StaticObstacle> static_obstacles_;
 
     // TODO:
     IndexedDynamicObstacles index_dynamic_obstacles_;

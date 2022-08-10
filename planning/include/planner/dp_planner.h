@@ -94,7 +94,7 @@ class DpPlanner {
         if (l_ind == NL - 1)
             return 0.0;
 
-        auto ref = frame_->reference_line().EvaluateStation(s);
+        auto ref = frame_->reference_line().GetMatchPoint(s);
         double lb = -ref.right_bound + safe_margin_;
         double ub = ref.left_bound - safe_margin_;
 

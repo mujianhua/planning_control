@@ -2,6 +2,7 @@
 
 #include "planning/reference_line.h"
 #include "math/math_utils.h"
+#include "planning/data_struct.h"
 
 #include <algorithm>
 
@@ -53,7 +54,7 @@ TrajectoryPoint LinearInterpolateTrajectory(const TrajectoryPoint &p0,
     return pt;
 }
 
-TrajectoryPoint ReferenceLine::EvaluateStation(double station) const {
+TrajectoryPoint ReferenceLine::GetMatchPoint(double station) const {
     auto iter = QueryLowerBoundStationPoint(station);
 
     if (iter == reference_points_.begin()) {
@@ -87,7 +88,7 @@ ReferenceLine::QueryNearestPoint(const Vec2d &point,
     return nearest_iter;
 }
 
-Vec2d ReferenceLine::GetProjection(const Vec2d &xy) const {
+TrajectoryPoint ReferenceLine::GetProjection(const Vec2d &xy) const {
     long point_idx =
         std::distance(reference_points_.begin(), QueryNearestPoint(xy));
     auto project_point = reference_points_[point_idx];
@@ -112,7 +113,11 @@ Vec2d ReferenceLine::GetProjection(const Vec2d &xy) const {
             reference_points_[index_start], reference_points_[index_end],
             reference_points_[index_start].s + delta_s);
     }
+    return project_point;
+}
 
+Vec2d ReferenceLine::XYToSL(const Vec2d &xy) const {
+    auto project_point = GetProjection(xy);
     double nr_x = xy.x() - project_point.x, nr_y = xy.y() - project_point.y;
     double lateral =
         copysign(hypot(nr_x, nr_y), nr_y * cos(project_point.theta) -
@@ -121,7 +126,7 @@ Vec2d ReferenceLine::GetProjection(const Vec2d &xy) const {
 }
 
 Vec2d ReferenceLine::GetCartesian(double station, double lateral) const {
-    auto ref = EvaluateStation(station);
+    auto ref = GetMatchPoint(station);
     return {ref.x - lateral * sin(ref.theta), ref.y + lateral * cos(ref.theta)};
 }
 

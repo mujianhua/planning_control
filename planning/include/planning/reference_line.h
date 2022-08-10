@@ -38,19 +38,22 @@ class ReferenceLine {
         return reference_points_;
     }
 
+    TrajectoryPoint GetMatchPoint(double station) const;
+
+    TrajectoryPoint GetProjection(const Vec2d &xy) const;
+
+    Vec2d XYToSL(const Vec2d &xy) const;
+
+    Vec2d GetCartesian(double station, double lateral) const;
+
+  private:
     std::vector<TrajectoryPoint>::const_iterator
     QueryLowerBoundStationPoint(double station) const;
 
     std::vector<TrajectoryPoint>::const_iterator
     QueryNearestPoint(const Vec2d &point, double *out_distance = nullptr) const;
 
-    TrajectoryPoint EvaluateStation(double station) const;
-
-    Vec2d GetProjection(const Vec2d &xy) const;
-
-    Vec2d GetCartesian(double station, double lateral) const;
-
-  protected:
+  private:
     std::vector<TrajectoryPoint> reference_points_;
 };
 

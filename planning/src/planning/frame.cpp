@@ -36,7 +36,7 @@ void Frame::SetReferenceLine(const ReferenceLine &reference) {
     int sample_points = int((back_s - start_s) / kSampleStep);
     for (int i = 0; i <= sample_points; i++) {
         double s = start_s + i * kSampleStep;
-        auto ref = reference_line_.EvaluateStation(s);
+        auto ref = reference_line_.GetMatchPoint(s);
 
         road_barrier_.push_back(
             reference_line_.GetCartesian(s, ref.left_bound));
@@ -49,8 +49,8 @@ void Frame::SetReferenceLine(const ReferenceLine &reference) {
 }
 
 bool Frame::CheckStaticCollision(const math::Box2d &rect) {
-    for (auto &obstacle : static_obstacles_) {
-        if (obstacle.HasOverlap(rect)) {
+    for (auto &obstacle : index_static_obstacles_.Items()) {
+        if (obstacle->HasOverlap(rect)) {
             return true;
         }
     }
@@ -114,15 +114,16 @@ bool Frame::CheckOptimizationCollision(double time, const math::Pose &pose,
         CheckDynamicCollision(time, math::Box2d(r_box))) {
         return true;
     }
+    return false;
 }
 
 bool Frame::CheckDynamicCollision(double time, const math::Box2d &rect) {
-    for (auto &obstacle : dynamic_obstacles_) {
-        if (obstacle.front().first > time || obstacle.back().first < time) {
+    for (auto &obstacle : index_dynamic_obstacles_.Items()) {
+        if (obstacle->front().first > time || obstacle->back().first < time) {
             continue;
         }
         auto result = std::upper_bound(
-            obstacle.begin(), obstacle.end(), time,
+            obstacle->begin(), obstacle->end(), time,
             [](double val, const std::pair<double, math::Polygon2d> &ob) {
                 return val < ob.first;
             });
@@ -139,13 +140,13 @@ std::unordered_map<int, math::Polygon2d>
 Frame::QueryDynamicObstacles(double time) {
     std::unordered_map<int, math::Polygon2d> filtered;
     int idx = 0;
-    for (auto &obstacle : dynamic_obstacles_) {
+    for (auto &obstacle : index_dynamic_obstacles_.Items()) {
         idx++;
-        if (obstacle.front().first > time || obstacle.back().first < time) {
+        if (obstacle->front().first > time || obstacle->back().first < time) {
             continue;
         }
         auto result = std::upper_bound(
-            obstacle.begin(), obstacle.end(), time,
+            obstacle->begin(), obstacle->end(), time,
             [](double val, const std::pair<double, math::Polygon2d> &ob) {
                 return val < ob.first;
             });
@@ -174,18 +175,18 @@ void Frame::Visualize() {
                         "Road Right");
 
     int idx = 0;
-    for (auto &obstacle : static_obstacles_) {
-        visualization::PlotPolygon(obstacle, 0.1, visualization::Color::Magenta,
-                                   idx++, "Obstacles");
+    for (auto &obstacle : index_static_obstacles_.Items()) {
+        visualization::PlotPolygon(
+            *obstacle, 0.1, visualization::Color::Magenta, idx++, "Obstacles");
     }
 
     // plot first frame of dynamic obstacles
     idx = 1;
-    for (auto &obstacle : dynamic_obstacles_) {
+    for (auto &obstacle : index_dynamic_obstacles_.Items()) {
         auto color = visualization::Color::fromHSV(
-            int((double)idx / dynamic_obstacles_.size() * 320), 1.0, 1.0);
+            int((double)idx / index_dynamic_obstacles_.Size() * 320), 1.0, 1.0);
         color.set_alpha(0.5);
-        visualization::PlotPolygon(obstacle[0].second, 0.1, color, idx,
+        visualization::PlotPolygon(obstacle->at(0).second, 0.1, color, idx,
                                    "Online Obstacle");
         idx++;
     }

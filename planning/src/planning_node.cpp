@@ -39,7 +39,7 @@ class PlanningNode {
         center_line_subscriber_ = nh_.subscribe(
             "/center_line", 1, &PlanningNode::CenterLineCallback, this);
         obstacles_subscriber_ = nh_.subscribe(
-            "/obstacles", 1, &PlanningNode::ObstaclesCallback, this);
+            "/obstacles", 1, &PlanningNode::StaticObstaclesCallback, this);
         dynamic_obstacles_subscriber_ =
             nh_.subscribe("/dynamic_obstacles", 1,
                           &PlanningNode::DynamicObstaclesCallback, this);
@@ -67,24 +67,24 @@ class PlanningNode {
     }
 
     // TODO: 处理不同plan中的相同障碍物,进行编号
-    void ObstaclesCallback(const ObstaclesConstPtr &msg) {
-        frame_->obstacles().clear();
+    void StaticObstaclesCallback(const ObstaclesConstPtr &msg) {
+        ROS_DEBUG("[Planning Node] receive static obstacles message.");
+        frame_->ClearStaticObstacles();
         size_t count = 0;
         for (auto &obstacle : msg->obstacles) {
             std::vector<math::Vec2d> points;
             for (auto &pt : obstacle.points) {
                 points.emplace_back(pt.x, pt.y);
             }
-            frame_->obstacles().emplace_back(points);
             frame_->AddObstacle("static" + std::to_string(++count),
                                 math::Polygon2d(points));
         }
-        // frame_->index_static_obstacles().Clear("static2");
         frame_->Visualize();
     }
 
     void DynamicObstaclesCallback(const DynamicObstaclesConstPtr &msg) {
-        frame_->dynamic_obstacles().clear();
+        ROS_DEBUG("[Planning Node] receive dynamic obstacles message.");
+        frame_->ClearDynamicObstacles();
         size_t count = 0;
         for (auto &obstacle : msg->obstacles) {
             Frame::DynamicObstacle dynamic_obstacle;
@@ -101,7 +101,6 @@ class PlanningNode {
             // TODO:
             frame_->AddObstacle("dynamic" + std::to_string(++count),
                                 dynamic_obstacle);
-            frame_->dynamic_obstacles().push_back(dynamic_obstacle);
         }
         frame_->Visualize();
     }
@@ -117,8 +116,9 @@ class PlanningNode {
                 double time = dt * i;
                 auto dynamic_obstacles = frame_->QueryDynamicObstacles(time);
                 for (auto &obstacle : dynamic_obstacles) {
-                    int hue = int((double)obstacle.first /
-                                  frame_->dynamic_obstacles().size() * 320);
+                    int hue =
+                        int((double)obstacle.first /
+                            frame_->index_dynamic_obstacles().Size() * 320);
 
                     visualization::PlotPolygon(
                         obstacle.second, 0.2,
