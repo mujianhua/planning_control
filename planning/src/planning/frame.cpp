@@ -43,7 +43,6 @@ void Frame::SetReferenceLine(const ReferenceLine &reference) {
         road_barrier_.push_back(
             reference_line_.GetCartesian(s, -ref.right_bound));
     }
-
     std::sort(road_barrier_.begin(), road_barrier_.end(),
               [](const Vec2d &a, const Vec2d &b) { return a.x() < b.x(); });
 }
