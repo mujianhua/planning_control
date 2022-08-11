@@ -10,9 +10,13 @@
  ***********************************************************************************/
 
 #include "visualization/plot.h"
+#include <cstddef>
+#include <cstdint>
+#include <mutex>
 
 namespace planning {
 namespace visualization {
+
 namespace {
 std::string frame_ = "map";
 std::mutex mutex_;
@@ -140,20 +144,18 @@ void PlotPoints(const Vector &xs, const Vector &ys, double width,
         msg.points.push_back(pt);
     }
 
-    mutex_.lock();
+    std::lock_guard<std::mutex> guard(mutex_);
     arr_.markers.push_back(msg);
-    mutex_.unlock();
 }
 
 void Trigger() {
-    mutex_.lock();
+    std::lock_guard<std::mutex> guard(mutex_);
     publisher_.publish(arr_);
     arr_.markers.clear();
-    mutex_.unlock();
 }
 
 void Clear() {
-    mutex_.lock();
+    std::lock_guard<std::mutex> guard(mutex_);
     arr_.markers.clear();
 
     visualization_msgs::MarkerArray arr;
@@ -164,7 +166,7 @@ void Clear() {
     msg.action = visualization_msgs::Marker::DELETEALL;
     arr.markers.push_back(msg);
     publisher_.publish(arr);
-    mutex_.unlock();
 }
+
 } // namespace visualization
 } // namespace planning

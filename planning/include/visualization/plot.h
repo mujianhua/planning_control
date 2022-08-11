@@ -61,6 +61,6 @@ void PlotPoints(const Vector &xs, const Vector &ys, double width = 0.1,
 void Trigger();
 
 void Clear();
-} // namespace visualization
 
+} // namespace visualization
 } // namespace planning
