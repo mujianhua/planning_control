@@ -11,7 +11,7 @@
 
 namespace planning {
 
-    // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // TODO: how to get reference points...
 
@@ -30,7 +30,7 @@ class ReferenceLineProvider {
  private:
   void GenerateThread();
 
-  bool CreateReferenceLine(ReferenceLine *reference_line);
+  bool CreateReferenceLine(ReferenceLine &reference_line);
 
   bool UpdateReferenceLine(const ReferenceLine &reference_line);
 
@@ -42,6 +42,7 @@ class ReferenceLineProvider {
   ReferenceLine reference_line_;
 
   std::atomic<bool> is_stop_{false};
+  std::thread thread_;
   std::mutex mutex_;
 };
 

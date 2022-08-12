@@ -28,6 +28,7 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
                                    &PlanningNode::PlanCallback, this);
 
   reference_line_provider_ = new ReferenceLineProvider();
+  reference_line_provider_->Start();
 }
 
 void PlanningNode::CenterLineCallback(const CenterLineConstPtr &msg) {
@@ -89,8 +90,12 @@ void PlanningNode::DynamicObstaclesCallback(
 
 void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
   DiscretizedTrajectory result;
-  //  reference_line_provider_->Start();
+
   state_ = CartesianPlanner::StartState(0.0, 0.0, 0.0, 5.0);
+  ReferenceLine reference_line;
+  reference_line_provider_->GetReferenceLine(&reference_line);
+  ROS_DEBUG("[Planning Node] reference line have %ld points",
+            reference_line.reference_points().size());
 
   if (planner_->Plan(state_, frame_, result)) {
     double dt = config_.tf / (double)(config_.nfe - 1);
