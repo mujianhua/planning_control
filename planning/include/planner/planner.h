@@ -14,8 +14,7 @@ class Planner {
 
   explicit Planner(const PlanningConfig &config) : config_(config) {}
 
-  virtual bool Plan(const VehicleState &state,
-                    const std::shared_ptr<Frame> &frame,
+  virtual bool Plan(const VehicleState &state, Frame *frame,
                     DiscretizedTrajectory &result) = 0;
 
   virtual std::string Name() = 0;

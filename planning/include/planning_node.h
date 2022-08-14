@@ -7,6 +7,8 @@
 #include "planning/CenterLine.h"
 #include "planning/DynamicObstacles.h"
 #include "planning/Obstacles.h"
+#include "planning/data_struct.h"
+#include "planning/discretized_trajectory.h"
 #include "planning/indexed_list.h"
 #include "planning/planning_config.h"
 #include "planning/reference_line.h"
@@ -32,6 +34,8 @@ class PlanningNode {
 
  private:
   void UpdateFrame();
+
+  void Animation(const DiscretizedTrajectory &plan_trajectory);
 
   void PlotVehicle(int id, const math::Pose &pt, double phi);
 

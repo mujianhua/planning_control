@@ -18,57 +18,59 @@
 namespace planning {
 
 class Frame {
-  public:
-    using DynamicObstacle = std::vector<std::pair<double, math::Polygon2d>>;
-    using StaticObstacle = math::Polygon2d;
-    using IndexedDynamicObstacles = IndexedList<std::string, DynamicObstacle>;
-    using IndexedStaticObstacle = IndexedList<std::string, StaticObstacle>;
+ public:
+  using DynamicObstacle = std::vector<std::pair<double, math::Polygon2d>>;
+  using StaticObstacle = math::Polygon2d;
+  using IndexedDynamicObstacles = IndexedList<std::string, DynamicObstacle>;
+  using IndexedStaticObstacle = IndexedList<std::string, StaticObstacle>;
 
-    explicit Frame(const PlanningConfig &config) : config_(config) {}
+  explicit Frame(const PlanningConfig &config) : config_(config) {}
 
-    const ReferenceLine &reference_line() const { return reference_line_; }
+  const ReferenceLine &reference_line() const { return reference_line_; }
 
-    void SetReferenceLine(const ReferenceLine &reference);
+  void SetReferenceLine(const ReferenceLine &reference);
 
-    IndexedStaticObstacle &index_static_obstacles() {
-        return index_static_obstacles_;
-    }
+  IndexedStaticObstacle &index_static_obstacles() {
+    return index_static_obstacles_;
+  }
 
-    IndexedDynamicObstacles &index_dynamic_obstacles() {
-        return index_dynamic_obstacles_;
-    }
+  IndexedDynamicObstacles &index_dynamic_obstacles() {
+    return index_dynamic_obstacles_;
+  }
 
-    void AddObstacle(const std::string &id, const DynamicObstacle &obs);
+  void AddObstacle(const std::string &id, const DynamicObstacle &obs);
 
-    void AddObstacle(const std::string &id, const StaticObstacle &obs);
+  void AddObstacle(const std::string &id, const StaticObstacle &obs);
 
-    void ClearStaticObstacles() { index_static_obstacles_.ClearAll(); }
+  void ClearObstacles();
 
-    void ClearDynamicObstacles() { index_dynamic_obstacles_.ClearAll(); }
+  void ClearStaticObstacles() { index_static_obstacles_.ClearAll(); }
 
-    bool CheckCollision(double time, const math::Box2d &rect);
+  void ClearDynamicObstacles() { index_dynamic_obstacles_.ClearAll(); }
 
-    bool CheckOptimizationCollision(double time, const math::Pose &pose,
-                                    double collision_buffer = 0.0);
+  bool CheckCollision(double time, const math::Box2d &rect);
 
-    std::unordered_map<int, math::Polygon2d> QueryDynamicObstacles(double time);
+  bool CheckOptimizationCollision(double time, const math::Pose &pose,
+                                  double collision_buffer = 0.0);
 
-    void Visualize();
+  std::unordered_map<int, math::Polygon2d> QueryDynamicObstacles(double time);
 
-  private:
-    bool CheckStaticCollision(const math::Box2d &rect);
+  void Visualize();
 
-    bool CheckDynamicCollision(double time, const math::Box2d &rect);
+ private:
+  bool CheckStaticCollision(const math::Box2d &rect);
 
-  private:
-    PlanningConfig config_;
+  bool CheckDynamicCollision(double time, const math::Box2d &rect);
 
-    // TODO:
-    IndexedDynamicObstacles index_dynamic_obstacles_;
-    IndexedStaticObstacle index_static_obstacles_;
+ private:
+  PlanningConfig config_;
 
-    ReferenceLine reference_line_;
-    std::vector<math::Vec2d> road_barrier_;
+  // TODO:
+  IndexedDynamicObstacles index_dynamic_obstacles_;
+  IndexedStaticObstacle index_static_obstacles_;
+
+  ReferenceLine reference_line_;
+  std::vector<math::Vec2d> road_barrier_;
 };
 
-} // namespace planning
+}  // namespace planning

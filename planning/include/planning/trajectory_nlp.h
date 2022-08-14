@@ -23,32 +23,32 @@ namespace planning {
 using namespace casadi;
 
 struct States {
-    std::vector<double> x, y, theta, v, phi, a, omega, jerk, xf, yf, xr, yr;
+  std::vector<double> x, y, theta, v, phi, a, omega, jerk, xf, yf, xr, yr;
 };
 
 struct Constraints {
-    double start_x, start_y, start_theta, start_v, start_a, start_phi,
-        start_omega;
-    std::vector<std::array<double, 4>> front_bound;
-    std::vector<std::array<double, 4>> rear_bound;
+  double start_x, start_y, start_theta, start_v, start_a, start_phi,
+      start_omega;
+  std::vector<std::array<double, 4>> front_bound;
+  std::vector<std::array<double, 4>> rear_bound;
 };
 
 class TrajectoryNLP {
-  public:
-    explicit TrajectoryNLP(const PlanningConfig &);
+ public:
+  explicit TrajectoryNLP(const PlanningConfig &);
 
-    double SolveIteratively(double w_inf, const Constraints &constraints,
-                            const States &guess,
-                            const DiscretizedTrajectory &reference,
-                            States &result);
+  double SolveIteratively(double w_inf, const Constraints &constraints,
+                          const States &guess,
+                          const DiscretizedTrajectory &reference,
+                          States &result);
 
-  private:
-    PlanningConfig config_;
-    Dict nlp_config_;
-    Function iterative_solver_;
-    Function infeasibility_evaluator_;
+ private:
+  PlanningConfig config_;
+  Dict nlp_config_;
+  Function iterative_solver_;
+  Function infeasibility_evaluator_;
 
-    void BuildIterativeNLP();
+  void BuildIterativeNLP();
 };
 
-} // namespace planning
+}  // namespace planning

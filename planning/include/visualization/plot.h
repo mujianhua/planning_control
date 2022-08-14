@@ -62,5 +62,5 @@ void Trigger();
 
 void Clear();
 
-} // namespace visualization
-} // namespace planning
+}  // namespace visualization
+}  // namespace planning

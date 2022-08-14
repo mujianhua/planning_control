@@ -118,7 +118,10 @@ double AngleDiff(const double from, const double to);
  * @param value The target value to get its squared value.
  * @return Squared value of the input value.
  */
-template <typename T> inline T Square(const T value) { return value * value; }
+template <typename T>
+inline T Square(const T value) {
+  return value * value;
+}
 
 /**
  * @brief Clamp a value between two bounds.
@@ -129,17 +132,18 @@ template <typename T> inline T Square(const T value) { return value * value; }
  * @param bound2 The other bound to clamp the value.
  * @return The clamped value.
  */
-template <typename T> T Clamp(const T value, T bound1, T bound2) {
-    if (bound1 > bound2) {
-        std::swap(bound1, bound2);
-    }
+template <typename T>
+T Clamp(const T value, T bound1, T bound2) {
+  if (bound1 > bound2) {
+    std::swap(bound1, bound2);
+  }
 
-    if (value < bound1) {
-        return bound1;
-    } else if (value > bound2) {
-        return bound2;
-    }
-    return value;
+  if (value < bound1) {
+    return bound1;
+  } else if (value > bound2) {
+    return bound2;
+  }
+  return value;
 }
 
 // Gaussian
@@ -151,33 +155,33 @@ inline double Sigmoid(const double x) { return 1.0 / (1.0 + std::exp(-x)); }
 Vec2d RotateVector2d(const Vec2d &v_in, const double theta);
 
 inline std::pair<double, double> RFUToFLU(const double x, const double y) {
-    return std::make_pair(y, -x);
+  return std::make_pair(y, -x);
 }
 
 inline std::pair<double, double> FLUToRFU(const double x, const double y) {
-    return std::make_pair(-y, x);
+  return std::make_pair(-y, x);
 }
 
 inline void L2Norm(int feat_dim, float *feat_data) {
-    if (feat_dim == 0) {
-        return;
-    }
-    // feature normalization
-    float l2norm = 0.0f;
+  if (feat_dim == 0) {
+    return;
+  }
+  // feature normalization
+  float l2norm = 0.0f;
+  for (int i = 0; i < feat_dim; ++i) {
+    l2norm += feat_data[i] * feat_data[i];
+  }
+  if (l2norm == 0) {
+    float val = 1.f / std::sqrt(static_cast<float>(feat_dim));
     for (int i = 0; i < feat_dim; ++i) {
-        l2norm += feat_data[i] * feat_data[i];
+      feat_data[i] = val;
     }
-    if (l2norm == 0) {
-        float val = 1.f / std::sqrt(static_cast<float>(feat_dim));
-        for (int i = 0; i < feat_dim; ++i) {
-            feat_data[i] = val;
-        }
-    } else {
-        l2norm = std::sqrt(l2norm);
-        for (int i = 0; i < feat_dim; ++i) {
-            feat_data[i] /= l2norm;
-        }
+  } else {
+    l2norm = std::sqrt(l2norm);
+    for (int i = 0; i < feat_dim; ++i) {
+      feat_data[i] /= l2norm;
     }
+  }
 }
 
 /**
@@ -193,31 +197,31 @@ inline void L2Norm(int feat_dim, float *feat_data) {
 template <typename T>
 T lerp(const T &x0, const double t0, const T &x1, const double t1,
        const double t) {
-    if (std::abs(t1 - t0) <= 1.0e-6) {
-        return x0;
-    }
-    const double r = (t - t0) / (t1 - t0);
-    const T x = x0 + r * (x1 - x0);
-    return x;
+  if (std::abs(t1 - t0) <= 1.0e-6) {
+    return x0;
+  }
+  const double r = (t - t0) / (t1 - t0);
+  const T x = x0 + r * (x1 - x0);
+  return x;
 }
 
 inline double slerp(const double a0, const double t0, const double a1,
                     const double t1, const double t) {
-    if (std::abs(t1 - t0) <= kMathEpsilon) {
-        return NormalizeAngle(a0);
-    }
-    const double a0_n = NormalizeAngle(a0);
-    const double a1_n = NormalizeAngle(a1);
-    double d = a1_n - a0_n;
-    if (d > M_PI) {
-        d = d - 2 * M_PI;
-    } else if (d < -M_PI) {
-        d = d + 2 * M_PI;
-    }
+  if (std::abs(t1 - t0) <= kMathEpsilon) {
+    return NormalizeAngle(a0);
+  }
+  const double a0_n = NormalizeAngle(a0);
+  const double a1_n = NormalizeAngle(a1);
+  double d = a1_n - a0_n;
+  if (d > M_PI) {
+    d = d - 2 * M_PI;
+  } else if (d < -M_PI) {
+    d = d + 2 * M_PI;
+  }
 
-    const double r = (t - t0) / (t1 - t0);
-    const double a = a0_n + d * r;
-    return NormalizeAngle(a);
+  const double r = (t - t0) / (t1 - t0);
+  const double a = a0_n + d * r;
+  return NormalizeAngle(a);
 }
 
 // Cartesian coordinates to Polar coordinates
@@ -226,52 +230,52 @@ std::pair<double, double> Cartesian2Polar(double x, double y);
 template <class T>
 typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
 almost_equal(T x, T y, int ulp) {
-    // the machine epsilon has to be scaled to the magnitude of the values used
-    // and multiplied by the desired precision in ULPs (units in the last place)
-    // unless the result is subnormal
-    return std::fabs(x - y) <=
-               std::numeric_limits<T>::epsilon() * std::fabs(x + y) * ulp ||
-           std::fabs(x - y) < std::numeric_limits<T>::min();
+  // the machine epsilon has to be scaled to the magnitude of the values used
+  // and multiplied by the desired precision in ULPs (units in the last place)
+  // unless the result is subnormal
+  return std::fabs(x - y) <=
+             std::numeric_limits<T>::epsilon() * std::fabs(x + y) * ulp ||
+         std::fabs(x - y) < std::numeric_limits<T>::min();
 }
 
 std::vector<double> ToContinuousAngle(const std::vector<double> &angle);
 
 template <int N>
 inline std::array<double, N> LinSpaced(double start, double end) {
-    std::array<double, N> res;
-    double step = (end - start) / (N - 1);
+  std::array<double, N> res;
+  double step = (end - start) / (N - 1);
 
-    for (int i = 0; i < N; i++) {
-        res[i] = start + step * i;
-    }
+  for (int i = 0; i < N; i++) {
+    res[i] = start + step * i;
+  }
 
-    return res;
+  return res;
 }
 
 inline std::vector<double> LinSpaced(double start, double end, int count) {
-    std::vector<double> res(count, 0);
-    double step = (end - start) / (count - 1);
+  std::vector<double> res(count, 0);
+  double step = (end - start) / (count - 1);
 
-    for (int i = 0; i < count; i++) {
-        res[i] = start + step * i;
-    }
+  for (int i = 0; i < count; i++) {
+    res[i] = start + step * i;
+  }
 
-    return res;
+  return res;
 }
 
 inline std::vector<double> ARange(double start, double end, double step) {
-    std::vector<double> res;
+  std::vector<double> res;
 
-    for (int i = 0;; i++) {
-        auto val = start + step * i;
-        if (val > end) {
-            break;
-        }
-        res.push_back(val);
+  for (int i = 0;; i++) {
+    auto val = start + step * i;
+    if (val > end) {
+      break;
     }
+    res.push_back(val);
+  }
 
-    return res;
+  return res;
 }
 
-} // namespace math
-} // namespace planning
+}  // namespace math
+}  // namespace planning

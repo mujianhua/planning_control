@@ -26,21 +26,21 @@ using math::Vec2d;
  * Discretized Trajectory
  */
 class DiscretizedTrajectory {
-  public:
-    using DataType = std::vector<TrajectoryPoint>;
+ public:
+  using DataType = std::vector<TrajectoryPoint>;
 
-    DiscretizedTrajectory() = default;
+  DiscretizedTrajectory() = default;
 
-    DiscretizedTrajectory(const DiscretizedTrajectory &rhs, size_t begin,
-                          size_t end = -1);
+  DiscretizedTrajectory(const DiscretizedTrajectory &rhs, size_t begin,
+                        size_t end = -1);
 
-    explicit DiscretizedTrajectory(std::vector<TrajectoryPoint> points)
-        : trajectory_points_(std::move(points)) {}
+  explicit DiscretizedTrajectory(std::vector<TrajectoryPoint> points)
+      : trajectory_points_(std::move(points)) {}
 
-    inline const DataType &data() const { return trajectory_points_; }
+  inline const DataType &data() const { return trajectory_points_; }
 
-  protected:
-    std::vector<TrajectoryPoint> trajectory_points_;
+ protected:
+  std::vector<TrajectoryPoint> trajectory_points_;
 };
 
-} // namespace planning
+}  // namespace planning

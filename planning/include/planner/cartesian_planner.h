@@ -24,7 +24,7 @@ class CartesianPlanner : public Planner {
   explicit CartesianPlanner(const PlanningConfig &config)
       : Planner(config_), dp_(config), opti_(config) {}
 
-  bool Plan(const VehicleState &state, const std::shared_ptr<Frame> &frame,
+  bool Plan(const VehicleState &state, Frame *frame,
             DiscretizedTrajectory &result) override;
 
   std::string Name() override { return "Cartesian Planner"; }

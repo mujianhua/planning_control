@@ -4,6 +4,7 @@
 
 #include "planning_node.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "planning/reference_line_provider.h"
@@ -90,41 +91,45 @@ void PlanningNode::DynamicObstaclesCallback(
   frame_->Visualize();
 }
 
-void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
-  DiscretizedTrajectory result;
+void PlanningNode::UpdateFrame() {}
 
+void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
   vehicle_state_ = VehicleState(0.0, 0.0, 0.0, 5.0);
   ReferenceLine reference_line;
   reference_line_provider_->GetReferenceLine(&reference_line);
   ROS_DEBUG("[Planning Node] reference line have %f points",
             reference_line.Length());
 
-  if (planner_->Plan(vehicle_state_, frame_, result)) {
-    double dt = config_.tf / (double)(config_.nfe - 1);
-    for (int i = 0; i < config_.nfe; i++) {
-      double time = dt * i;
-      auto dynamic_obstacles = frame_->QueryDynamicObstacles(time);
-      for (auto &obstacle : dynamic_obstacles) {
-        int hue = int((double)obstacle.first /
-                      frame_->index_dynamic_obstacles().Size() * 320);
-
-        visualization::PlotPolygon(obstacle.second, 0.2,
-                                   visualization::Color::fromHSV(hue, 1.0, 1.0),
-                                   obstacle.first, "Online Obstacle");
-      }
-
-      auto &pt = result.data().at(i);
-      PlotVehicle(1, {pt.x, pt.y, pt.theta},
-                  atan(pt.kappa * config_.vehicle.wheel_base));
-      ros::Duration(dt).sleep();
-    }
-
-    visualization::Trigger();
-    reference_line_provider_->Stop();
+  DiscretizedTrajectory result;
+  if (!planner_->Plan(vehicle_state_, frame_.get(), result)) {
+    ROS_ERROR("[Planning Node] Unable plan a trajectory");
   }
+  Animation(result);
+  reference_line_provider_->Stop();
 }
 
-void PlanningNode::UpdateFrame() {}
+void PlanningNode::Animation(const DiscretizedTrajectory &plan_trajectory) {
+  double dt = config_.tf / (double)(config_.nfe - 1);
+  for (int i = 0; i < config_.nfe; i++) {
+    double time = dt * i;
+    auto dynamic_obstacles = frame_->QueryDynamicObstacles(time);
+    for (auto &obstacle : dynamic_obstacles) {
+      int hue = int((double)obstacle.first /
+                    frame_->index_dynamic_obstacles().Size() * 320);
+
+      visualization::PlotPolygon(obstacle.second, 0.2,
+                                 visualization::Color::fromHSV(hue, 1.0, 1.0),
+                                 obstacle.first, "Online Obstacle");
+    }
+
+    auto &pt = plan_trajectory.data().at(i);
+    PlotVehicle(1, {pt.x, pt.y, pt.theta},
+                atan(pt.kappa * config_.vehicle.wheel_base));
+    ros::Duration(dt).sleep();
+  }
+
+  visualization::Trigger();
+}
 
 void PlanningNode::PlotVehicle(int id, const math::Pose &pt, double phi) {
   auto tires = GenerateTireBoxes({pt.x(), pt.y(), pt.theta()}, phi);

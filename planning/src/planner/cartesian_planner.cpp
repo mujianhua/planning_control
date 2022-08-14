@@ -15,8 +15,7 @@
 
 namespace planning {
 
-bool CartesianPlanner::Plan(const VehicleState &state,
-                            const std::shared_ptr<Frame> &frame,
+bool CartesianPlanner::Plan(const VehicleState &state, Frame *frame,
                             DiscretizedTrajectory &result) {
   ros::Time start_time = ros::Time::now();
   ros::Time current_time = start_time;

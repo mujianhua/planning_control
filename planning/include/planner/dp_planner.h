@@ -39,8 +39,8 @@ class DpPlanner {
  public:
   DpPlanner(const PlanningConfig &config);
 
-  bool Plan(double start_x, double start_y, double start_theta,
-            const std::shared_ptr<Frame> &frame, DiscretizedTrajectory &result);
+  bool Plan(double start_x, double start_y, double start_theta, Frame *frame,
+            DiscretizedTrajectory &result);
 
  private:
   struct StateCell {
@@ -72,7 +72,7 @@ class DpPlanner {
     double start_theta = 0;
   };
 
-  std::shared_ptr<Frame> frame_;
+  Frame *frame_;
   PlanningConfig config_;
 
   int nseg_;
