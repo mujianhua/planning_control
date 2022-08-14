@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(planning)
 SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-add_compile_options(-std=c++11 -O3)
+add_compile_options(-std=c++14 -O3)
 
 find_package(catkin REQUIRED COMPONENTS
         roscpp
@@ -65,7 +65,8 @@ set(SRC
         src/planning/trajectory_nlp.cpp
         src/planning/trajectory_optimizer.cpp
         src/planner/cartesian_planner.cpp
-        src/planner/dp_planner.cpp)
+        src/planner/dp_planner.cpp
+        src/on_lane_planning.cpp)
 
 add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC})
 

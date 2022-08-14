@@ -10,7 +10,7 @@ namespace planning {
 
 class Planner {
  public:
-  Planner() = default;
+  Planner() = delete;
 
   explicit Planner(const PlanningConfig &config) : config_(config) {}
 

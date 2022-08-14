@@ -7,19 +7,15 @@
 #include <cstddef>
 #include <memory>
 
+#include "on_lane_planning.h"
 #include "planning/reference_line_provider.h"
+#include "planning_base.h"
 
 namespace planning {
 
 PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
-  frame_ = std::make_shared<Frame>(config_);
+  planning_base_ = std::make_unique<OnLanePlanning>(config_);
 
-  if (FLAGS_planner == "Cartesian") {
-    planner_ = std::make_shared<CartesianPlanner>(config_);
-  }
-
-  center_line_subscriber_ =
-      nh_.subscribe("/center_line", 1, &PlanningNode::CenterLineCallback, this);
   obstacles_subscriber_ = nh_.subscribe(
       "/obstacles", 1, &PlanningNode::StaticObstaclesCallback, this);
   dynamic_obstacles_subscriber_ = nh_.subscribe(
@@ -27,51 +23,27 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
 
   goal_subscriber_ = nh_.subscribe("/move_base_simple/goal", 1,
                                    &PlanningNode::PlanCallback, this);
-
-  reference_line_provider_ = new ReferenceLineProvider();
-  reference_line_provider_->Start();
-}
-
-PlanningNode::~PlanningNode() { reference_line_provider_->Stop(); }
-
-void PlanningNode::CenterLineCallback(const CenterLineConstPtr &msg) {
-  Trajectory data;
-  for (auto &pt : msg->points) {
-    TrajectoryPoint tp;
-    tp.s = pt.s;
-    tp.x = pt.x;
-    tp.y = pt.y;
-    tp.theta = pt.theta;
-    tp.kappa = pt.kappa;
-    tp.left_bound = pt.left_bound;
-    tp.right_bound = pt.right_bound;
-    data.push_back(tp);
-  }
-
-  frame_->SetReferenceLine(ReferenceLine(data));
-  frame_->Visualize();
 }
 
 // TODO: 处理不同plan中的相同障碍物,进行编号
 void PlanningNode::StaticObstaclesCallback(const ObstaclesConstPtr &msg) {
   ROS_DEBUG("[Planning Node] receive static obstacles message.");
-  frame_->ClearStaticObstacles();
+  index_static_obstacles_.ClearAll();
   size_t count = 0;
   for (auto &obstacle : msg->obstacles) {
     std::vector<math::Vec2d> points;
     for (auto &pt : obstacle.points) {
       points.emplace_back(pt.x, pt.y);
     }
-    frame_->AddObstacle("static" + std::to_string(++count),
-                        math::Polygon2d(points));
+    index_static_obstacles_.Add("static" + std::to_string(++count),
+                                math::Polygon2d(points));
   }
-  frame_->Visualize();
 }
 
 void PlanningNode::DynamicObstaclesCallback(
     const DynamicObstaclesConstPtr &msg) {
   ROS_DEBUG("[Planning Node] receive dynamic obstacles message.");
-  frame_->ClearDynamicObstacles();
+  index_dynamic_obstacles_.ClearAll();
   size_t count = 0;
   for (auto &obstacle : msg->obstacles) {
     Frame::DynamicObstacle dynamic_obstacle;
@@ -85,37 +57,37 @@ void PlanningNode::DynamicObstaclesCallback(
 
       dynamic_obstacle.emplace_back(tp.time, points);
     }
-    // TODO:
-    frame_->AddObstacle("dynamic" + std::to_string(++count), dynamic_obstacle);
+    index_dynamic_obstacles_.Add("dynamic" + std::to_string(++count),
+                                 dynamic_obstacle);
   }
-  frame_->Visualize();
 }
-
-void PlanningNode::UpdateFrame() {}
 
 void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
   vehicle_state_ = VehicleState(0.0, 0.0, 0.0, 5.0);
-  ReferenceLine reference_line;
-  reference_line_provider_->GetReferenceLine(&reference_line);
-  ROS_DEBUG("[Planning Node] reference line have %f points",
-            reference_line.Length());
+
+  local_view_.vehicle_state = std::make_shared<VehicleState>(vehicle_state_);
+  local_view_.dynamic_obstacle =
+      std::make_shared<Frame::IndexedDynamicObstacles>(
+          index_dynamic_obstacles_);
+  local_view_.static_obstacle =
+      std::make_shared<Frame::IndexedStaticObstacle>(index_static_obstacles_);
 
   DiscretizedTrajectory result;
-  if (!planner_->Plan(vehicle_state_, frame_.get(), result)) {
-    ROS_ERROR("[Planning Node] Unable plan a trajectory");
-  }
+  planning_base_->RunOnce(local_view_, &result);
+
   Animation(result);
-  reference_line_provider_->Stop();
 }
 
 void PlanningNode::Animation(const DiscretizedTrajectory &plan_trajectory) {
   double dt = config_.tf / (double)(config_.nfe - 1);
   for (int i = 0; i < config_.nfe; i++) {
     double time = dt * i;
-    auto dynamic_obstacles = frame_->QueryDynamicObstacles(time);
+    auto dynamic_obstacles =
+        planning_base_->frame()->QueryDynamicObstacles(time);
     for (auto &obstacle : dynamic_obstacles) {
-      int hue = int((double)obstacle.first /
-                    frame_->index_dynamic_obstacles().Size() * 320);
+      int hue =
+          int((double)obstacle.first /
+              planning_base_->frame()->index_dynamic_obstacles().Size() * 320);
 
       visualization::PlotPolygon(obstacle.second, 0.2,
                                  visualization::Color::fromHSV(hue, 1.0, 1.0),

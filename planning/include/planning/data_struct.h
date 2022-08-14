@@ -11,6 +11,16 @@ struct VehicleState {
   double x, y, theta, v, phi, a, omega;
 };
 
+struct PathPoint {
+  double s = 0.0;
+
+  double x = 0.0;
+  double y = 0.0;
+  double theta = 0.0;
+  double kappa = 0.0;
+  double dkappa = 0.0;
+};
+
 struct TrajectoryPoint {
   double s = 0.0;
 

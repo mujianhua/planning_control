@@ -1,5 +1,6 @@
 
 #include "planner/lattice_planner.h"
+#include <array>
 #include "math/cartesian_frenet_conversion.h"
 #include "planning/data_struct.h"
 
@@ -9,8 +10,15 @@ using planning::math::CartesianFrenetConverter;
 
 bool LatticePlanner::Plan(const VehicleState &start_state, Frame *frame,
                           DiscretizedTrajectory &result) {
-  TrajectoryPoint math_point =
+  TrajectoryPoint match_point =
       frame->reference_line().GetProjection({start_state.x, start_state.y});
+
+  std::array<double, 3> init_s;
+  std::array<double, 3> init_d;
+  TrajectoryPoint cartesian_point;
+  cartesian_point.x = start_state.x;
+  // ComputeInitFrenetState(match_point, const TrajectoryPoint &cartesian_point,
+  //                        &init_s, &init_d);
 
   return true;
 }

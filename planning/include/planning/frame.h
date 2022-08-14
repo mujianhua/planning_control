@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "math/polygon2d.h"
+#include "planning/data_struct.h"
 #include "planning/indexed_list.h"
 #include "planning/reference_line.h"
 #include "planning_config.h"
@@ -37,6 +38,8 @@ class Frame {
   IndexedDynamicObstacles &index_dynamic_obstacles() {
     return index_dynamic_obstacles_;
   }
+
+  // void SetObastacles(IndexedDynamicObstacles, IndexedStaticObstacle);
 
   void AddObstacle(const std::string &id, const DynamicObstacle &obs);
 
@@ -71,6 +74,8 @@ class Frame {
 
   ReferenceLine reference_line_;
   std::vector<math::Vec2d> road_barrier_;
+
+  VehicleState vehicle_state_;
 };
 
 }  // namespace planning
