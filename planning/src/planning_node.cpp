@@ -31,6 +31,8 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
   reference_line_provider_->Start();
 }
 
+PlanningNode::~PlanningNode() { reference_line_provider_->Stop(); }
+
 void PlanningNode::CenterLineCallback(const CenterLineConstPtr &msg) {
   Trajectory data;
   for (auto &pt : msg->points) {
@@ -91,13 +93,13 @@ void PlanningNode::DynamicObstaclesCallback(
 void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
   DiscretizedTrajectory result;
 
-  state_ = CartesianPlanner::StartState(0.0, 0.0, 0.0, 5.0);
+  vehicle_state_ = VehicleState(0.0, 0.0, 0.0, 5.0);
   ReferenceLine reference_line;
   reference_line_provider_->GetReferenceLine(&reference_line);
-  ROS_DEBUG("[Planning Node] reference line have %ld points",
-            reference_line.reference_points().size());
+  ROS_DEBUG("[Planning Node] reference line have %f points",
+            reference_line.Length());
 
-  if (planner_->Plan(state_, frame_, result)) {
+  if (planner_->Plan(vehicle_state_, frame_, result)) {
     double dt = config_.tf / (double)(config_.nfe - 1);
     for (int i = 0; i < config_.nfe; i++) {
       double time = dt * i;
@@ -121,6 +123,8 @@ void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
     reference_line_provider_->Stop();
   }
 }
+
+void PlanningNode::UpdateFrame() {}
 
 void PlanningNode::PlotVehicle(int id, const math::Pose &pt, double phi) {
   auto tires = GenerateTireBoxes({pt.x(), pt.y(), pt.theta()}, phi);

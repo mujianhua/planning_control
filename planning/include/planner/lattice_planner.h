@@ -6,15 +6,15 @@
 namespace planning {
 
 class LatticePlanner : public Planner {
-  public:
-    explicit LatticePlanner(const PlanningConfig &config) : Planner(config) {}
+ public:
+  explicit LatticePlanner(const PlanningConfig &config) : Planner(config) {}
 
-    bool Plan(const StartState &state, const std::shared_ptr<Frame> &frame,
-              DiscretizedTrajectory &result) override;
+  bool Plan(const VehicleState &state, const std::shared_ptr<Frame> &frame,
+            DiscretizedTrajectory &result) override;
 
-    std::string Name() override { return "Lattice"; }
+  std::string Name() override { return "Lattice"; }
 
-  private:
+ private:
 };
 
-} // namespace planning
+}  // namespace planning

@@ -33,6 +33,8 @@ class ReferenceLine {
 
   Vec2d GetCartesian(double station, double lateral) const;
 
+  double Length() const { return reference_points_.back().s; }
+
  private:
   std::vector<TrajectoryPoint>::const_iterator QueryLowerBoundStationPoint(
       double station) const;

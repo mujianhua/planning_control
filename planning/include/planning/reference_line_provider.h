@@ -1,3 +1,8 @@
+/**
+ * @file reference_line_provider.h
+ * @brief
+ */
+
 #pragma once
 
 #include <mutex>
@@ -19,6 +24,8 @@ class ReferenceLineProvider {
  public:
   ReferenceLineProvider();
 
+  ~ReferenceLineProvider();
+
   void ReferenceLineSubCb(const CenterLineConstPtr &msg);
 
   bool Start();
@@ -30,14 +37,14 @@ class ReferenceLineProvider {
  private:
   void GenerateThread();
 
-  bool CreateReferenceLine(ReferenceLine &reference_line);
+  bool CreateReferenceLine(ReferenceLine *reference_line);
 
   bool UpdateReferenceLine(const ReferenceLine &reference_line);
 
  private:
   ros::NodeHandle n;
   ros::Subscriber reference_points_sub_;
-  CenterLineConstPtr msg_;
+
   std::vector<TrajectoryPoint> raw_reference_points_;
   ReferenceLine reference_line_;
 

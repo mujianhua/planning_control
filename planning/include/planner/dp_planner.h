@@ -36,73 +36,72 @@ constexpr int NS = 7;
 constexpr int NL = 10;
 
 class DpPlanner {
-  public:
-    DpPlanner(const PlanningConfig &config);
+ public:
+  DpPlanner(const PlanningConfig &config);
 
-    bool Plan(double start_x, double start_y, double start_theta,
-              const std::shared_ptr<Frame> &frame,
-              DiscretizedTrajectory &result);
+  bool Plan(double start_x, double start_y, double start_theta,
+            const std::shared_ptr<Frame> &frame, DiscretizedTrajectory &result);
 
-  private:
-    struct StateCell {
-        double cost = Inf;
-        double current_s = NInf;
-        int parent_s_ind = -1;
-        int parent_l_ind = -1;
+ private:
+  struct StateCell {
+    double cost = Inf;
+    double current_s = NInf;
+    int parent_s_ind = -1;
+    int parent_l_ind = -1;
 
-        StateCell() = default;
+    StateCell() = default;
 
-        StateCell(double cost, double cur_s, int parent_s_ind, int parent_l_ind)
-            : cost(cost), current_s(cur_s), parent_s_ind(parent_s_ind),
-              parent_l_ind(parent_l_ind) {}
-    };
+    StateCell(double cost, double cur_s, int parent_s_ind, int parent_l_ind)
+        : cost(cost),
+          current_s(cur_s),
+          parent_s_ind(parent_s_ind),
+          parent_l_ind(parent_l_ind) {}
+  };
 
-    struct StateIndex {
-        int t = -1, s = -1, l = -1;
+  struct StateIndex {
+    int t = -1, s = -1, l = -1;
 
-        StateIndex() = default;
+    StateIndex() = default;
 
-        StateIndex(int tt, int ss, int ll) : t(tt), s(ss), l(ll) {}
-    };
+    StateIndex(int tt, int ss, int ll) : t(tt), s(ss), l(ll) {}
+  };
 
-    struct StartState {
-        double start_s = 0;
-        double start_l = 0;
-        double start_theta = 0;
-    };
+  struct VehicleState {
+    double start_s = 0;
+    double start_l = 0;
+    double start_theta = 0;
+  };
 
-    std::shared_ptr<Frame> frame_;
-    PlanningConfig config_;
+  std::shared_ptr<Frame> frame_;
+  PlanningConfig config_;
 
-    int nseg_;
-    double unit_time_;
-    std::array<double, NT> time_;
-    std::array<double, NS> station_;
-    std::array<double, NL - 1> lateral_;
+  int nseg_;
+  double unit_time_;
+  std::array<double, NT> time_;
+  std::array<double, NS> station_;
+  std::array<double, NL - 1> lateral_;
 
-    StartState state_;
-    StateCell state_space_[NT][NS][NL];
+  VehicleState state_;
+  StateCell state_space_[NT][NS][NL];
 
-    double safe_margin_;
+  double safe_margin_;
 
-    double GetCollisionCost(StateIndex parent_l_ind, StateIndex cur_ind);
+  double GetCollisionCost(StateIndex parent_l_ind, StateIndex cur_ind);
 
-    std::pair<double, double> GetCost(StateIndex parent_ind,
-                                      StateIndex cur_ind);
+  std::pair<double, double> GetCost(StateIndex parent_ind, StateIndex cur_ind);
 
-    double GetLateralOffset(double s, int l_ind) {
-        if (l_ind == NL - 1)
-            return 0.0;
+  double GetLateralOffset(double s, int l_ind) {
+    if (l_ind == NL - 1) return 0.0;
 
-        auto ref = frame_->reference_line().GetMatchPoint(s);
-        double lb = -ref.right_bound + safe_margin_;
-        double ub = ref.left_bound - safe_margin_;
+    auto ref = frame_->reference_line().GetMatchPoint(s);
+    double lb = -ref.right_bound + safe_margin_;
+    double ub = ref.left_bound - safe_margin_;
 
-        return lb + (ub - lb) * lateral_[l_ind];
-    }
+    return lb + (ub - lb) * lateral_[l_ind];
+  }
 
-    std::vector<Vec2d> InterpolateLinearly(double parent_s, int parent_l_ind,
-                                           int cur_s_ind, int cur_l_ind);
+  std::vector<Vec2d> InterpolateLinearly(double parent_s, int parent_l_ind,
+                                         int cur_s_ind, int cur_l_ind);
 };
 
-} // namespace planning
+}  // namespace planning

@@ -2,10 +2,10 @@
 
 namespace planning {
 
-bool LatticePlanner::Plan(const StartState &state,
+bool LatticePlanner::Plan(const VehicleState &state,
                           const std::shared_ptr<Frame> &frame,
                           DiscretizedTrajectory &result) {
-    return true;
+  return true;
 }
 
-} // namespace planning
+}  // namespace planning

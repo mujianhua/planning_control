@@ -20,19 +20,19 @@
 namespace planning {
 
 class CartesianPlanner : public Planner {
-  public:
-    explicit CartesianPlanner(const PlanningConfig &config)
-        : Planner(config_), dp_(config), opti_(config) {}
+ public:
+  explicit CartesianPlanner(const PlanningConfig &config)
+      : Planner(config_), dp_(config), opti_(config) {}
 
-    bool Plan(const StartState &state, const std::shared_ptr<Frame> &frame,
-              DiscretizedTrajectory &result) override;
+  bool Plan(const VehicleState &state, const std::shared_ptr<Frame> &frame,
+            DiscretizedTrajectory &result) override;
 
-    std::string Name() override { return "Cartesian Planner"; }
+  std::string Name() override { return "Cartesian Planner"; }
 
-  private:
-    PlanningConfig config_;
-    DpPlanner dp_;
-    TrajectoryOptimizer opti_;
+ private:
+  PlanningConfig config_;
+  DpPlanner dp_;
+  TrajectoryOptimizer opti_;
 };
 
-} // namespace planning
+}  // namespace planning
