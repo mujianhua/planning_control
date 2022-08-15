@@ -15,29 +15,30 @@
 
 namespace planning {
 
-bool CartesianPlanner::Plan(const VehicleState &state, Frame *frame,
-                            DiscretizedTrajectory &result) {
+bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
+                            Frame *frame, DiscretizedTrajectory &result) {
   ros::Time start_time = ros::Time::now();
   ros::Time current_time = start_time;
 
   DiscretizedTrajectory coarse_trajectory;
-  if (!dp_.Plan(state.x, state.y, state.theta, frame, coarse_trajectory)) {
+  if (!dp_.Plan(planning_init_point.x, planning_init_point.y,
+                planning_init_point.theta, frame, coarse_trajectory)) {
     ROS_ERROR("DP failed");
     return false;
   }
 
-  ROS_INFO("[CartesianPlanner] dp time is %f",
-           (ros::Time::now() - current_time).toSec());
+  ROS_DEBUG("[CartesianPlanner] dp time is %f",
+            (ros::Time::now() - current_time).toSec());
   current_time = ros::Time::now();
 
   Constraints opti_constraints;
-  opti_constraints.start_x = state.x;
-  opti_constraints.start_y = state.y;
-  opti_constraints.start_theta = state.theta;
-  opti_constraints.start_v = state.v;
-  opti_constraints.start_phi = state.phi;
-  opti_constraints.start_a = state.a;
-  opti_constraints.start_omega = state.omega;
+  opti_constraints.start_x = frame->vehicle_state().x;
+  opti_constraints.start_y = frame->vehicle_state().y;
+  opti_constraints.start_theta = frame->vehicle_state().theta;
+  opti_constraints.start_v = frame->vehicle_state().v;
+  opti_constraints.start_phi = frame->vehicle_state().phi;
+  opti_constraints.start_a = frame->vehicle_state().a;
+  opti_constraints.start_omega = frame->vehicle_state().omega;
 
   std::vector<double> coarse_x, coarse_y;
   for (auto &pt : coarse_trajectory.data()) {

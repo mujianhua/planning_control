@@ -65,6 +65,7 @@ set(SRC
         src/planning/trajectory_nlp.cpp
         src/planning/trajectory_optimizer.cpp
         src/planner/cartesian_planner.cpp
+        src/planner/lattice_planner.cpp
         src/planner/dp_planner.cpp
         src/on_lane_planning.cpp)
 

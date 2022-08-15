@@ -1,6 +1,7 @@
 #include "on_lane_planning.h"
 #include <memory>
 #include "planner/cartesian_planner.h"
+#include "planning/data_struct.h"
 #include "planning/frame.h"
 #include "planning/planning_config.h"
 #include "planning/reference_line.h"
@@ -33,16 +34,23 @@ void OnLanePlanning::UpdateFrame() {
   reference_line_provider_->GetReferenceLine(&reference_line);
   frame_->SetReferenceLine(reference_line);
 
+  // vehicle state
+  frame_->SetVehicleState(*local_view_.vehicle_state);
+
   frame_->Visualize();
 }
 
 void OnLanePlanning::RunOnce(const LocalView &local_view,
                              DiscretizedTrajectory *const adc_trajectory) {
   local_view_ = local_view;
+
   UpdateFrame();
 
-  if (!planner_->Plan(*local_view.vehicle_state, frame_.get(),
-                      *adc_trajectory)) {
+  TrajectoryPoint init_point;
+  init_point.x = local_view.vehicle_state->x;
+  init_point.y = local_view.vehicle_state->y;
+  init_point.theta = local_view.vehicle_state->theta;
+  if (!planner_->Plan(init_point, frame_.get(), *adc_trajectory)) {
     ROS_ERROR("unable plan a trajectory!");
   }
 

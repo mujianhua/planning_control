@@ -31,6 +31,10 @@ class Frame {
 
   void SetReferenceLine(const ReferenceLine &reference);
 
+  void SetVehicleState(const VehicleState &state) { vehicle_state_ = state; }
+
+  const VehicleState &vehicle_state() const { return vehicle_state_; }
+
   IndexedStaticObstacle &index_static_obstacles() {
     return index_static_obstacles_;
   }
@@ -46,10 +50,6 @@ class Frame {
   void AddObstacle(const std::string &id, const StaticObstacle &obs);
 
   void ClearObstacles();
-
-  void ClearStaticObstacles() { index_static_obstacles_.ClearAll(); }
-
-  void ClearDynamicObstacles() { index_dynamic_obstacles_.ClearAll(); }
 
   bool CheckCollision(double time, const math::Box2d &rect);
 

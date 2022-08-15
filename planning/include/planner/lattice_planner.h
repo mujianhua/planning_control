@@ -11,7 +11,7 @@ class LatticePlanner : public Planner {
  public:
   explicit LatticePlanner(const PlanningConfig &config) : Planner(config) {}
 
-  bool Plan(const VehicleState &state, Frame *frame,
+  bool Plan(const TrajectoryPoint &planning_init_point, Frame *frame,
             DiscretizedTrajectory &result) override;
 
   std::string Name() override { return "Lattice"; }

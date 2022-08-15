@@ -80,6 +80,7 @@ bool ReferenceLineProvider::UpdateReferenceLine(
     const planning::ReferenceLine &reference_line) {
   std::lock_guard<std::mutex> lock(mutex_);
   reference_line_ = reference_line;
+  return true;
 }
 
 }  // namespace planning
