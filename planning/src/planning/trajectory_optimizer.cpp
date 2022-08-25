@@ -124,8 +124,9 @@ bool TrajectoryOptimizer::FormulateCorridorConstraints(
     constraints.front_bound[i] = {box.min_x(), box.max_x(), box.min_y(),
                                   box.max_y()};
 
-    visualization::PlotPolygon(math::Polygon2d(math::Box2d(box)), 0.02,
-                               visualization::Color::Grey, i, "Front Corridor");
+    // visualization::PlotPolygon(math::Polygon2d(math::Box2d(box)), 0.02,
+    //                            visualization::Color::Grey, i, "Front
+    //                            Corridor");
 
     if (!GenerateBox(time, states.xr[i], states.yr[i], vehicle_.radius, box)) {
       return false;
@@ -133,11 +134,12 @@ bool TrajectoryOptimizer::FormulateCorridorConstraints(
     constraints.rear_bound[i] = {box.min_x(), box.max_x(), box.min_y(),
                                  box.max_y()};
 
-    visualization::PlotPolygon(math::Polygon2d(math::Box2d(box)), 0.02,
-                               visualization::Color::Blue, i, "Rear Corridor");
+    // visualization::PlotPolygon(math::Polygon2d(math::Box2d(box)), 0.02,
+    //                            visualization::Color::Blue, i, "Rear
+    //                            Corridor");
   }
 
-  visualization::Trigger();
+  // visualization::Trigger();
 
   return true;
 }

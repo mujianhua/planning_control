@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 #include <vector>
+
 #include <boost/thread/shared_mutex.hpp>
 
 namespace planning {
@@ -35,7 +36,7 @@ class IndexedList {
     }
   }
 
-  const size_t Size() { return object_list_.size(); }
+  const size_t Size() const { return object_list_.size(); }
 
   const std::vector<const T *> &Items() const { return object_list_; }
 

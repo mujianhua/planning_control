@@ -47,6 +47,10 @@ if (WITH_HSL)
     add_definitions(-DWITH_HSL)
 endif ()
 
+set(LATTICE_SRC
+        src/lattice/lattice_trajectory1d.cpp
+        src/lattice/trajectory1d_generator.cpp)
+
 set(SRC
         src/math/aabox2d.cpp
         src/math/box2d.cpp
@@ -77,5 +81,4 @@ target_link_libraries(${PROJECT_NAME}_node
         ${catkin_LIBRARIES}
         casadi
         gflags
-        pthread
-        )
+        pthread)

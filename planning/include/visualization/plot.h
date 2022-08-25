@@ -1,26 +1,18 @@
-/***********************************************************************************
- *  C++ Source Codes for "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method".
- ***********************************************************************************
- *  Copyright (C) 2022 Bai Li
- *  Users are suggested to cite the following article when they use the source
- *codes. Bai Li et al., "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method",
- *  IEEE Transactions on Intelligent Transportation Systems, 2022.
- ***********************************************************************************/
-
+/**
+ * @file plot.h
+ * @brief
+ */
 #pragma once
 
-#include "planning/vehicle_param.h"
-
-#include "math/polygon2d.h"
-#include "math/vec2d.h"
-
 #include <mutex>
+
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
 
 #include "color.h"
+#include "math/polygon2d.h"
+#include "math/vec2d.h"
+#include "planning/vehicle_param.h"
 
 namespace planning {
 namespace visualization {

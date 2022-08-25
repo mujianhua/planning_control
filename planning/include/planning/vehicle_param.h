@@ -11,7 +11,7 @@ namespace planning {
 class VehicleParam {
  public:
   /**
-   * L_F, front hang length of the ego vehicle (m)
+   * @brief L_F, front hang length of the ego vehicle (m)
    */
   double front_hang_length = 0.96;
 

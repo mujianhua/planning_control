@@ -1,3 +1,9 @@
+/**
+ * @file trajectory1d_generator.h
+ * @brief
+ *
+ */
+
 #pragma once
 
 #include <array>
@@ -18,7 +24,18 @@ class Trajectory1dGenerator {
   Trajectory1dGenerator(const std::array<double, 3> &lon_init_state,
                         const std::array<double, 3> &lat_init_state);
 
+  virtual ~Trajectory1dGenerator() = default;
+
+  void GenerateTrajectoryBundles(
+      std::vector<std::shared_ptr<Curve1d>> *ptr_lon_trajectory_bundle,
+      std::vector<std::shared_ptr<Curve1d>> *ptr_lat_trajectory_bundle);
+
+  void GenerateLateralTrajectoryBundle(
+      std::vector<std::shared_ptr<Curve1d>> *ptr_lat_trajectory_bundle) const;
+
  private:
+  void GenerateSpeedProfilesForCruising() const;
+
   template <size_t N>
   void GenerateTrajectory1DBundle(
       const std::array<double, 3> &init_state,

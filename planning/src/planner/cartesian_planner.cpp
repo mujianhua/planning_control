@@ -40,17 +40,17 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
   opti_constraints.start_a = frame->vehicle_state().a;
   opti_constraints.start_omega = frame->vehicle_state().omega;
 
-  std::vector<double> coarse_x, coarse_y;
-  for (auto &pt : coarse_trajectory.data()) {
-    coarse_x.push_back(pt.x);
-    coarse_y.push_back(pt.y);
-  }
-
-  visualization::Plot(coarse_x, coarse_y, 0.1, visualization::Color::Cyan, 1,
-                      "Coarse Trajectory");
-  visualization::PlotPoints(coarse_x, coarse_y, 0.3, visualization::Color::Cyan,
-                            2, "Coarse Trajectory");
-  visualization::Trigger();
+  // std::vector<double> coarse_x, coarse_y;
+  // for (auto &pt : coarse_trajectory.data()) {
+  //   coarse_x.push_back(pt.x);
+  //   coarse_y.push_back(pt.y);
+  // }
+  // visualization::Plot(coarse_x, coarse_y, 0.1, visualization::Color::Cyan, 1,
+  //                     "Coarse Trajectory");
+  // visualization::PlotPoints(coarse_x, coarse_y, 0.3,
+  // visualization::Color::Cyan,
+  //                           2, "Coarse Trajectory");
+  // visualization::Trigger();
 
   States optimized;
   if (!opti_.OptimizeIteratively(coarse_trajectory, frame, opti_constraints,

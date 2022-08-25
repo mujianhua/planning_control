@@ -1,3 +1,7 @@
+/**
+ * @file planning_node.h
+ * @brief
+ */
 
 #include <ros/ros.h>
 
@@ -24,8 +28,6 @@ class PlanningNode {
   explicit PlanningNode(const ros::NodeHandle &nh);
 
   ~PlanningNode() = default;
-
-  void CenterLineCallback(const CenterLineConstPtr &msg);
 
   // TODO: 处理不同plan中的相同障碍物,进行编号
   void StaticObstaclesCallback(const ObstaclesConstPtr &msg);
