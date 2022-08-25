@@ -55,9 +55,6 @@ class PlanningNode {
 
   std::unique_ptr<PlanningBase> planning_base_;
 
-  Frame::IndexedDynamicObstacles index_dynamic_obstacles_;
-  Frame::IndexedStaticObstacle index_static_obstacles_;
-
   IndexedList<std::string, Obstacle> index_obstacles_;
 
   ros::Subscriber obstacles_subscriber_, dynamic_obstacles_subscriber_,

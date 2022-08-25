@@ -29,7 +29,6 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
 // TODO: 处理不同plan中的相同障碍物,进行编号
 void PlanningNode::StaticObstaclesCallback(const ObstaclesConstPtr &msg) {
   ROS_DEBUG("[Planning Node] receive static obstacles message.");
-  index_static_obstacles_.ClearAll();
   size_t count = 0;
   for (auto &obstacle : msg->obstacles) {
     std::vector<math::Vec2d> points;
@@ -45,7 +44,6 @@ void PlanningNode::StaticObstaclesCallback(const ObstaclesConstPtr &msg) {
 void PlanningNode::DynamicObstaclesCallback(
     const DynamicObstaclesConstPtr &msg) {
   ROS_DEBUG("[Planning Node] receive dynamic obstacles message.");
-  index_dynamic_obstacles_.ClearAll();
   size_t count = 0;
   for (auto &obstacle : msg->obstacles) {
     Frame::DynamicObstacle dynamic_obstacle;

@@ -25,8 +25,6 @@ class Frame {
  public:
   using DynamicObstacle = std::vector<std::pair<double, math::Polygon2d>>;
   using StaticObstacle = math::Polygon2d;
-  using IndexedDynamicObstacles = IndexedList<std::string, DynamicObstacle>;
-  using IndexedStaticObstacle = IndexedList<std::string, StaticObstacle>;
 
   explicit Frame(const PlanningConfig &config) : config_(config) {}
 
@@ -44,20 +42,6 @@ class Frame {
     return dynamic_obstacles_;
   }
 
-  IndexedStaticObstacle &index_static_obstacles() {
-    return index_static_obstacles_;
-  }
-
-  IndexedDynamicObstacles &index_dynamic_obstacles() {
-    return index_dynamic_obstacles_;
-  }
-
-  void AddObstacle(const std::string &id, const DynamicObstacle &obs);
-
-  void AddObstacle(const std::string &id, const StaticObstacle &obs);
-
-  void ClearObstacles();
-
   bool CheckCollision(double time, const math::Box2d &rect);
 
   bool CheckOptimizationCollision(double time, const math::Pose &pose,
@@ -74,10 +58,6 @@ class Frame {
 
  private:
   PlanningConfig config_;
-
-  // TODO:
-  IndexedDynamicObstacles index_dynamic_obstacles_;
-  IndexedStaticObstacle index_static_obstacles_;
 
   std::vector<const Obstacle *> obstacles_;
   std::vector<const Obstacle *> static_obstacles_;

@@ -18,19 +18,6 @@ void Frame::Update(const LocalView &local_view) {
   }
 }
 
-void Frame::AddObstacle(const std::string &id, const DynamicObstacle &obs) {
-  index_dynamic_obstacles_.Add(id, obs);
-}
-
-void Frame::AddObstacle(const std::string &id, const StaticObstacle &obs) {
-  index_static_obstacles_.Add(id, obs);
-}
-
-void Frame::ClearObstacles() {
-  index_dynamic_obstacles_.ClearAll();
-  index_static_obstacles_.ClearAll();
-}
-
 void Frame::SetReferenceLine(const ReferenceLine &reference) {
   reference_line_ = reference;
 
