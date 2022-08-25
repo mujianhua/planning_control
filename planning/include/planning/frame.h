@@ -8,10 +8,13 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "math/polygon2d.h"
 #include "planning/data_struct.h"
 #include "planning/indexed_list.h"
+#include "planning/local_view.h"
+#include "planning/obstacle.h"
 #include "planning/reference_line.h"
 #include "planning_config.h"
 #include "vehicle_param.h"
@@ -27,6 +30,8 @@ class Frame {
 
   explicit Frame(const PlanningConfig &config) : config_(config) {}
 
+  void Update(const LocalView &local_view);
+
   const ReferenceLine &reference_line() const { return reference_line_; }
 
   void SetReferenceLine(const ReferenceLine &reference);
@@ -35,6 +40,10 @@ class Frame {
 
   const VehicleState &vehicle_state() const { return vehicle_state_; }
 
+  const std::vector<const Obstacle *> &dynamic_obstacles() {
+    return dynamic_obstacles_;
+  }
+
   IndexedStaticObstacle &index_static_obstacles() {
     return index_static_obstacles_;
   }
@@ -42,8 +51,6 @@ class Frame {
   IndexedDynamicObstacles &index_dynamic_obstacles() {
     return index_dynamic_obstacles_;
   }
-
-  // void SetObastacles(IndexedDynamicObstacles, IndexedStaticObstacle);
 
   void AddObstacle(const std::string &id, const DynamicObstacle &obs);
 
@@ -71,6 +78,10 @@ class Frame {
   // TODO:
   IndexedDynamicObstacles index_dynamic_obstacles_;
   IndexedStaticObstacle index_static_obstacles_;
+
+  std::vector<const Obstacle *> obstacles_;
+  std::vector<const Obstacle *> static_obstacles_;
+  std::vector<const Obstacle *> dynamic_obstacles_;
 
   ReferenceLine reference_line_;
   std::vector<math::Vec2d> road_barrier_;

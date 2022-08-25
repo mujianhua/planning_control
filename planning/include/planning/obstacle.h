@@ -21,6 +21,10 @@ class Obstacle {
 
   bool IsStatic() const { return is_static_; }
 
+  const DynamicObstacle &polygon2ds() const { return dynamic_obs_; }
+
+  const StaticObstacle &polygon2d() const { return static_obs_; }
+
  private:
   std::string id_;
   bool is_static_;

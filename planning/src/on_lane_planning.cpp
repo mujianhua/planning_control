@@ -24,10 +24,7 @@ OnLanePlanning::OnLanePlanning(const PlanningConfig &config)
 OnLanePlanning::~OnLanePlanning() { reference_line_provider_->Stop(); }
 
 void OnLanePlanning::UpdateFrame() {
-  // obstacles
-  frame_->ClearObstacles();
-  frame_->index_dynamic_obstacles() = *local_view_.dynamic_obstacle;
-  frame_->index_static_obstacles() = *local_view_.static_obstacle;
+  frame_->Update(local_view_);
 
   // reference line
   ReferenceLine reference_line;

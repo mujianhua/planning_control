@@ -15,6 +15,7 @@
 #include "planning/discretized_trajectory.h"
 #include "planning/indexed_list.h"
 #include "planning/local_view.h"
+#include "planning/obstacle.h"
 #include "planning/planning_config.h"
 #include "planning/reference_line.h"
 #include "planning/reference_line_provider.h"
@@ -34,7 +35,7 @@ class PlanningNode {
 
   void DynamicObstaclesCallback(const DynamicObstaclesConstPtr &msg);
 
-  void PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg);
+  void Proc(const geometry_msgs::PoseStampedConstPtr &msg);
 
  private:
   void Animation(const DiscretizedTrajectory &plan_trajectory);
@@ -56,6 +57,8 @@ class PlanningNode {
 
   Frame::IndexedDynamicObstacles index_dynamic_obstacles_;
   Frame::IndexedStaticObstacle index_static_obstacles_;
+
+  IndexedList<std::string, Obstacle> index_obstacles_;
 
   ros::Subscriber obstacles_subscriber_, dynamic_obstacles_subscriber_,
       goal_subscriber_;

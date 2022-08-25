@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "on_lane_planning.h"
+#include "planning/obstacle.h"
 #include "planning/reference_line_provider.h"
 #include "planning_base.h"
 
@@ -21,8 +22,8 @@ PlanningNode::PlanningNode(const ros::NodeHandle &nh) : nh_(nh) {
   dynamic_obstacles_subscriber_ = nh_.subscribe(
       "/dynamic_obstacles", 1, &PlanningNode::DynamicObstaclesCallback, this);
 
-  goal_subscriber_ = nh_.subscribe("/move_base_simple/goal", 1,
-                                   &PlanningNode::PlanCallback, this);
+  goal_subscriber_ =
+      nh_.subscribe("/move_base_simple/goal", 1, &PlanningNode::Proc, this);
 }
 
 // TODO: 处理不同plan中的相同障碍物,进行编号
@@ -35,8 +36,9 @@ void PlanningNode::StaticObstaclesCallback(const ObstaclesConstPtr &msg) {
     for (auto &pt : obstacle.points) {
       points.emplace_back(pt.x, pt.y);
     }
-    index_static_obstacles_.Add("static" + std::to_string(++count),
-                                math::Polygon2d(points));
+    Obstacle obs("static" + std::to_string(++count), math::Polygon2d(points));
+
+    index_obstacles_.Add("static" + std::to_string(++count), obs);
   }
 }
 
@@ -57,20 +59,18 @@ void PlanningNode::DynamicObstaclesCallback(
 
       dynamic_obstacle.emplace_back(tp.time, points);
     }
-    index_dynamic_obstacles_.Add("dynamic" + std::to_string(++count),
-                                 dynamic_obstacle);
+    Obstacle obs("dynamic" + std::to_string(++count), dynamic_obstacle);
+
+    index_obstacles_.Add("dynamic" + std::to_string(++count), obs);
   }
 }
 
-void PlanningNode::PlanCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
+void PlanningNode::Proc(const geometry_msgs::PoseStampedConstPtr &msg) {
   vehicle_state_ = VehicleState(0.0, 0.0, 0.0, 5.0);
 
   local_view_.vehicle_state = std::make_shared<VehicleState>(vehicle_state_);
-  local_view_.dynamic_obstacle =
-      std::make_shared<Frame::IndexedDynamicObstacles>(
-          index_dynamic_obstacles_);
-  local_view_.static_obstacle =
-      std::make_shared<Frame::IndexedStaticObstacle>(index_static_obstacles_);
+  local_view_.obstacles =
+      std::make_shared<IndexedList<std::string, Obstacle>>(index_obstacles_);
 
   DiscretizedTrajectory result;
   planning_base_->RunOnce(local_view_, &result);
@@ -85,9 +85,8 @@ void PlanningNode::Animation(const DiscretizedTrajectory &plan_trajectory) {
     auto dynamic_obstacles =
         planning_base_->frame()->QueryDynamicObstacles(time);
     for (auto &obstacle : dynamic_obstacles) {
-      int hue =
-          int((double)obstacle.first /
-              planning_base_->frame()->index_dynamic_obstacles().Size() * 320);
+      int hue = int((double)obstacle.first /
+                    planning_base_->frame()->dynamic_obstacles().size() * 320);
 
       visualization::PlotPolygon(obstacle.second, 0.2,
                                  visualization::Color::fromHSV(hue, 1.0, 1.0),

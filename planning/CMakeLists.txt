@@ -61,6 +61,7 @@ set(SRC
         src/math/cartesian_frenet_conversion.cpp
         src/visualization/plot.cpp
         src/visualization/color.cpp
+        src/planning/obstacle.cpp
         src/planning/planning_config.cpp
         src/planning/reference_line.cpp
         src/planning/reference_line_provider.cpp

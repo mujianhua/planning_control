@@ -8,6 +8,16 @@ namespace planning {
 
 constexpr double kSampleStep = 0.1;
 
+void Frame::Update(const LocalView &local_view) {
+  for (const auto &obs : local_view.obstacles->Items()) {
+    if (obs->IsStatic()) {
+      static_obstacles_.push_back(obs);
+    } else {
+      dynamic_obstacles_.push_back(obs);
+    }
+  }
+}
+
 void Frame::AddObstacle(const std::string &id, const DynamicObstacle &obs) {
   index_dynamic_obstacles_.Add(id, obs);
 }
@@ -41,8 +51,8 @@ void Frame::SetReferenceLine(const ReferenceLine &reference) {
 }
 
 bool Frame::CheckStaticCollision(const math::Box2d &rect) {
-  for (auto &obstacle : index_static_obstacles_.Items()) {
-    if (obstacle->HasOverlap(rect)) {
+  for (auto &obstacle : static_obstacles_) {
+    if (obstacle->polygon2d().HasOverlap(rect)) {
       return true;
     }
   }
@@ -110,12 +120,13 @@ bool Frame::CheckOptimizationCollision(double time, const math::Pose &pose,
 }
 
 bool Frame::CheckDynamicCollision(double time, const math::Box2d &rect) {
-  for (auto &obstacle : index_dynamic_obstacles_.Items()) {
-    if (obstacle->front().first > time || obstacle->back().first < time) {
+  for (auto &obstacle : dynamic_obstacles_) {
+    if (obstacle->polygon2ds().front().first > time ||
+        obstacle->polygon2ds().back().first < time) {
       continue;
     }
     auto result = std::upper_bound(
-        obstacle->begin(), obstacle->end(), time,
+        obstacle->polygon2ds().begin(), obstacle->polygon2ds().end(), time,
         [](double val, const std::pair<double, math::Polygon2d> &ob) {
           return val < ob.first;
         });
@@ -132,13 +143,14 @@ std::unordered_map<int, math::Polygon2d> Frame::QueryDynamicObstacles(
     double time) {
   std::unordered_map<int, math::Polygon2d> filtered;
   int idx = 0;
-  for (auto &obstacle : index_dynamic_obstacles_.Items()) {
+  for (auto &obstacle : dynamic_obstacles_) {
     idx++;
-    if (obstacle->front().first > time || obstacle->back().first < time) {
+    if (obstacle->polygon2ds().front().first > time ||
+        obstacle->polygon2ds().back().first < time) {
       continue;
     }
     auto result = std::upper_bound(
-        obstacle->begin(), obstacle->end(), time,
+        obstacle->polygon2ds().begin(), obstacle->polygon2ds().end(), time,
         [](double val, const std::pair<double, math::Polygon2d> &ob) {
           return val < ob.first;
         });
@@ -167,19 +179,21 @@ void Frame::Visualize() {
                       "Road Right");
 
   int idx = 0;
-  for (auto &obstacle : index_static_obstacles_.Items()) {
-    visualization::PlotPolygon(*obstacle, 0.1, visualization::Color::Magenta,
-                               idx++, "Obstacles");
+  for (auto &obstacle : static_obstacles_) {
+    visualization::PlotPolygon(obstacle->polygon2d(), 0.1,
+                               visualization::Color::Magenta, idx++,
+                               "Obstacles");
   }
 
   // plot first frame of dynamic obstacles
   idx = 1;
-  for (auto &obstacle : index_dynamic_obstacles_.Items()) {
+  for (auto &obstacle : dynamic_obstacles_) {
     auto color = visualization::Color::fromHSV(
-        int((double)idx / index_dynamic_obstacles_.Size() * 320), 1.0, 1.0);
+        int((double)idx / static_cast<double>(dynamic_obstacles_.size() * 320)),
+        1.0, 1.0);
     color.set_alpha(0.5);
-    visualization::PlotPolygon(obstacle->at(0).second, 0.1, color, idx,
-                               "Online Obstacle");
+    visualization::PlotPolygon(obstacle->polygon2ds().at(0).second, 0.1, color,
+                               idx, "Online Obstacle");
     idx++;
   }
 
