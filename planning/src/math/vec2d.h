@@ -23,10 +23,6 @@
 
 #include <cmath>
 
-/**
- * @namespace apollo::common::math
- * @brief apollo::common::math
- */
 namespace planning {
 namespace math {
 

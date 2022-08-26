@@ -29,10 +29,6 @@
 #include "line_segment2d.h"
 #include "vec2d.h"
 
-/**
- * @namespace apollo::common::math
- * @brief apollo::common::math
- */
 namespace planning {
 namespace math {
 
