@@ -1,4 +1,10 @@
+/**
+ * @file data_struct.h
+ * @brief provide data structure for planning.
+ */
+
 #pragma once
+
 #include <vector>
 
 namespace planning {
