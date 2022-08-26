@@ -2,12 +2,14 @@
 
 #include <memory>
 #include <vector>
+
 #include <OsqpEigen/OsqpEigen.h>
+
+#include "../../../planning/src/reference_line/reference_line.h"
+#include "../../../planning/src/reference_line/reference_line_smoother.h"
 #include "Eigen/Dense"
 #include "Eigen/Sparse"
 #include "common/planning_dependency_injector.h"
-#include "reference_line/reference_line.h"
-#include "reference_line/reference_line_smoother.h"
 
 namespace mujianhua {
 namespace planning {

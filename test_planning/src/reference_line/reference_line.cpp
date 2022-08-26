@@ -1,7 +1,9 @@
-#include "reference_line/reference_line.h"
+#include "../../../planning/src/reference_line/reference_line.h"
+
 #include <cfloat>
 #include <vector>
-#include "common/data_struct.h"
+
+#include "../../../planning/src/common/data_struct.h"
 #include "common/math/math_util.h"
 #include "common/spline.h"
 #include "common/vehicle_state.h"

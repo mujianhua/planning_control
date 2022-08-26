@@ -9,8 +9,8 @@
 
 #include "on_lane_planning.h"
 #include "planning/obstacle.h"
-#include "planning/reference_line_provider.h"
 #include "planning_base.h"
+#include "reference_line/reference_line_provider.h"
 
 namespace planning {
 
@@ -46,7 +46,7 @@ void PlanningNode::DynamicObstaclesCallback(
   ROS_DEBUG("[Planning Node] receive dynamic obstacles message.");
   size_t count = 0;
   for (auto &obstacle : msg->obstacles) {
-    Frame::DynamicObstacle dynamic_obstacle;
+    Obstacle::DynamicObstacle dynamic_obstacle;
     for (auto &tp : obstacle.trajectory) {
       math::Pose coord(tp.x, tp.y, tp.theta);
       std::vector<math::Vec2d> points;
@@ -64,6 +64,7 @@ void PlanningNode::DynamicObstaclesCallback(
 }
 
 void PlanningNode::Proc(const geometry_msgs::PoseStampedConstPtr &msg) {
+  // TODO mutex
   vehicle_state_ = VehicleState(0.0, 0.0, 0.0, 5.0);
 
   local_view_.vehicle_state = std::make_shared<VehicleState>(vehicle_state_);

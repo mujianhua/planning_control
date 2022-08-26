@@ -1,8 +1,12 @@
 
-#include "planner/lattice_planner.h"
+#include "lattice_planner.h"
+
 #include <array>
-#include "math/cartesian_frenet_conversion.h"
-#include "planning/data_struct.h"
+#include <memory>
+
+#include "../common/data_struct.h"
+#include "../lattice/path_time_graph.h"
+#include "../math/cartesian_frenet_conversion.h"
 
 namespace planning {
 
@@ -13,8 +17,8 @@ bool LatticePlanner::Plan(const TrajectoryPoint &planning_init_point,
   TrajectoryPoint match_point = frame->reference_line().GetProjection(
       {planning_init_point.x, planning_init_point.y});
 
-  std::array<double, 3> init_s;
-  std::array<double, 3> init_d;
+  std::array<double, 3> init_s{};
+  std::array<double, 3> init_d{};
   TrajectoryPoint cartesian_point;
   cartesian_point.x = frame->vehicle_state().x;
   cartesian_point.y = frame->vehicle_state().y;
@@ -23,6 +27,10 @@ bool LatticePlanner::Plan(const TrajectoryPoint &planning_init_point,
   cartesian_point.velocity = frame->vehicle_state().v;
   cartesian_point.a = frame->vehicle_state().a;
   ComputeInitFrenetState(match_point, cartesian_point, &init_s, &init_d);
+
+  auto ptr_path_time_graph = std::make_shared<PathTimeGraph>(
+      frame->obstacles(), &frame->reference_line(), init_s[0], init_s[0], 0.0,
+      0.0, init_d);
 
   return true;
 }

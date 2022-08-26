@@ -9,12 +9,12 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "planning/trajectory_optimizer.h"
+#include "trajectory_optimizer.h"
 
 #include <bitset>
 
-#include "math/math_utils.h"
-#include "visualization/plot.h"
+#include "../math/math_utils.h"
+#include "../visualization/plot.h"
 
 namespace planning {
 
@@ -25,9 +25,9 @@ TrajectoryOptimizer::TrajectoryOptimizer(const PlanningConfig &config)
 
 bool TrajectoryOptimizer::OptimizeIteratively(
     const DiscretizedTrajectory &coarse, Frame *frame,
-    const Constraints &constraints, States &result) {
+    const OptiConstraints &constraints, OptiStates &result) {
   frame_ = frame;
-  States guess;
+  OptiStates guess;
   for (auto &pt : coarse.data()) {
     guess.x.push_back(pt.x);
     guess.y.push_back(pt.y);
@@ -38,13 +38,14 @@ bool TrajectoryOptimizer::OptimizeIteratively(
   int iter = 0;
   double w_penalty = config_.opti_w_penalty0;
 
-  Constraints iterative_constraints = constraints;
+  OptiConstraints iterative_constraints = constraints;
 
   while (iter < config_.opti_iter_max) {
     FormulateCorridorConstraints(guess, iterative_constraints);
 
     double cur_infeasibility = nlp_.SolveIteratively(
         w_penalty, iterative_constraints, guess, coarse, guess);
+
     visualization::Plot(guess.x, guess.y, 0.1, visualization::Color::Red, iter,
                         "Intermediate Trajectory");
     visualization::Trigger();
@@ -64,7 +65,7 @@ bool TrajectoryOptimizer::OptimizeIteratively(
   return false;
 }
 
-void TrajectoryOptimizer::CalculateInitialGuess(States &states) const {
+void TrajectoryOptimizer::CalculateInitialGuess(OptiStates &states) const {
   states.v.resize(config_.nfe, 0.0);
   states.phi.resize(config_.nfe, 0.0);
 
@@ -102,7 +103,7 @@ void TrajectoryOptimizer::CalculateInitialGuess(States &states) const {
 }
 
 bool TrajectoryOptimizer::FormulateCorridorConstraints(
-    States &states, Constraints &constraints) {
+    OptiStates &states, OptiConstraints &constraints) {
   constraints.front_bound.resize(config_.nfe);
   constraints.rear_bound.resize(config_.nfe);
   states.xf.resize(config_.nfe);

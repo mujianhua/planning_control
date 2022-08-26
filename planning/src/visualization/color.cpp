@@ -9,7 +9,8 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "visualization/color.h"
+#include "color.h"
+
 #include <cmath>
 
 namespace planning {

@@ -9,7 +9,7 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "planning/trajectory_nlp.h"
+#include "trajectory_nlp.h"
 
 namespace planning {
 
@@ -83,10 +83,10 @@ void TrajectoryNLP::BuildIterativeNLP() {
 }
 
 double TrajectoryNLP::SolveIteratively(double w_inf,
-                                       const Constraints &constraints,
-                                       const States &guess,
+                                       const OptiConstraints &constraints,
+                                       const OptiStates &guess,
                                        const DiscretizedTrajectory &reference,
-                                       States &result) {
+                                       OptiStates &result) {
   auto identity = DM::ones(config_.nfe, 1);
 
   DM lb_x, lb_y, lb_theta, lb_v, lb_phi, lb_a, lb_omega, lb_jerk, lb_xf, lb_yf,

@@ -1,11 +1,13 @@
 
 #include "reference_line/qp_spline_reference_smoother.h"
+
 #include <cmath>
 #include <cstddef>
 #include <utility>
 #include <vector>
-#include "common/data_struct.h"
-#include "reference_line/reference_line.h"
+
+#include "../../../planning/src/common/data_struct.h"
+#include "../../../planning/src/reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
 
 namespace mujianhua {

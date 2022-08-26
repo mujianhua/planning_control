@@ -14,13 +14,13 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "math/line_segment2d.h"
+#include "line_segment2d.h"
 
 #include <algorithm>
 #include <cassert>
 #include <utility>
 
-#include "math/math_utils.h"
+#include "math_utils.h"
 
 namespace planning {
 namespace math {

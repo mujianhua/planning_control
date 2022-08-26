@@ -1,13 +1,14 @@
 #include <memory>
 #include <vector>
-#include "common/data_struct.h"
+
+#include "../../../planning/src/common/data_struct.h"
+#include "../../../planning/src/reference_line/reference_line.h"
 #include "common/frame.h"
 #include "common/math/math_util.h"
 #include "common/planning_dependency_injector.h"
 #include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"
 #include "path_optimizer/qp_path_optimizer.h"
-#include "reference_line/reference_line.h"
 #include "reference_line/reference_point.h"
 
 namespace mujianhua {

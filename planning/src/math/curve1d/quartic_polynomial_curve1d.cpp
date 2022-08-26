@@ -18,7 +18,7 @@
  * @file quartic_polynomial_curve1d.cc
  **/
 
-#include "math/curve1d/quartic_polynomial_curve1d.h"
+#include "quartic_polynomial_curve1d.h"
 
 #include "glog/logging.h"
 

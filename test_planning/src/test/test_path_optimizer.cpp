@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <glog/logging.h>
@@ -18,7 +19,8 @@
 #include <tf/tf.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
-#include "common/data_struct.h"
+
+#include "../../../planning/src/common/data_struct.h"
 #include "common/math/math_util.h"
 #include "config/planning_flags.h"
 #include "eigen3/Eigen/Dense"

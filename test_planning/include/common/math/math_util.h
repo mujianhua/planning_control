@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cmath>
-#include "common/data_struct.h"
+
+#include "../../../../planning/src/common/data_struct.h"
 #include "common/spline.h"
 #include "common/vehicle_state.h"
 #include "common_me/TrajectoryPoint.h"

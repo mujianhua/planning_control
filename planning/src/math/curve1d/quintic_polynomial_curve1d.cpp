@@ -18,7 +18,7 @@
  * @file quintic_polynomial_curve1d.cc
  **/
 
-#include "math/curve1d/quintic_polynomial_curve1d.h"
+#include "quintic_polynomial_curve1d.h"
 
 #include "glog/logging.h"
 

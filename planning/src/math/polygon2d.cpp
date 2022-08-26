@@ -14,7 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "math/polygon2d.h"
+#include "polygon2d.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,7 +24,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include "math/math_utils.h"
+#include "math_utils.h"
 
 namespace planning {
 namespace math {

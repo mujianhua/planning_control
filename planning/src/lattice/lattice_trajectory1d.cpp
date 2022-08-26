@@ -18,7 +18,7 @@
  * @file
  **/
 
-#include "lattice/lattice_trajectory1d.h"
+#include "lattice_trajectory1d.h"
 
 #include "glog/logging.h"
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "math/math_utils.h"
+#include "math_utils.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

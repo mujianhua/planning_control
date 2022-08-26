@@ -1,17 +1,12 @@
-/***********************************************************************************
- *  C++ Source Codes for "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method".
- ***********************************************************************************
- *  Copyright (C) 2022 Bai Li
- *  Users are suggested to cite the following article when they use the source
- *codes. Bai Li et al., "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method",
- *  IEEE Transactions on Intelligent Transportation Systems, 2022.
- ***********************************************************************************/
+/**
+ * @file cartesian_planner.cpp
+ */
 
-#include "planner/cartesian_planner.h"
-#include "planner/dp_planner.h"
-#include "visualization/plot.h"
+#include "cartesian_planner.h"
+
+#include "../common/data_struct.h"
+#include "../visualization/plot.h"
+#include "dp_planner.h"
 
 namespace planning {
 
@@ -20,6 +15,7 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
   ros::Time start_time = ros::Time::now();
   ros::Time current_time = start_time;
 
+  // 1. Get coarse trajectory by dynamic programming
   DiscretizedTrajectory coarse_trajectory;
   if (!dp_.Plan(planning_init_point.x, planning_init_point.y,
                 planning_init_point.theta, frame, coarse_trajectory)) {
@@ -31,7 +27,22 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
             (ros::Time::now() - current_time).toSec());
   current_time = ros::Time::now();
 
-  Constraints opti_constraints;
+  /*  // visualize coarse trajectory.
+   std::vector<double> coarse_x, coarse_y;
+   for (auto &pt : coarse_trajectory.data()) {
+     coarse_x.push_back(pt.x);
+     coarse_y.push_back(pt.y);
+   }
+   visualization::Plot(coarse_x, coarse_y, 0.1, visualization::Color::Cyan, 1,
+                       "Coarse Trajectory");
+   visualization::PlotPoints(coarse_x, coarse_y, 0.3,
+   visualization::Color::Cyan,
+                             2, "Coarse Trajectory");
+   visualization::Trigger();
+ */
+
+  // 2. optimize coarse trajectory.
+  OptiConstraints opti_constraints;
   opti_constraints.start_x = frame->vehicle_state().x;
   opti_constraints.start_y = frame->vehicle_state().y;
   opti_constraints.start_theta = frame->vehicle_state().theta;
@@ -40,19 +51,7 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
   opti_constraints.start_a = frame->vehicle_state().a;
   opti_constraints.start_omega = frame->vehicle_state().omega;
 
-  // std::vector<double> coarse_x, coarse_y;
-  // for (auto &pt : coarse_trajectory.data()) {
-  //   coarse_x.push_back(pt.x);
-  //   coarse_y.push_back(pt.y);
-  // }
-  // visualization::Plot(coarse_x, coarse_y, 0.1, visualization::Color::Cyan, 1,
-  //                     "Coarse Trajectory");
-  // visualization::PlotPoints(coarse_x, coarse_y, 0.3,
-  // visualization::Color::Cyan,
-  //                           2, "Coarse Trajectory");
-  // visualization::Trigger();
-
-  States optimized;
+  OptiStates optimized;
   if (!opti_.OptimizeIteratively(coarse_trajectory, frame, opti_constraints,
                                  optimized)) {
     ROS_ERROR("Optimization failed");
@@ -63,17 +62,13 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
   Trajectory result_data;
   double incremental_s = 0.0;
   for (int i = 0; i < config_.nfe; i++) {
-    TrajectoryPoint tp;
     incremental_s += i > 0 ? hypot(optimized.x[i] - optimized.x[i - 1],
                                    optimized.y[i] - optimized.y[i - 1])
                            : 0.0;
-    tp.s = incremental_s;
-
-    tp.x = optimized.x[i];
-    tp.y = optimized.y[i];
-    tp.theta = optimized.theta[i];
+    TrajectoryPoint tp(incremental_s, optimized.x[i], optimized.y[i],
+                       optimized.theta[i],
+                       tan(optimized.phi[i]) / config_.vehicle.wheel_base);
     tp.velocity = optimized.v[i];
-    tp.kappa = tan(optimized.phi[i]) / config_.vehicle.wheel_base;
 
     opti_x.push_back(tp.x);
     opti_y.push_back(tp.y);

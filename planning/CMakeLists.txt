@@ -31,7 +31,7 @@ catkin_package(
 )
 
 include_directories(
-        include
+        src
         ${catkin_INCLUDE_DIRS}
 )
 
@@ -48,8 +48,11 @@ if (WITH_HSL)
 endif ()
 
 set(LATTICE_SRC
+        src/math/curve1d/quartic_polynomial_curve1d.cpp
+        src/math/curve1d/quintic_polynomial_curve1d.cpp
         src/lattice/lattice_trajectory1d.cpp
-        src/lattice/trajectory1d_generator.cpp)
+        src/lattice/trajectory1d_generator.cpp
+        src/lattice/path_time_graph.cpp)
 
 set(SRC
         src/math/aabox2d.cpp
@@ -58,13 +61,17 @@ set(SRC
         src/math/math_utils.cpp
         src/math/polygon2d.cpp
         src/math/vec2d.cpp
+        src/math/path_matcher.cpp
+        src/math/linear_interpolation.cpp
         src/math/cartesian_frenet_conversion.cpp
+        src/common/st_point.cpp
+        src/common/st_boundary.cpp
         src/visualization/plot.cpp
         src/visualization/color.cpp
         src/planning/obstacle.cpp
         src/planning/planning_config.cpp
-        src/planning/reference_line.cpp
-        src/planning/reference_line_provider.cpp
+        src/reference_line/reference_line.cpp
+        src/reference_line/reference_line_provider.cpp
         src/planning/discretized_trajectory.cpp
         src/planning/frame.cpp
         src/planning/trajectory_nlp.cpp
@@ -74,7 +81,7 @@ set(SRC
         src/planner/dp_planner.cpp
         src/on_lane_planning.cpp)
 
-add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC})
+add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC} ${LATTICE_SRC})
 
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -82,4 +89,5 @@ target_link_libraries(${PROJECT_NAME}_node
         ${catkin_LIBRARIES}
         casadi
         gflags
+        glog
         pthread)

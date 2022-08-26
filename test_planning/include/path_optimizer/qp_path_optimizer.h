@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cstddef>
-#include "common/data_struct.h"
+
+#include "../../../planning/src/common/data_struct.h"
+#include "../../../planning/src/reference_line/reference_line.h"
 #include "common/frame.h"
 #include "path_optimizer/path_optimizer.h"
-#include "reference_line/reference_line.h"
 
 namespace mujianhua {
 namespace planning {

@@ -14,13 +14,13 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "math/aabox2d.h"
+#include "aabox2d.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-#include "math/math_utils.h"
+#include "math_utils.h"
 
 namespace planning {
 namespace math {

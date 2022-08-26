@@ -1,11 +1,18 @@
+/**
+ * @file on_lane_planning.cpp
+ */
+
 #include "on_lane_planning.h"
+
 #include <memory>
+
+#include "common/data_struct.h"
 #include "planner/cartesian_planner.h"
-#include "planning/data_struct.h"
+#include "planner/lattice_planner.h"
 #include "planning/frame.h"
 #include "planning/planning_config.h"
-#include "planning/reference_line.h"
 #include "planning_base.h"
+#include "reference_line/reference_line.h"
 #include "visualization/plot.h"
 
 namespace planning {
@@ -14,7 +21,10 @@ OnLanePlanning::OnLanePlanning(const PlanningConfig &config)
     : PlanningBase(config) {
   if (FLAGS_planner == "Cartesian") {
     planner_ = std::make_unique<CartesianPlanner>(config_);
+  } else if (FLAGS_planner == "Lattice") {
+    planner_ = std::make_unique<LatticePlanner>(config_);
   }
+
   frame_ = std::make_unique<Frame>(config_);
   reference_line_provider_ = std::make_unique<ReferenceLineProvider>();
 
@@ -30,9 +40,6 @@ void OnLanePlanning::UpdateFrame() {
   ReferenceLine reference_line;
   reference_line_provider_->GetReferenceLine(&reference_line);
   frame_->SetReferenceLine(reference_line);
-
-  // vehicle state
-  frame_->SetVehicleState(*local_view_.vehicle_state);
 
   frame_->Visualize();
 }

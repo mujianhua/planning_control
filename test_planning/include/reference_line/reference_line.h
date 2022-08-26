@@ -2,7 +2,8 @@
 
 #include <cstddef>
 #include <vector>
-#include "common/data_struct.h"
+
+#include "../../../planning/src/common/data_struct.h"
 #include "common/frame.h"
 #include "common/spline.h"
 #include "reference_line/reference_point.h"

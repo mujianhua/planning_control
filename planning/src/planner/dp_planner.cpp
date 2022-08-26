@@ -1,14 +1,13 @@
 
-#include "planner/dp_planner.h"
+#include "dp_planner.h"
 
-#include <bitset>
-#include <sstream>
 #include <utility>
+#include <vector>
 
-#include "math/math_utils.h"
-#include "math/polygon2d.h"
-#include "ros/time.h"
-#include "visualization/plot.h"
+#include "../common/data_struct.h"
+#include "../math/math_utils.h"
+#include "../math/polygon2d.h"
+#include "../visualization/plot.h"
 
 namespace planning {
 
@@ -128,8 +127,8 @@ bool DpPlanner::Plan(double start_x, double start_y, double start_theta,
                      Frame *frame, DiscretizedTrajectory &result) {
   frame_ = frame;
   auto sl = frame_->reference_line().XYToSL({start_x, start_y});
-  state_.start_s = sl.x();
-  state_.start_l = sl.y();
+  state_.start_s = sl.first;
+  state_.start_l = sl.second;
   state_.start_theta = start_theta;
 
   // reset state space
@@ -204,8 +203,7 @@ bool DpPlanner::Plan(double start_x, double start_y, double start_theta,
   }
 
   // interpolation
-  Trajectory data;
-  data.resize(config_.nfe);
+  std::vector<TrajectoryPoint> data(config_.nfe);
   double last_l = state_.start_l, last_s = state_.start_s;
 
   for (int i = 0; i < NT; i++) {

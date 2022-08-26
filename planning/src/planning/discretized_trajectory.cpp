@@ -9,10 +9,11 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "planning/discretized_trajectory.h"
-#include "math/math_utils.h"
+#include "discretized_trajectory.h"
 
 #include <algorithm>
+
+#include "../math/math_utils.h"
 
 namespace planning {
 

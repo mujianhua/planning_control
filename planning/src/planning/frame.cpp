@@ -1,14 +1,20 @@
 
-#include "planning/frame.h"
-#include "planning/reference_line.h"
-#include "ros/time.h"
-#include "visualization/plot.h"
+#include "frame.h"
+
+#include "../reference_line/reference_line.h"
+#include "../visualization/plot.h"
 
 namespace planning {
 
 constexpr double kSampleStep = 0.1;
 
 void Frame::Update(const LocalView &local_view) {
+  // vehicle state
+  vehicle_state_ = *local_view.vehicle_state;
+
+  // obstacles
+  // TODO:
+  obstacles_ = local_view.obstacles->Items();
   for (const auto &obs : local_view.obstacles->Items()) {
     if (obs->IsStatic()) {
       static_obstacles_.push_back(obs);

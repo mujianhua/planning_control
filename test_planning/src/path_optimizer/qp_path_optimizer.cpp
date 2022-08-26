@@ -1,6 +1,7 @@
 #include "path_optimizer/qp_path_optimizer.h"
-#include "common/data_struct.h"
-#include "reference_line/reference_line.h"
+
+#include "../../../planning/src/common/data_struct.h"
+#include "../../../planning/src/reference_line/reference_line.h"
 
 namespace mujianhua {
 namespace planning {

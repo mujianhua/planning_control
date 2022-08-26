@@ -14,14 +14,14 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "math/box2d.h"
+#include "box2d.h"
 
 #include <algorithm>
 #include <cmath>
 #include <utility>
 
-#include "math/math_utils.h"
-#include "math/polygon2d.h"
+#include "math_utils.h"
+#include "polygon2d.h"
 
 namespace planning {
 namespace math {

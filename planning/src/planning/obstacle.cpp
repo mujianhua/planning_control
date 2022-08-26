@@ -1,5 +1,5 @@
 
-#include "planning/obstacle.h"
+#include "obstacle.h"
 
 namespace planning {
 

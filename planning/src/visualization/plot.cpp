@@ -9,7 +9,7 @@
  *  IEEE Transactions on Intelligent Transportation Systems, 2022.
  ***********************************************************************************/
 
-#include "visualization/plot.h"
+#include "plot.h"
 
 #include <cstddef>
 #include <mutex>

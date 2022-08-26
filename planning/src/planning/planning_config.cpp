@@ -1,4 +1,4 @@
-#include "planning/planning_config.h"
+#include "planning_config.h"
 
 #include <gflags/gflags.h>
 

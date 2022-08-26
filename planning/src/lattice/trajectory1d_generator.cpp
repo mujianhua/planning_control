@@ -2,7 +2,7 @@
  * @file trajectory1d_generator.cpp
  */
 
-#include "lattice/trajectory1d_generator.h"
+#include "trajectory1d_generator.h"
 
 namespace planning {
 
