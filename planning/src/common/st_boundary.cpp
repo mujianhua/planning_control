@@ -11,7 +11,7 @@ STBoundary::STBoundary(
     bool is_accurate_boundary) {
   std::vector<std::pair<STPoint, STPoint>> reduced_pairs(point_pairs);
   if (!is_accurate_boundary) {
-    RemoveRedundantPoints(&point_pairs);
+    RemoveRedundantPoints(&reduced_pairs);
   }
 
   for (const auto &item : reduced_pairs) {
@@ -39,6 +39,10 @@ STBoundary::STBoundary(
   max_t_ = lower_points_.back().t();
 }
 
+void STBoundary::set_id(const std::string &id) { id_ = id; }
+
+const std::string &STBoundary::id() const { return id_; }
+
 void STBoundary::set_bottom_left_point(STPoint st_point) {
   bottom_left_point_ = st_point;
 }
@@ -61,7 +65,7 @@ bool STBoundary::IsPointNear(const math::LineSegment2d &seg,
 }
 
 void STBoundary::RemoveRedundantPoints(
-    const std::vector<std::pair<STPoint, STPoint>> *point_pairs) {
+    std::vector<std::pair<STPoint, STPoint>> *point_pairs) {
   if (!point_pairs || point_pairs->size() <= 2) {
     return;
   }
@@ -76,9 +80,14 @@ void STBoundary::RemoveRedundantPoints(
     if (!IsPointNear(lower_seg, point_pairs->at(j).first, kMaxDist) ||
         !IsPointNear(upper_seg, point_pairs->at(j).second, kMaxDist)) {
       ++i;
+      if (i != j) {
+        point_pairs->at(i) = point_pairs->at(j);
+      }
     }
     ++j;
   }
+  point_pairs->at(++i) = point_pairs->back();
+  point_pairs->reserve(i + 1);
 }
 
 }  // namespace planning

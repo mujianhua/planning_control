@@ -14,6 +14,11 @@ DECLARE_bool(enable_reference_line_provider_thread);
 
 DECLARE_bool(enable_smooth_reference_line);
 
+////////////////////////////////////////////////////
+//                  LATTICE                       //
+////////////////////////////////////////////////////
+DECLARE_double(trajectory_time_length);
+
 struct PlanningConfig {
   /**
    * @brief Number of finite elements used to discretize an OCP

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(planning)
+
 SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 add_compile_options(-std=c++14 -O3)
@@ -25,7 +26,7 @@ add_message_files(
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
 catkin_package(
-        INCLUDE_DIRS include
+        # INCLUDE_DIRS include
         LIBRARIES planning
         CATKIN_DEPENDS roscpp message_runtime
 )

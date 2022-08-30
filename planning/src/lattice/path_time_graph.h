@@ -2,6 +2,7 @@
 #pragma once
 
 #include <array>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -27,6 +28,9 @@ class PathTimeGraph {
   SLBoundary ComputeObstacleBoundary(const std::vector<math::Vec2d> &vertices,
                                      const ReferenceLine *reference_line) const;
 
+  STPoint SetPathTimePoint(const std::string &obstacle_id, const double s,
+                           const double t) const;
+
   void SetStaticObstacle(const Obstacle *obstacle,
                          const ReferenceLine *reference_line);
 
@@ -37,6 +41,10 @@ class PathTimeGraph {
   std::pair<double, double> path_range_;
   std::pair<double, double> time_range_;
   std::array<double, 3> init_d_{};
+
+  std::unordered_map<std::string, STBoundary> path_time_obstacle_map_;
+  std::vector<STBoundary> path_time_obstacles_;
+  std::vector<SLBoundary> staic_obs_sl_boundaries_;
 };
 
 }  // namespace planning

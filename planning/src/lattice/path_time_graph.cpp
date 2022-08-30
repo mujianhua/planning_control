@@ -3,6 +3,8 @@
 
 #include "../math/path_matcher.h"
 #include "../math/polygon2d.h"
+#include "common/st_point.h"
+#include "planning/planning_config.h"
 
 namespace planning {
 
@@ -55,9 +57,26 @@ void PathTimeGraph::SetStaticObstacle(const Obstacle *obstacle,
 
   SLBoundary sl_boundary =
       ComputeObstacleBoundary(polygon.GetAllVertices(), reference_line);
+
+  path_time_obstacle_map_[obstacle_id].set_id(obstacle_id);
+  path_time_obstacle_map_[obstacle_id].set_bottom_left_point(
+      SetPathTimePoint(obstacle_id, sl_boundary.start_s, 0.0));
+  path_time_obstacle_map_[obstacle_id].set_bottom_right_point(SetPathTimePoint(
+      obstacle_id, sl_boundary.start_s, FLAGS_trajectory_time_length));
+  path_time_obstacle_map_[obstacle_id].set_upper_left_point(
+      SetPathTimePoint(obstacle_id, sl_boundary.end_s, 0.0));
+  path_time_obstacle_map_[obstacle_id].set_upper_right_point(SetPathTimePoint(
+      obstacle_id, sl_boundary.end_s, FLAGS_trajectory_time_length));
+  staic_obs_sl_boundaries_.push_back(std::move(sl_boundary));
 }
 
 void PathTimeGraph::SetDynamicObstacle(const Obstacle *obstacle,
                                        const ReferenceLine *reference_line) {}
+
+STPoint PathTimeGraph::SetPathTimePoint(const std::string &obstacle_id,
+                                        const double s, const double t) const {
+  STPoint path_time_point(s, t);
+  return path_time_point;
+}
 
 }  // namespace planning

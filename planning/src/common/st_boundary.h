@@ -19,6 +19,10 @@ class STBoundary : public math::Polygon2d {
       const std::vector<std::pair<STPoint, STPoint>> &point_pairs,
       bool is_accurate_boundary = false);
 
+  void set_id(const std::string &id);
+
+  const std::string &id() const;
+
   void set_bottom_left_point(STPoint st_point);
   void set_bottom_right_point(STPoint st_point);
   void set_upper_left_point(STPoint st_point);
@@ -28,8 +32,11 @@ class STBoundary : public math::Polygon2d {
   bool IsPointNear(const math::LineSegment2d &seg, const math::Vec2d &point,
                    const double max_dist);
 
+  /**
+   * @brief delete redundant points(take both ends on the same straight line).
+   */
   void RemoveRedundantPoints(
-      const std::vector<std::pair<STPoint, STPoint>> *point_pairs);
+      std::vector<std::pair<STPoint, STPoint>> *point_pairs);
 
   std::string id_;
 
