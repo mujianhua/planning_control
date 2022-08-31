@@ -1,10 +1,9 @@
 
 #pragma once
 
-#include <gflags/gflags.h>
-#include <gflags/gflags_declare.h>
+#include "gflags/gflags.h"
 
-#include "vehicle_param.h"
+#include "planning/vehicle_param.h"
 
 namespace planning {
 

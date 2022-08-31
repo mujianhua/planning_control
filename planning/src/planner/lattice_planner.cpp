@@ -4,9 +4,9 @@
 #include <array>
 #include <memory>
 
-#include "../common/data_struct.h"
-#include "../lattice/path_time_graph.h"
-#include "../math/cartesian_frenet_conversion.h"
+#include "common/data_struct.h"
+#include "lattice/path_time_graph.h"
+#include "math/cartesian_frenet_conversion.h"
 
 namespace planning {
 

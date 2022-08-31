@@ -5,12 +5,14 @@ SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 add_compile_options(-std=c++14 -O3)
 
+# find ros package
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         message_generation
         geometry_msgs
         )
 
+# find other package
 find_package(gflags REQUIRED)
 
 add_message_files(
@@ -27,8 +29,11 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
 catkin_package(
         # INCLUDE_DIRS include
-        LIBRARIES planning
-        CATKIN_DEPENDS roscpp message_runtime
+        LIBRARIES 
+            planning
+        CATKIN_DEPENDS 
+            roscpp 
+            message_runtime
 )
 
 include_directories(
@@ -67,6 +72,7 @@ set(SRC
         src/math/cartesian_frenet_conversion.cpp
         src/common/st_point.cpp
         src/common/st_boundary.cpp
+        src/common/planning_gflags.cc
         src/visualization/plot.cpp
         src/visualization/color.cpp
         src/planning/obstacle.cpp
@@ -83,9 +89,7 @@ set(SRC
         src/on_lane_planning.cpp)
 
 add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC} ${LATTICE_SRC})
-
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 target_link_libraries(${PROJECT_NAME}_node
         ${catkin_LIBRARIES}
         casadi

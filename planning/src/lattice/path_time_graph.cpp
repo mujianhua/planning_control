@@ -1,9 +1,9 @@
 
 #include "path_time_graph.h"
 
-#include "../math/path_matcher.h"
-#include "../math/polygon2d.h"
+#include "common/planning_gflags.h"
 #include "common/st_point.h"
+#include "math/polygon2d.h"
 #include "planning/planning_config.h"
 
 namespace planning {
@@ -71,7 +71,12 @@ void PathTimeGraph::SetStaticObstacle(const Obstacle *obstacle,
 }
 
 void PathTimeGraph::SetDynamicObstacle(const Obstacle *obstacle,
-                                       const ReferenceLine *reference_line) {}
+                                       const ReferenceLine *reference_line) {
+  double relative_time = time_range_.first;
+  while (relative_time < time_range_.second) {
+    relative_time += FLAGS_trajectory_time_resolution;
+  }
+}
 
 STPoint PathTimeGraph::SetPathTimePoint(const std::string &obstacle_id,
                                         const double s, const double t) const {

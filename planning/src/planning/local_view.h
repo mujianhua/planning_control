@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include "../common/data_struct.h"
-#include "../math/polygon2d.h"
+#include "common/data_struct.h"
 #include "indexed_list.h"
-#include "obstacle.h"
+#include "math/polygon2d.h"
+#include "planning/obstacle.h"
 
 namespace planning {
 

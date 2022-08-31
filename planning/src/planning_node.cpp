@@ -65,7 +65,7 @@ void PlanningNode::DynamicObstaclesCallback(
 }
 
 void PlanningNode::Proc(const geometry_msgs::PoseStampedConstPtr &msg) {
-  // TODO mutex
+  // TODO: mutex
   vehicle_state_ = VehicleState(0.0, 0.0, 0.0, 5.0);
 
   local_view_.vehicle_state = std::make_shared<VehicleState>(vehicle_state_);
