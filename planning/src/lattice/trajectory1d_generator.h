@@ -12,19 +12,21 @@
 #include <utility>
 #include <vector>
 
-#include "../math/curve1d/curve1d.h"
-#include "../math/curve1d/quartic_polynomial_curve1d.h"
-#include "../math/curve1d/quintic_polynomial_curve1d.h"
 #include "glog/logging.h"
-#include "lattice_trajectory1d.h"
-#include "path_time_graph.h"
+#include "lattice/end_condition_sampler.h"
+#include "lattice/lattice_trajectory1d.h"
+#include "lattice/path_time_graph.h"
+#include "math/curve1d/curve1d.h"
+#include "math/curve1d/quartic_polynomial_curve1d.h"
+#include "math/curve1d/quintic_polynomial_curve1d.h"
 
 namespace planning {
 
 class Trajectory1dGenerator {
  public:
   Trajectory1dGenerator(const std::array<double, 3> &lon_init_state,
-                        const std::array<double, 3> &lat_init_state);
+                        const std::array<double, 3> &lat_init_state,
+                        std::shared_ptr<PathTimeGraph> ptr_path_time_graph);
 
   virtual ~Trajectory1dGenerator() = default;
 
@@ -38,12 +40,22 @@ class Trajectory1dGenerator {
  private:
   void GenerateSpeedProfilesForCruising() const;
 
+  void GenerateLongitudinalTrajectoryBundle(
+      std::vector<std::shared_ptr<Curve1d>> *ptr_lon_trajectory_bundle) const;
+
   template <size_t N>
   void GenerateTrajectory1DBundle(
       const std::array<double, 3> &init_state,
       const std::vector<std::pair<std::array<double, 3>, double>>
           &end_conditions,
       std::vector<std::shared_ptr<Curve1d>> *ptr_trajectory_bundle);
+
+ private:
+  std::array<double, 3> init_lon_state_;
+  std::array<double, 3> init_lat_state_;
+
+  EndConditionSampler end_condition_sampler_;
+  std::shared_ptr<PathTimeGraph> ptr_path_time_graph_;
 };
 
 template <>

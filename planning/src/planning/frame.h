@@ -10,14 +10,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../common/data_struct.h"
-#include "../math/polygon2d.h"
-#include "../reference_line/reference_line.h"
+#include "common/data_struct.h"
+#include "common/obstacle.h"
+#include "common/planning_config.h"
+#include "common/vehicle_param.h"
 #include "indexed_list.h"
 #include "local_view.h"
-#include "obstacle.h"
-#include "planning_config.h"
-#include "vehicle_param.h"
+#include "math/polygon2d.h"
+#include "reference_line/reference_line.h"
 
 namespace planning {
 

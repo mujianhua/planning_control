@@ -15,9 +15,9 @@
 
 #include <casadi/casadi.hpp>
 
+#include "common/planning_config.h"
 #include "discretized_trajectory.h"
 #include "frame.h"
-#include "planning_config.h"
 
 namespace planning {
 

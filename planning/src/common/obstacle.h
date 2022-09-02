@@ -22,7 +22,6 @@ class Obstacle {
  public:
   using DynamicObstacle =
       std::vector<std::pair<double, math::Polygon2d>>;  // (time, polygon2d)...
-  using StaticObstacle = math::Polygon2d;
   using obstacle_trajectory =
       std::vector<std::pair<double, math::Pose>>;  // (time, pose)...
 
@@ -31,13 +30,7 @@ class Obstacle {
   /**
    * \brief static obstacle constructor
    */
-  Obstacle(const std::string &id, const StaticObstacle &obs);
-
-  /**
-   * \brief dynamic obstacle constructor
-   * todo: delete...
-   */
-  Obstacle(const std::string &id, const DynamicObstacle &obs);
+  Obstacle(const std::string &id, const math::Polygon2d &appearance);
 
   /**
    * \brief dynamic obstacle constructor
@@ -54,21 +47,23 @@ class Obstacle {
    */
   const DynamicObstacle &polygon2ds() const { return dynamic_obs_; }
 
-  math::Polygon2d GetPolygon2dAtTime(const double relvative_time) const;
+  math::Pose GetPoseAtTime(double relative_time) const;
+
+  math::Polygon2d GetPolygonAtTime(double relative_time) const;
 
   /**
    * \brief static obstacles methods.
    */
-  const StaticObstacle &polygon2d() const { return static_obs_; }
+  const math::Polygon2d &polygon2d() const { return appearance_; }
 
  private:
   std::string id_;
-  bool is_static_;
+  bool is_static_{};
 
   math::Polygon2d appearance_;
+  obstacle_trajectory trajectory_;
 
   DynamicObstacle dynamic_obs_;
-  StaticObstacle static_obs_;
 };
 
 }  // namespace planning

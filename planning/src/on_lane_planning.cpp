@@ -6,11 +6,10 @@
 
 #include <memory>
 
-#include "common/data_struct.h"
+#include "common/planning_gflags.h"
 #include "planner/cartesian_planner.h"
 #include "planner/lattice_planner.h"
 #include "planning/frame.h"
-#include "planning/planning_config.h"
 #include "planning_base.h"
 #include "reference_line/reference_line.h"
 #include "visualization/plot.h"

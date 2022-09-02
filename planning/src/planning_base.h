@@ -1,10 +1,10 @@
 #pragma once
 
+#include "common/planning_config.h"
 #include "planner/planner.h"
 #include "planning/discretized_trajectory.h"
 #include "planning/frame.h"
 #include "planning/local_view.h"
-#include "planning/planning_config.h"
 
 namespace planning {
 

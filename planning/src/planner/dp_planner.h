@@ -14,7 +14,7 @@
 #include "../math/vec2d.h"
 #include "../planning/discretized_trajectory.h"
 #include "../planning/frame.h"
-#include "../planning/planning_config.h"
+#include "common/planning_config.h"
 
 namespace planning {
 

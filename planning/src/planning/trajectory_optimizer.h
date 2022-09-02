@@ -13,8 +13,8 @@
 
 #include "../math/aabox2d.h"
 #include "../math/polygon2d.h"
+#include "common/planning_config.h"
 #include "discretized_trajectory.h"
-#include "planning_config.h"
 #include "trajectory_nlp.h"
 
 namespace planning {

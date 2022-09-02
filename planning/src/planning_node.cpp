@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <memory>
 
+#include "common/obstacle.h"
 #include "on_lane_planning.h"
-#include "planning/obstacle.h"
 #include "planning_base.h"
 #include "reference_line/reference_line_provider.h"
 
@@ -47,18 +47,17 @@ void PlanningNode::DynamicObstaclesCallback(
   ROS_DEBUG("[Planning Node] receive dynamic obstacles message.");
   size_t count = 0;
   for (auto &obstacle : msg->obstacles) {
-    Obstacle::DynamicObstacle dynamic_obstacle;
+    Obstacle::obstacle_trajectory obs_traj;
     for (auto &tp : obstacle.trajectory) {
       math::Pose coord(tp.x, tp.y, tp.theta);
-      std::vector<math::Vec2d> points;
-      for (auto &pt : obstacle.polygon.points) {
-        points.push_back(coord.transform({pt.x, pt.y, 0.0}));
-      }
-      math::Polygon2d polygon(points);
-
-      dynamic_obstacle.emplace_back(tp.time, points);
+      obs_traj.emplace_back(tp.time, coord);
     }
-    Obstacle obs("dynamic" + std::to_string(++count), dynamic_obstacle);
+    std::vector<math::Vec2d> points;
+    for (auto &p : obstacle.polygon.points) {
+      points.emplace_back(p.x, p.y);
+    }
+    math::Polygon2d polygon(points);
+    Obstacle obs("dynamic" + std::to_string(++count), polygon, obs_traj);
 
     index_obstacles_.Add("dynamic" + std::to_string(++count), obs);
   }

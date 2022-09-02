@@ -1,8 +1,8 @@
 
-#include "frame.h"
+#include "planning/frame.h"
 
-#include "../reference_line/reference_line.h"
-#include "../visualization/plot.h"
+#include "reference_line/reference_line.h"
+#include "visualization/plot.h"
 
 namespace planning {
 
@@ -13,7 +13,7 @@ void Frame::Update(const LocalView &local_view) {
   vehicle_state_ = *local_view.vehicle_state;
 
   // obstacles
-  // TODO:
+  // TODO:...
   obstacles_ = local_view.obstacles->Items();
   for (const auto &obs : local_view.obstacles->Items()) {
     if (obs->IsStatic()) {
@@ -103,13 +103,10 @@ bool Frame::CheckOptimizationCollision(double time, const math::Pose &pose,
   f_box.Shift({xf, yf});
   r_box.Shift({xr, yr});
 
-  if (CheckStaticCollision(math::Box2d(f_box)) ||
-      CheckStaticCollision(math::Box2d(r_box)) ||
-      CheckDynamicCollision(time, math::Box2d(f_box)) ||
-      CheckDynamicCollision(time, math::Box2d(r_box))) {
-    return true;
-  }
-  return false;
+  return CheckStaticCollision(math::Box2d(f_box)) ||
+         CheckStaticCollision(math::Box2d(r_box)) ||
+         CheckDynamicCollision(time, math::Box2d(f_box)) ||
+         CheckDynamicCollision(time, math::Box2d(r_box));
 }
 
 bool Frame::CheckDynamicCollision(double time, const math::Box2d &rect) {

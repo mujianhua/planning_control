@@ -16,7 +16,6 @@
 
 #include "linear_interpolation.h"
 
-#include "../common/data_struct.h"
 #include "math_utils.h"
 
 namespace planning {
@@ -36,6 +35,19 @@ PathPoint InterpolateUsingLinearApproximation(const PathPoint &p0,
   double dkappa = (1 - weight) * p0.dkappa + weight * p1.dkappa;
 
   return PathPoint{s, x, y, theta, kappa, dkappa};
+}
+
+Pose InterpolateUsingLinearApproximation(const std::pair<double, Pose> &p0,
+                                         const std::pair<double, Pose> &p1,
+                                         const double t) {
+  double t0 = p0.first;
+  double t1 = p1.first;
+
+  double weight = (t - t0) / (t1 - t0);
+  double x = (1 - weight) * p0.second.x();
+  double y = (1 - weight) * p0.second.y();
+  double theta = (1 - weight) * p0.second.theta();
+  return {x, y, theta};
 }
 
 }  // namespace math

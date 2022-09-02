@@ -3,8 +3,8 @@
 
 #include <tuple>
 
-#include "../math/box2d.h"
-#include "../math/pose.h"
+#include "math/box2d.h"
+#include "math/pose.h"
 
 namespace planning {
 

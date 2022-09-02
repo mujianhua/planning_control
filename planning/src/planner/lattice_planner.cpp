@@ -4,8 +4,8 @@
 #include <array>
 #include <memory>
 
-#include "common/data_struct.h"
 #include "lattice/path_time_graph.h"
+#include "lattice/trajectory1d_generator.h"
 #include "math/cartesian_frenet_conversion.h"
 
 namespace planning {
@@ -31,6 +31,13 @@ bool LatticePlanner::Plan(const TrajectoryPoint &planning_init_point,
   auto ptr_path_time_graph = std::make_shared<PathTimeGraph>(
       frame->obstacles(), &frame->reference_line(), init_s[0], init_s[0], 0.0,
       0.0, init_d);
+
+  Trajectory1dGenerator trajectory1d_generator(init_s, init_d,
+                                               ptr_path_time_graph);
+  std::vector<std::shared_ptr<Curve1d>> lon_trajectory_bundle;
+  std::vector<std::shared_ptr<Curve1d>> lat_trajectory_bundle;
+  trajectory1d_generator.GenerateTrajectoryBundles(&lon_trajectory_bundle,
+                                                   &lat_trajectory_bundle);
 
   return true;
 }

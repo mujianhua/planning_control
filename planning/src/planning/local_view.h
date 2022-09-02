@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "common/data_struct.h"
+#include "common/obstacle.h"
 #include "indexed_list.h"
 #include "math/polygon2d.h"
-#include "planning/obstacle.h"
 
 namespace planning {
 

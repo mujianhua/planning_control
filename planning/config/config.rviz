@@ -83,7 +83,14 @@ Visualization Manager:
       Marker Topic: /planning_markers
       Name: MarkerArray
       Namespaces:
-        {}
+        Footprint: true
+        Intermediate Trajectory: true
+        Obstacles: true
+        Online Obstacle: true
+        Optimized Trajectory: true
+        Road Left: true
+        Road Right: true
+        Tires: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -123,11 +130,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 8.464385032653809
+      Scale: 7.32153844833374
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: 42.037025451660156
-      Y: -1.8880302906036377
+      X: 43.176631927490234
+      Y: -6.58062744140625
     Saved: ~
 Window Geometry:
   Displays:
@@ -146,4 +153,4 @@ Window Geometry:
     collapsed: true
   Width: 1267
   X: 638
-  Y: 89
+  Y: 59

@@ -23,15 +23,20 @@
 
 #include <cmath>
 
-#include "../common/data_struct.h"
+#include "common/data_struct.h"
 #include "glog/logging.h"
+#include "math/pose.h"
 
 namespace planning {
 namespace math {
 
 PathPoint InterpolateUsingLinearApproximation(const PathPoint &p0,
-                                              const PathPoint &p1,
-                                              const double s);
+                                              const PathPoint &p1, double s);
+
+// (t, pose)
+Pose InterpolateUsingLinearApproximation(const std::pair<double, Pose> &p0,
+                                         const std::pair<double, Pose> &p1,
+                                         double t);
 
 }  // namespace math
 }  // namespace planning

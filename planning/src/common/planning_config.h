@@ -2,21 +2,11 @@
 #pragma once
 
 #include "gflags/gflags.h"
-
-#include "planning/vehicle_param.h"
+#include "vehicle_param.h"
 
 namespace planning {
 
-DECLARE_string(planner);
 
-DECLARE_bool(enable_reference_line_provider_thread);
-
-DECLARE_bool(enable_smooth_reference_line);
-
-////////////////////////////////////////////////////
-//                  LATTICE                       //
-////////////////////////////////////////////////////
-DECLARE_double(trajectory_time_length);
 
 struct PlanningConfig {
   /**

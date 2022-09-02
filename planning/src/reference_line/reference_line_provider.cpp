@@ -1,6 +1,6 @@
 #include "reference_line_provider.h"
 
-#include "../planning/planning_config.h"
+#include "common/planning_gflags.h"
 #include "reference_line.h"
 
 namespace planning {

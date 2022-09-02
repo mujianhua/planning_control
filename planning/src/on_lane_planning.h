@@ -1,6 +1,6 @@
 #pragma once
 
-#include "planning/planning_config.h"
+#include "common/planning_config.h"
 #include "planning_base.h"
 #include "reference_line/reference_line_provider.h"
 

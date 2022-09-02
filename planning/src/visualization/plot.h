@@ -11,8 +11,8 @@
 
 #include "../math/polygon2d.h"
 #include "../math/vec2d.h"
-#include "../planning/vehicle_param.h"
 #include "color.h"
+#include "common/vehicle_param.h"
 
 namespace planning {
 namespace visualization {

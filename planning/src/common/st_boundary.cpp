@@ -1,8 +1,8 @@
 
 #include "st_boundary.h"
 
-#include "../math/line_segment2d.h"
-#include "../math/polygon2d.h"
+#include "math/line_segment2d.h"
+#include "math/polygon2d.h"
 
 namespace planning {
 

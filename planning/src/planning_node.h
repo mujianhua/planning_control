@@ -6,6 +6,8 @@
 #include <ros/ros.h>
 
 #include "common/data_struct.h"
+#include "common/obstacle.h"
+#include "common/planning_config.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "planner/cartesian_planner.h"
 #include "planner/planner.h"
@@ -15,8 +17,6 @@
 #include "planning/discretized_trajectory.h"
 #include "planning/indexed_list.h"
 #include "planning/local_view.h"
-#include "planning/obstacle.h"
-#include "planning/planning_config.h"
 #include "planning_base.h"
 #include "reference_line/reference_line.h"
 #include "reference_line/reference_line_provider.h"

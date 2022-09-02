@@ -3,7 +3,7 @@
 #include <array>
 
 #include "../common/data_struct.h"
-#include "../planning/planning_config.h"
+#include "common/planning_config.h"
 #include "planner.h"
 
 namespace planning {
