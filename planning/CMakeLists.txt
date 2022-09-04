@@ -31,7 +31,7 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 catkin_package(
         # INCLUDE_DIRS include
         LIBRARIES
-        planning
+        ${PROJECT_NAME}
 
         CATKIN_DEPENDS
         roscpp
@@ -55,17 +55,7 @@ if (WITH_HSL)
     add_definitions(-DWITH_HSL)
 endif ()
 
-set(LATTICE_SRC
-        src/math/curve1d/quartic_polynomial_curve1d.cpp
-        src/math/curve1d/quintic_polynomial_curve1d.cpp
-        src/lattice/lattice_trajectory1d.cpp
-        src/lattice/trajectory1d_generator.cpp
-        src/lattice/path_time_graph.cpp
-        src/lattice/end_condition_sampler.cc
-        src/lattice/lateral_qp_optimizer.cc
-        src/lattice/lateral_osqp_optimizer.cc)
-
-set(SRC
+set(MATH_SRC
         src/math/aabox2d.cpp
         src/math/box2d.cpp
         src/math/line_segment2d.cpp
@@ -75,6 +65,20 @@ set(SRC
         src/math/path_matcher.cpp
         src/math/linear_interpolation.cpp
         src/math/cartesian_frenet_conversion.cpp
+        src/math/curve1d/quartic_polynomial_curve1d.cpp
+        src/math/curve1d/quintic_polynomial_curve1d.cpp)
+add_library(MATH_LIB
+        ${MATH_SRC})
+
+set(LATTICE_SRC
+        src/lattice/lattice_trajectory1d.cpp
+        src/lattice/trajectory1d_generator.cpp
+        src/lattice/path_time_graph.cpp
+        src/lattice/end_condition_sampler.cc
+        src/lattice/lateral_qp_optimizer.cc
+        src/lattice/lateral_osqp_optimizer.cc)
+
+set(SRC
         src/common/st_point.cpp
         src/common/st_boundary.cpp
         src/common/obstacle.cpp
@@ -90,11 +94,12 @@ set(SRC
         src/planner/cartesian_planner.cpp
         src/planner/lattice_planner.cpp
         src/planner/dp_planner.cpp
-        src/on_lane_planning.cpp src/lattice/end_condition_sampler.h)
+        src/on_lane_planning.cpp)
 
 add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC} ${LATTICE_SRC})
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_node
+        MATH_LIB
         ${catkin_LIBRARIES}
         casadi
         gflags

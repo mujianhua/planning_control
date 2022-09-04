@@ -1,6 +1,6 @@
 /**
- * @file planning_node.h
- * @brief
+ * \file planning_node.h
+ * \brief
  */
 
 #include <ros/ros.h>
