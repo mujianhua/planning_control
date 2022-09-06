@@ -2,7 +2,7 @@
  * \brief constraint for quadprog programming. A*x = b, A*x <= b
  * matrix cols is optimize variable size.
  * matrix rows is constraints size.
- */
+ **/
 
 #pragma once
 
