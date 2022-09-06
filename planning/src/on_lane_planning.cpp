@@ -22,6 +22,7 @@ OnLanePlanning::OnLanePlanning(const PlanningConfig &config)
     planner_ = std::make_unique<CartesianPlanner>(config_);
   } else if (FLAGS_planner == "Lattice") {
     planner_ = std::make_unique<LatticePlanner>(config_);
+  } else if (FLAGS_planner == "EM") {
   }
 
   frame_ = std::make_unique<Frame>(config_);

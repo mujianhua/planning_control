@@ -31,6 +31,8 @@ $$
 
 ### LATTICE
 
+### EM
+
 ## Reference Line
 
 ### Reference Line Smoother
