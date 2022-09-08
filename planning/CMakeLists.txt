@@ -95,6 +95,9 @@ set(SRC
         src/planner/lattice_planner.cpp
         src/planner/em_planner.cc
         src/planner/dp_planner.cpp
+        src/task/task.cc
+        src/task/path_optimizer.cc
+        src/task/dp_poly_path/dp_poly_path_optimizer.cc
         src/on_lane_planning.cpp)
 
 add_executable(${PROJECT_NAME}_node src/planning_node.cpp ${SRC} ${LATTICE_SRC})

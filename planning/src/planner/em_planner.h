@@ -6,7 +6,7 @@ namespace planning {
 
 class EMPlanner : public Planner {
  public:
-  explicit EMPlanner(const PlanningConfig &config) : Planner(config_) {}
+  explicit EMPlanner(const PlanningConfig &config);
 
   bool Plan(const TrajectoryPoint &planning_init_point, Frame *frame,
             DiscretizedTrajectory &result) override;
