@@ -6,8 +6,6 @@
 
 namespace planning {
 
-
-
 struct PlanningConfig {
   /**
    * @brief Number of finite elements used to discretize an OCP

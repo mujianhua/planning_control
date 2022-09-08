@@ -56,6 +56,7 @@ void OnLanePlanning::RunOnce(const LocalView &local_view,
   init_point.x = local_view.vehicle_state->x;
   init_point.y = local_view.vehicle_state->y;
   init_point.theta = local_view.vehicle_state->theta;
+
   if (!planner_->Plan(init_point, frame_.get(), *adc_trajectory)) {
     ROS_ERROR("unable plan a trajectory!");
   }

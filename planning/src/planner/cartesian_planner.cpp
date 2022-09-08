@@ -4,11 +4,26 @@
 
 #include "cartesian_planner.h"
 
-#include "../common/data_struct.h"
-#include "../visualization/plot.h"
+#include "common/data_struct.h"
 #include "dp_planner.h"
+#include "visualization/plot.h"
 
 namespace planning {
+
+namespace {
+
+void set_opti_constraints(OptiConstraints &opti_constraints,
+                          const Frame *frame) {
+  opti_constraints.start_x = frame->vehicle_state().x;
+  opti_constraints.start_y = frame->vehicle_state().y;
+  opti_constraints.start_theta = frame->vehicle_state().theta;
+  opti_constraints.start_v = frame->vehicle_state().v;
+  opti_constraints.start_phi = frame->vehicle_state().phi;
+  opti_constraints.start_a = frame->vehicle_state().a;
+  opti_constraints.start_omega = frame->vehicle_state().omega;
+}
+
+}  // namespace
 
 bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
                             Frame *frame, DiscretizedTrajectory &result) {
@@ -43,13 +58,7 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
 
   // 2. optimize coarse trajectory.
   OptiConstraints opti_constraints;
-  opti_constraints.start_x = frame->vehicle_state().x;
-  opti_constraints.start_y = frame->vehicle_state().y;
-  opti_constraints.start_theta = frame->vehicle_state().theta;
-  opti_constraints.start_v = frame->vehicle_state().v;
-  opti_constraints.start_phi = frame->vehicle_state().phi;
-  opti_constraints.start_a = frame->vehicle_state().a;
-  opti_constraints.start_omega = frame->vehicle_state().omega;
+  set_opti_constraints(opti_constraints, frame);
 
   OptiStates optimized;
   if (!opti_.OptimizeIteratively(coarse_trajectory, frame, opti_constraints,
@@ -57,6 +66,10 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
     ROS_ERROR("Optimization failed");
     return false;
   }
+
+  ROS_DEBUG("[CartesianPlanner] iterative optimization time is %f",
+            (ros::Time::now() - current_time).toSec());
+  current_time = ros::Time::now();
 
   std::vector<double> opti_x, opti_y, opti_v;
   Trajectory result_data;

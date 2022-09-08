@@ -12,6 +12,9 @@
 #include "on_lane_planning.h"
 #include "planning_base.h"
 #include "reference_line/reference_line_provider.h"
+#include "ros/duration.h"
+#include "ros/time.h"
+#include "visualization/plot.h"
 
 namespace planning {
 
@@ -72,7 +75,12 @@ void PlanningNode::Proc(const geometry_msgs::PoseStampedConstPtr &msg) {
       std::make_shared<IndexedList<std::string, Obstacle>>(index_obstacles_);
 
   DiscretizedTrajectory result;
+  ros::Time current_time = ros::Time::now();
+
   planning_base_->RunOnce(local_view_, &result);
+
+  ros::Duration t = ros::Time::now() - current_time;
+  ROS_INFO("[CartesianPlanner] dp time is %f", t.toSec());
 
   Animation(result);
 }
@@ -91,10 +99,11 @@ void PlanningNode::Animation(const DiscretizedTrajectory &plan_trajectory) {
                                  visualization::Color::fromHSV(hue, 1.0, 1.0),
                                  obstacle.first, "Online Obstacle");
     }
-
+    visualization::Trigger();
     auto &pt = plan_trajectory.data().at(i);
     PlotVehicle(1, {pt.x, pt.y, pt.theta},
                 atan(pt.kappa * config_.vehicle.wheel_base));
+
     ros::Duration(dt).sleep();
   }
 
