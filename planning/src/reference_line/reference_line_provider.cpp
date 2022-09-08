@@ -1,4 +1,4 @@
-#include "reference_line_provider.h"
+#include "reference_line/reference_line_provider.h"
 
 #include "common/planning_gflags.h"
 #include "reference_line.h"

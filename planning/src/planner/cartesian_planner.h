@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include "../planning/trajectory_optimizer.h"
 #include "common/planning_config.h"
 #include "dp_planner.h"
 #include "planner.h"
+#include "planning/trajectory_optimizer.h"
 
 namespace planning {
 

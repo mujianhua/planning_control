@@ -4,10 +4,10 @@
 #include <utility>
 #include <vector>
 
-#include "../common/data_struct.h"
-#include "../math/math_utils.h"
-#include "../math/polygon2d.h"
-#include "../visualization/plot.h"
+#include "common/data_struct.h"
+#include "math/math_utils.h"
+#include "math/polygon2d.h"
+#include "visualization/plot.h"
 
 namespace planning {
 

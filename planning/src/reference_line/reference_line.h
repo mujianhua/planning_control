@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "../common/data_struct.h"
-#include "../math/vec2d.h"
+#include "common/data_struct.h"
+#include "math/vec2d.h"
 
 namespace planning {
 

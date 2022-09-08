@@ -8,6 +8,7 @@
 
 #include "common/planning_gflags.h"
 #include "planner/cartesian_planner.h"
+#include "planner/em_planner.h"
 #include "planner/lattice_planner.h"
 #include "planning/frame.h"
 #include "planning_base.h"
@@ -23,6 +24,7 @@ OnLanePlanning::OnLanePlanning(const PlanningConfig &config)
   } else if (FLAGS_planner == "Lattice") {
     planner_ = std::make_unique<LatticePlanner>(config_);
   } else if (FLAGS_planner == "EM") {
+    planner_ = std::make_unique<EMPlanner>(config_);
   }
 
   frame_ = std::make_unique<Frame>(config_);

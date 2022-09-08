@@ -1,10 +1,10 @@
 
-#include "reference_line.h"
+#include "reference_line/reference_line.h"
 
 #include <algorithm>
 
-#include "../common/data_struct.h"
-#include "../math/math_utils.h"
+#include "common/data_struct.h"
+#include "math/math_utils.h"
 
 namespace planning {
 

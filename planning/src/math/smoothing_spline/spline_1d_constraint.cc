@@ -14,6 +14,13 @@ Spline1dConstraint::Spline1dConstraint(const std::vector<double>& x_knots,
   equality_constraint_.SetIsEquality(true);
 }
 
+uint32_t Spline1dConstraint::FindIndex(const double x) const {
+  auto upper_bound = std::upper_bound(x_knots_.begin() + 1, x_knots_.end(), x);
+  return std::min(static_cast<uint32_t>(x_knots_.size() - 1),
+                  static_cast<uint32_t>(upper_bound - x_knots_.begin())) -
+         1;
+}
+
 bool Spline1dConstraint::FilterConstraints(
     const std::vector<double>& x_coord, const std::vector<double>& lower_bound,
     const std::vector<double>& upper_bound,
@@ -40,7 +47,14 @@ bool Spline1dConstraint::FilterConstraints(
       filtered_lower_bound_x->emplace_back(x_coord[i]);
     }
   }
-  // todo:.................................................
+  for (uint32_t i = 0; i != upper_bound.size(); ++i) {
+    if (std::isnan(upper_bound[i]) || upper_bound[i] == inf) return false;
+    if (upper_bound[i] < inf && upper_bound[i] > -inf) {
+      filtered_upper_bound->emplace_back(upper_bound[i]);
+      filtered_upper_bound_x->emplace_back(x_coord[i]);
+    }
+  }
+  return true;
 }
 
 }  // namespace planning

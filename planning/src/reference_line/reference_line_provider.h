@@ -7,11 +7,10 @@
 
 #include <mutex>
 #include <thread>
-
 #include <planning/CenterLine.h>
 #include <ros/ros.h>
 
-#include "../common/data_struct.h"
+#include "common/data_struct.h"
 #include "reference_line.h"
 
 namespace planning {

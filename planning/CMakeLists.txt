@@ -93,6 +93,7 @@ set(SRC
         src/planning/trajectory_optimizer.cpp
         src/planner/cartesian_planner.cpp
         src/planner/lattice_planner.cpp
+        src/planner/em_planner.cc
         src/planner/dp_planner.cpp
         src/on_lane_planning.cpp)
 

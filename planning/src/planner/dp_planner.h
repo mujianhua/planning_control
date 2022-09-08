@@ -1,7 +1,8 @@
 /**
  * @file dp_planner.h
- * @brief
+ * @brief dynamic programming [t, s, l]
  */
+
 #pragma once
 
 #include <cmath>
@@ -9,12 +10,12 @@
 #include <memory>
 #include <tuple>
 
-#include "../math/polygon2d.h"
-#include "../math/pose.h"
-#include "../math/vec2d.h"
-#include "../planning/discretized_trajectory.h"
-#include "../planning/frame.h"
 #include "common/planning_config.h"
+#include "math/polygon2d.h"
+#include "math/pose.h"
+#include "math/vec2d.h"
+#include "planning/discretized_trajectory.h"
+#include "planning/frame.h"
 
 namespace planning {
 
