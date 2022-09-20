@@ -2,10 +2,10 @@
  * @file cartesian_planner.cpp
  */
 
-#include "cartesian_planner.h"
+#include "planner/cartesian_planner.h"
 
 #include "common/data_struct.h"
-#include "dp_planner.h"
+#include "planner/dp_planner.h"
 #include "visualization/plot.h"
 
 namespace planning {
@@ -30,7 +30,7 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
   ros::Time start_time = ros::Time::now();
   ros::Time current_time = start_time;
 
-  // 1. Get coarse trajectory by dynamic programming
+  /** 1. Get coarse trajectory by dynamic programming */
   DiscretizedTrajectory coarse_trajectory;
   if (!dp_.Plan(planning_init_point.x, planning_init_point.y,
                 planning_init_point.theta, frame, coarse_trajectory)) {
@@ -56,7 +56,7 @@ bool CartesianPlanner::Plan(const TrajectoryPoint &planning_init_point,
    visualization::Trigger();
  */
 
-  // 2. optimize coarse trajectory.
+  /** 2. optimize coarse trajectory. */
   OptiConstraints opti_constraints;
   set_opti_constraints(opti_constraints, frame);
 

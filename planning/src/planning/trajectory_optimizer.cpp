@@ -1,20 +1,10 @@
-/***********************************************************************************
- *  C++ Source Codes for "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method".
- ***********************************************************************************
- *  Copyright (C) 2022 Bai Li
- *  Users are suggested to cite the following article when they use the source
- *codes. Bai Li et al., "Autonomous Driving on Curvy Roads without Reliance on
- *  Frenet Frame: A Cartesian-based Trajectory Planning Method",
- *  IEEE Transactions on Intelligent Transportation Systems, 2022.
- ***********************************************************************************/
 
 #include "trajectory_optimizer.h"
 
 #include <bitset>
 
-#include "../math/math_utils.h"
-#include "../visualization/plot.h"
+#include "math/math_utils.h"
+#include "visualization/plot.h"
 
 namespace planning {
 
@@ -40,6 +30,7 @@ bool TrajectoryOptimizer::OptimizeIteratively(
 
   OptiConstraints iterative_constraints = constraints;
 
+  /** Iterative optimization frame. */
   while (iter < config_.opti_iter_max) {
     FormulateCorridorConstraints(guess, iterative_constraints);
 
@@ -212,4 +203,5 @@ bool TrajectoryOptimizer::GenerateBox(double time, double &x, double &y,
             {x + incremental[1], y + incremental[3]}};
   return true;
 }
+
 }  // namespace planning
